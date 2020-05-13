@@ -1,0 +1,106 @@
+/* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
+/* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <game/generated/protocol.h>
+#include <game/server/gamecontext.h>
+#include "gmine.h"
+
+CMine::CMine(CGameWorld *pGameWorld, vec2 Pos, int Owner, int Damage)
+: CEntity(pGameWorld, CGameWorld::ENTTYPE_PROJECTILE)
+{ 
+	m_Pos = Pos;
+	m_Owner = Owner;
+	m_Damage = Damage;
+
+	GameWorld()->InsertEntity(this);
+}
+
+void CMine::Reset()
+{
+	GameServer()->m_World.DestroyEntity(this);
+}
+
+void CMine::HitCharacter()
+{
+	CCharacter *pHit = GameServer()->m_World.ClosestCharacter(m_Pos, 6.0f, NULL);
+	
+	if(!pHit)
+		return;
+		
+	if(pHit)
+	{
+		pHit->TakeDamage(vec2(0,0), m_Damage, m_Owner, WEAPON_GRENADE);
+		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
+		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false);
+	}
+}
+
+void CMine::FallDown()
+{
+	m_Vel.y += GameWorld()->m_Core.m_Tuning.m_Gravity;
+	m_Vel.x*=0.97f;
+	if(m_Vel.x < 0.01f && m_Vel.x > -0.01f)
+		m_Vel.x = 0;
+		
+	GameServer()->Collision()->MoveBox(&m_Pos,&m_Vel, vec2(28.0f*5, 28.0f*5), 0.5f);
+}
+
+void CMine::IsUnderProj()
+{
+	for(int i; i < MAX_CLIENTS, i++)
+	{
+		CCharacter *pVictim = GameServer()->GetPlayerChar(i);
+		if(!pVictim || i == m_Owner)
+			continue;
+		
+		if(pVictim->m_Pos.y - m_Pos.y > 32*6)
+			continue;
+		
+		if(abs(pVictim->m_Pos.y - m_Pos.y) < 
+		vec2 TargetPosY = GameServer()->GetPlayerChar(i)->m_Pos.y;
+		vec2 ProjPosY = m_Pos.y;
+		if(TargetPosY < ProjPosY || TargetPosY == ProjPosY || TargetPosY > ProjPosY)
+			FallDown();
+	}
+}
+
+void CMine::Collide()
+{
+	vec2 Dir = vec2(0, 1);
+	int Collide = GameServer()->Collision()->IntersectLine(m_Pos, m_Pos+Dir, 0x0, 0x0);
+	if(Collide)
+		m_GoUp = false;
+}
+
+void CMine::Tick()
+{
+	CCharacter *pOwnerchar = GameServer()->GetPlayerChar(m_Owner);
+	
+	if(!pOwnerchar)
+	{
+		Reset();
+		return;
+	}
+	
+	IsUnderProj();
+	HitCharacter();
+	
+	Collide();
+	
+	if(m_GoUp)
+	{
+		m_Vel.y++;
+		m_Pos = m_Vel;
+	}
+}
+
+void CMine::Snap(int SnappingClient)
+{
+	CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_ID, sizeof(CNetObj_Projectile)));
+	if(pProj)
+	pProj->m_X = (int)m_Pos.x;
+	pProj->m_Y = (int)m_Pos.y;
+	pProj->m_VelX = (int)m_Vel.x;
+	pProj->m_VelY = (int)m_Vel.y;
+	pProj->m_StartTick = Server()->Tick();
+	pProj->m_Type = WEAPON_GRENADE;
+}
