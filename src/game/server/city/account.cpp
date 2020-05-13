@@ -234,7 +234,7 @@ void CAccount::Register(char *Username, char *Password)
 		return;
 	}
 	
-	if(mkdir("accounts", mode_t S_IRWXU || S_IRWXG | S_IROTH | S_IXOTH))
+	if(fs_makedir("accounts")) // that was some useless stuff
 		dbg_msg("account", "Account folder created!");
 	#endif
 
