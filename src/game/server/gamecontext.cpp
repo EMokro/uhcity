@@ -606,8 +606,8 @@ void CGameContext::OnClientEnter(int ClientID)
 	str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s", Server()->ClientName(ClientID), m_pController->GetTeamName(m_apPlayers[ClientID]->GetTeam()));
 	SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
-	SendChatTarget(ClientID, "Welcome on uTown");
-	SendChatTarget(ClientID, "Made by Pikotee & KlickFoot");
+	SendChatTarget(ClientID, "Welcome on UH|City");
+	SendChatTarget(ClientID, "Made by NoHack2Win & Urinstone");
 	SendChatTarget(ClientID, "use /help for some help");
 
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
