@@ -77,7 +77,7 @@ void CInfJumps::Snap(int SnappingClient)
 	
 	CNetObj_Laser *pObj[4];
 	
-	for(int i = 0; i < 6; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		pObj[i] = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
 
