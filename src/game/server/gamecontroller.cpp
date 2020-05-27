@@ -396,7 +396,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 		if(pVictim->GetPlayer()->m_AccData.m_Money >= 50)
 			pVictim->GetPlayer()->m_AccData.m_Money -= 50;
 
-		pVictim->GetPlayer()->m_Score--; // suicide
+		pVictim->GetPlayer()->m_Score; // suicide doesn't reduce score
 	}
 	else
 	{
