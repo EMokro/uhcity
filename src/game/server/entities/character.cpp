@@ -1529,16 +1529,33 @@ void CCharacter::HandleCity()
 	if(Server()->Tick()%50 == 0)
 	{
 		int Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
+		int ExpPoints = Money * 10;
 	
-		if(Money)
-		{
-			if(m_pPlayer->m_AccData.m_VIP)
-				Money *= 2;
+				if(Money && ExpPoints)
+				{
+					//if(m_pPlayer->m_AccData.m_VIP)
+					//	Money *= 2;
 
-			m_pPlayer->m_AccData.m_Money += Money;
-			str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d", m_pPlayer->m_AccData.m_Money, Money);
-			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
-		}
+					
+					m_pPlayer->m_AccData.m_Money += Money;
+					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+
+					str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
+					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+
+					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+					{
+						m_pPlayer->m_AccData.m_ExpPoints = 0;
+						m_pPlayer->m_AccData.m_Level++;
+						m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
+
+						char aBuf[256];
+						str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
+						GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+						
+					}
+				}
 	
 
 		if(m_pPlayer->m_AccData.m_UserID)
