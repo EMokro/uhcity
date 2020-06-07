@@ -1033,6 +1033,17 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 }
 
+// calculate exp needed to level up
+unsigned long long calcExp(int level)
+{
+  unsigned long long exp = 3000;
+  if(level >= 800)
+    exp = ~0;
+  else
+    exp += ((15.0 * level + pow(2, level/20.0)) + pow(level, 1.5)) * pow(level, 2.15) - 150;
+  return exp;
+}
+
 void CCharacter::ResetInput()
 {
 	m_Input.m_Direction = 0;
@@ -1309,15 +1320,32 @@ void CCharacter::Booster()
 			{
 				char aBuf[50];
 				int Money = 1000;
+				int ExpPoints = 10000;
 	
-				if(Money)
+				if(Money && ExpPoints)
 				{
 					//if(m_pPlayer->m_AccData.m_VIP)
 					//	Money *= 2;
 
+					
 					m_pPlayer->m_AccData.m_Money += Money;
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d", m_pPlayer->m_AccData.m_Money, Money);
+					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+
+					str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+
+					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+					{
+						m_pPlayer->m_AccData.m_ExpPoints = 0;
+						m_pPlayer->m_AccData.m_Level++;
+						m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
+
+						char aBuf[256];
+						str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
+						GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+						
+					}
 				}
 			}
 		}
