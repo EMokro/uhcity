@@ -162,7 +162,12 @@ void CCharacter::Tele()
 		{
 			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
 
-			if(GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
+		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+		{
+			m_Core.m_Pos = TelePos;
+		}
+
+			else if(GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
 				|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
 				|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
 				|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
