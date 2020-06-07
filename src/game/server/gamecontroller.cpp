@@ -401,13 +401,13 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	else
 	{
 		if(IsTeamplay() && pVictim->GetPlayer()->GetTeam() == pKiller->GetTeam())
-			pKiller->m_Score--; // teamkill
+			pKiller->m_Score; // teamkill
 		else
 		{
 			if(!pKiller->m_Insta)
 			{
 				char aKillmsg[50];
-			pKiller->m_Score++; // normal kill
+			pKiller->m_Score; // normal kill
 			pKiller->m_AccData.m_Money += 500;
 			str_format(aKillmsg, sizeof(aKillmsg), "+500 TC || current %i TC",pKiller->m_AccData.m_Money);
 				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aKillmsg);
@@ -416,7 +416,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 			{
 				char aKillmsg[200];
 				char aBuf[50];
-				pKiller->m_Score++;
+				pKiller->m_Score;
 				pKiller->GetCharacter()->m_InstaKills++;
 				pKiller->m_AccData.m_Money += 1000+(pKiller->GetCharacter()->m_InstaKills*100);
 				str_format(aKillmsg, sizeof(aKillmsg), "+%i TC || Current: %i TC || %i Insta-Kills",pKiller->GetCharacter()->m_InstaKills*100+1000,pKiller->m_AccData.m_Money,pKiller->GetCharacter()->m_InstaKills);

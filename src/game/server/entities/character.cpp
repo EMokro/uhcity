@@ -1520,9 +1520,9 @@ void CCharacter::HandleCity()
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_UNFREEZE))
 		Unfreeze();
 
-	if(m_Invisible && m_pPlayer->m_Score > 20)
+	if(m_Invisible && m_pPlayer->m_Score > 50)
 	{
-		GameServer()->SendBroadcast("Invisibility disabled, Score > 20", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast("Invisibility disabled, Score > 50", m_pPlayer->GetCID());
 		m_Invisible = 0;
 	}
 
