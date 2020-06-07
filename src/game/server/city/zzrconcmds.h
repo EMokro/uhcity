@@ -9,7 +9,7 @@
 //Teleport
 CONSOLE_COMMAND("tele", "vi", CFGFLAG_SERVER, ConTeleport, this, "")
 
-//Ränge
+//Rï¿½nge
 CONSOLE_COMMAND("Police", "vi", CFGFLAG_SERVER, ConPolice, this, "Enable disable Police on v")
 CONSOLE_COMMAND("Vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable Police on v")
 CONSOLE_COMMAND("Donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable Police on v")
@@ -20,7 +20,8 @@ CONSOLE_COMMAND("up", "?v", CFGFLAG_SERVER, ConUp, this, "")
 CONSOLE_COMMAND("down", "?v", CFGFLAG_SERVER, ConDown, this, "")
 CONSOLE_COMMAND("left", "?v", CFGFLAG_SERVER, ConLeft, this, "")
 CONSOLE_COMMAND("right", "?v", CFGFLAG_SERVER, ConRight, this, "")
-CONSOLE_COMMAND("GiveMoney", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "GiveMoney (Player ID) (Money [1-5Mio])") // Test cmd, need to be deleted
+CONSOLE_COMMAND("GiveMoney", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "GiveMoney (Player ID) (Money [1-5Mio])")
+CONSOLE_COMMAND("Set_Lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "Set level (Player ID) (level [1-800])")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")

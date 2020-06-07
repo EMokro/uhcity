@@ -180,6 +180,7 @@ public:
 		static void ConGiveMoney(IConsole::IResult *pResult, void *pUserData);
 		static void ConLogout(IConsole::IResult *pResult, void *pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
+		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
 
 		public: //Ende :D
 

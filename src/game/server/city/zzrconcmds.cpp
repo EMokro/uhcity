@@ -225,3 +225,34 @@ void CGameContext::ConUnjail(IConsole::IResult *pResult, void *pUserData)
 	pChr->GetPlayer()->m_AccData.m_Arrested = 1;
 	}
 }
+
+void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	int Time = pResult->GetInteger(0);
+	int JailID = pResult->GetVictim();
+	char aBuf[200];
+
+	if(Time > 800 || Time < 1)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value between 1 and 800");
+		return;
+	}
+
+	CCharacter* pChr = pSelf->GetPlayerChar(JailID);
+	if(pChr)
+	{
+		if(pChr->IsAlive())
+		{
+			pChr->GetPlayer()->m_AccData.m_Level = Time;
+			pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
+	
+			if(Time)
+			{
+				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(JailID), Time);
+				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
+			
+			}
+		}
+	}
+}
