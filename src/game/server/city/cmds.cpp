@@ -100,7 +100,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		if(pOwner)
 		{
-			str_format(aBuf, sizeof(aBuf), "Money: %d TC\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d", m_pPlayer->m_AccData.m_Money, pOwner->m_Health,m_pPlayer->m_AccData.m_Health, pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,m_pPlayer->m_AccData.m_UserID);
+			str_format(aBuf, sizeof(aBuf), "Money: %d TC\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d\nExp: %d", m_pPlayer->m_AccData.m_Money, pOwner->m_Health,m_pPlayer->m_AccData.m_Health, pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,m_pPlayer->m_AccData.m_UserID,m_pPlayer->m_AccData.m_ExpPoints);
 			GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 			//GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}
@@ -122,6 +122,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		return;
 
 	}
+
 	else if(!str_comp_nocase(Msg->m_pMessage, "/home") || !str_comp_nocase(Msg->m_pMessage, "/house"))
 	{
 		LastChat();
@@ -273,10 +274,8 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v1.2 by NoHack2Win & UrinStone");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nPreviously known as xP|City, will be adding new updates");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded a new leveling system!");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nPlease report any bugs to NoHack2Win or UrinStone");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nuTown_v2.0 by Pikotee & KlickFoot");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nDon't trust Blunk(Torben Weiss) and QuickTee/r00t they're stealing mods...");
 		return;
     }
 	else if(!str_comp_nocase(Msg->m_pMessage, "/instagib") || !str_comp_nocase(Msg->m_pMessage, "/insta"))

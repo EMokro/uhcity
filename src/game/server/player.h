@@ -109,6 +109,7 @@ public:
 
 		int m_HouseID;
 		unsigned int m_Money;
+		unsigned long long m_exp;
 		int m_Health;
 		int m_Armor;	
 		int m_Kills;
@@ -163,7 +164,7 @@ public:
 	int m_Authed;
 	char m_aRank[64];
 			
-	//Klickfoots scheiß
+	//Klickfoots scheiï¿½
 	int m_ReleaseCarousel;
 	int m_Crown;
 

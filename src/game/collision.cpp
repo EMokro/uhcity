@@ -79,12 +79,16 @@ void CCollision::Init(class CLayers *pLayers)
 }
 int CCollision::TileMoney(int x, int y)
 {
-	if(IsTile(x, y, TILE_MONEY100))
+	if(IsTile(x, y, TILE_MONEY50))
+		return 500;
+	else if(IsTile(x, y, TILE_MONEY100))
 		return 100;
 	else if(IsTile(x, y, TILE_MONEY200))
 		return 200;
 	else if(IsTile(x, y, TILE_MONEY500))
 		return 500;
+	else if(IsTile(x, y, TILE_MONEY1000))
+		return 1000;
 
 	return 0;
 }
