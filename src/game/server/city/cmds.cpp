@@ -274,8 +274,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nuTown_v2.0 by Pikotee & KlickFoot");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nDon't trust Blunk(Torben Weiss) and QuickTee/r00t they're stealing mods...");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v1.2.1 by NoHack2Win and Urinstone");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nPreviously known as xP|City, we'll be adding new features!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nChangelog:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded a new leveling system");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded 50 and 1000 money tile chairs");
 		return;
     }
 	else if(!str_comp_nocase(Msg->m_pMessage, "/instagib") || !str_comp_nocase(Msg->m_pMessage, "/insta"))
