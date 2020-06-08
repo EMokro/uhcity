@@ -277,6 +277,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v1.2.1 by NoHack2Win and Urinstone");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nPreviously known as xP|City, we'll be adding new features!");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nChangelog:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nFixed many crash bugs");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded a new leveling system");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded 50 and 1000 money tile chairs");
 		return;
@@ -350,7 +351,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =DONOR=\n\n\nWe accept donations of at least 10 Euro (as PaySafeCard) to fund our WebSite and Server. \nAs a little \"THANKS\" we'll enable some special stuff for you:\n\n- /Home (Own House - your Spawnpoint)\n\n- /Save, /Load (Position)\n\n- /Tele (Teleport to Cursor)\n\n- /Right, /Left, /Down, /Up (Walk through Walls)\n\n- /Crown (Crown as Stylistic Feature)\n\n- Money Tile (+1000TCs/Second)\n\n\n\nSpecial Thanks to r00t, for Server-Hosting, Support and Websitekeeping");
+		str_format(aBuf, sizeof(aBuf), "            =DONOR=\n\n\nWe accept donations of at least 10 Euro (as PaySafeCard) to fund our WebSite and Server. \nAs a little \"THANKS\" we'll enable some special stuff for you:\n\n- /Home (Own House - your Spawnpoint)\n\n- /Save, /Load (Position)\n\n- /Tele (Teleport to Cursor)\n\n- /Right, /Left, /Down, /Up (Walk through Walls)\n\n- /Crown (Crown as Stylistic Feature)\n\n- Money Tile (+1000TCs/Second)");
 		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 		return;
 	}
@@ -381,21 +382,19 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
+
 	else if(!str_comp_nocase(Msg->m_pMessage, "/god"))
     {
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Noob CMD disabled, even for Admins");
-		LastChat();
-		return;
 		char aBuf[200];
 		if(!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Test CMD acces denied");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are not admin! Access denied");
 			return;
 		}
 
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(pOwner)
+		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
 		{
 			pOwner->m_God^=true;
 			str_format(aBuf, sizeof(aBuf), "%s Godmode", pOwner->m_God?"Enabled":"Disabled");
