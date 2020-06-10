@@ -164,33 +164,39 @@ void CCharacter::Tele()
 			return;
 		}
 
-		for(int i = 1; i < Dist; i+=32)
+		if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
 		{
-			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-
-		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
-		{
-			m_Core.m_Pos = TelePos;
-		}
-
-			else if(GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
+			for (int i = 1; i < Dist; i += 32)
 			{
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied"); 
+				vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
+
+
+				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
+				{
+					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied");
+					return;
+				}
+			}
+
+			if (Protected())
+			{
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
 				return;
 			}
 		}
 
-		if(Protected())
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first"); 
-			return;
-		}
-
 		m_Core.m_Pos = TelePos;
+		CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
+		if (pEvent)
+		{
+			pEvent->m_X = (int)TelePos.x;
+			pEvent->m_Y = (int)TelePos.y;
+			pEvent->m_ClientID = m_pPlayer->GetCID();
+		}
 	}
 }
 
