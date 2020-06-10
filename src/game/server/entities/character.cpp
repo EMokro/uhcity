@@ -164,33 +164,39 @@ void CCharacter::Tele()
 			return;
 		}
 
-		for(int i = 1; i < Dist; i+=32)
+		if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
 		{
-			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-
-		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
-		{
-			m_Core.m_Pos = TelePos;
-		}
-
-			else if(GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
-				|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
+			for (int i = 1; i < Dist; i += 32)
 			{
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied"); 
+				vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
+
+
+				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
+					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
+				{
+					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied");
+					return;
+				}
+			}
+
+			if (Protected())
+			{
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
 				return;
 			}
 		}
 
-		if(Protected())
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first"); 
-			return;
-		}
-
 		m_Core.m_Pos = TelePos;
+		CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
+		if (pEvent)
+		{
+			pEvent->m_X = (int)TelePos.x;
+			pEvent->m_Y = (int)TelePos.y;
+			pEvent->m_ClientID = m_pPlayer->GetCID();
+		}
 	}
 }
 
@@ -663,14 +669,14 @@ void CCharacter::FireWeapon()
 				(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
 				1, m_GameZone?0:m_pPlayer->m_AccData.m_GunExplode, 0, -1, WEAPON_GUN);
 
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
+				// pack the Projectile and send it to the client Directly
+				CNetObj_Projectile p;
+				pProj->FillInfo(&p);
 
 			
-			Msg.AddInt(1);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
+				Msg.AddInt(1);
+				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+					Msg.AddInt(((int *)&p)[i]);
 
 			}
 			else
@@ -680,9 +686,9 @@ void CCharacter::FireWeapon()
 				//CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 				Msg.AddInt(ShotSpread*2+1);
 
-				float Spreading[18*2+1];
+				float Spreading[12*2+1];
 
-				for(int i = 0; i < 18*2+1; i++)
+				for(int i = 0; i < 12*2+1; i++)
 				{
 					Spreading[i] = -1.260f + 0.070f * i;
 				}

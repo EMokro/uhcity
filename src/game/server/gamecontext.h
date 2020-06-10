@@ -182,6 +182,8 @@ public:
 		static void ConLogout(IConsole::IResult *pResult, void *pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
+		static void ConSetLife(IConsole::IResult* pResult, void* pUserData);
+		static void ConSetArmor(IConsole::IResult* pResult, void* pUserData);
 
 		public: //Ende :D
 

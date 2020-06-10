@@ -5,16 +5,16 @@
 
 class CAllWeapons : public CEntity
 {
-public:
-	CAllWeapons(CGameWorld *pGameWorld, int Owner, vec2 Pos);
+	public:
+		CAllWeapons(CGameWorld *pGameWorld, int Owner, vec2 Pos);
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void Snap(int SnappingClient);
+		virtual void Reset();
+		virtual void Tick();
+		virtual void Snap(int SnappingClient);
 
-private:
-	int m_Owner;
-	int m_IDs[30];
+	private:
+		int m_Owner;
+		int m_IDs[30];
 	
 };
 
