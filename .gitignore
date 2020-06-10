@@ -5,7 +5,7 @@ bam.exe
 *.o
 *.pyc
 config.lua
-accounts/
+accounts/**
 src/game/generated/server_data.h
 src/game/generated/server_data.cpp
 src/game/generated/protocol.h
