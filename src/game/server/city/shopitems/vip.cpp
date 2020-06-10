@@ -15,7 +15,6 @@ CVip::CVip(CGameWorld *pGameWorld, vec2 Pos)
 void CVip::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
-
 }
 
 void CVip::Tick()
@@ -42,12 +41,9 @@ void CVip::Tick()
 
 void CVip::Snap(int SnappingClient)
 {
-
 	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, TEAM_BLUE, sizeof(CNetObj_Flag));
 
 	pFlag->m_X = m_Pos.x;
 	pFlag->m_Y = m_Pos.y;
 	pFlag->m_Team = TEAM_BLUE;
-		
-	
 }

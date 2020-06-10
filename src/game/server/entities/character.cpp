@@ -663,14 +663,14 @@ void CCharacter::FireWeapon()
 				(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
 				1, m_GameZone?0:m_pPlayer->m_AccData.m_GunExplode, 0, -1, WEAPON_GUN);
 
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
+				// pack the Projectile and send it to the client Directly
+				CNetObj_Projectile p;
+				pProj->FillInfo(&p);
 
 			
-			Msg.AddInt(1);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
+				Msg.AddInt(1);
+				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+					Msg.AddInt(((int *)&p)[i]);
 
 			}
 			else
@@ -680,9 +680,9 @@ void CCharacter::FireWeapon()
 				//CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 				Msg.AddInt(ShotSpread*2+1);
 
-				float Spreading[18*2+1];
+				float Spreading[12*2+1];
 
-				for(int i = 0; i < 18*2+1; i++)
+				for(int i = 0; i < 12*2+1; i++)
 				{
 					Spreading[i] = -1.260f + 0.070f * i;
 				}

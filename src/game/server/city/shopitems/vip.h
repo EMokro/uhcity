@@ -14,8 +14,6 @@ public:
 
 private:
 	vec2 m_Pos;
-	
-	
 };
 
 #endif

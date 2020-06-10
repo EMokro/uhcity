@@ -140,7 +140,8 @@ void CGameContext::ConDonor(IConsole::IResult *pResult, void *pUserData)
 		if(Switch)
 				str_format(aBuf, sizeof aBuf, "'%s' is a Donor now.", pSelf->Server()->ClientName(DonorID));
 		else
-					str_format(aBuf, sizeof aBuf, "'%s' is no longer a Donor.", pSelf->Server()->ClientName(DonorID));
+				str_format(aBuf, sizeof aBuf, "'%s' is no longer a Donor.", pSelf->Server()->ClientName(DonorID));
+
 		pSelf->SendChat(-1, CHAT_ALL, aBuf);
 	}
 }
@@ -167,10 +168,9 @@ void CGameContext::ConJail(IConsole::IResult *pResult, void *pUserData)
 	
 			if(Time)
 			{
-				str_format(aBuf, sizeof aBuf, "'%s' is arrested for %i secounds.", pSelf->Server()->ClientName(JailID), Time);
+				str_format(aBuf, sizeof aBuf, "'%s' is arrested for %i seconds.", pSelf->Server()->ClientName(JailID), Time);
 				pSelf->SendChat(-1, CHAT_ALL, aBuf);
 				pChr->Die(pChr->GetPlayer()->GetCID(), WEAPON_GAME);
-			
 			}
 		}
 	}
@@ -284,6 +284,65 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(JailID), Time);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
 			
+			}
+		}
+	}
+}
+
+void CGameContext::ConSetLife(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
+	char aBuf[200];
+
+	if (Amount < 10 && Amount > 500)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Value must be between 10 and 500");
+		return;
+	}
+
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
+	if (pChr)
+	{
+		if (pChr->IsAlive())
+		{
+			pChr->GetPlayer()->m_AccData.m_Health = Amount;
+
+			if (Amount)
+			{
+				str_format(aBuf, sizeof aBuf, "'%s' got %d life", pSelf->Server()->ClientName(ID), Amount);
+				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
+
+			}
+		}
+	}
+}
+
+void CGameContext::ConSetArmor(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
+	char aBuf[200];
+
+	if (Amount < 10 && Amount > 500)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Value must be between 10 and 500");
+		return;
+	}
+
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
+	if (pChr)
+	{
+		if (pChr->IsAlive())
+		{
+			pChr->GetPlayer()->m_AccData.m_Armor = Amount;
+
+			if (Amount)
+			{	
+				str_format(aBuf, sizeof aBuf, "'%s' got %d armor", pSelf->Server()->ClientName(ID), Amount);
+				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
 			}
 		}
 	}

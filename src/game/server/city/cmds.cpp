@@ -137,6 +137,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if(pOwner && pOwner->IsAlive())
 		{
 			pOwner->m_Home = m_pPlayer->m_AccData.m_UserID;
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
 			dbg_msg("-.-", "/home: %i", pOwner->m_Home);
 		}
 
@@ -210,14 +211,27 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/rainbow"))
 	{
 		LastChat();
+		char aBuf[200];
+
 		m_pPlayer->m_Rainbow^=true;
+		str_format(aBuf, sizeof(aBuf), "%s Rainbow", m_pPlayer->m_Rainbow ? "Enabled" : "Disabled");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/crown"))
 	{
 		LastChat();
-		if(m_pPlayer->m_AccData.m_Donor)
-		m_pPlayer->m_Crown^=true;
+
+		char aBuf[200];
+
+		if (m_pPlayer->m_AccData.m_Donor) {
+			m_pPlayer->m_Crown ^= true;
+			str_format(aBuf, sizeof(aBuf), "%s Crown", m_pPlayer->m_Crown ? "Enabled" : "Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+		
+
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/del") || !str_comp_nocase(Msg->m_pMessage, "/delete"))
@@ -321,8 +335,10 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		
 		CCharacter *pUser = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(pUser)
+		if (pUser) {
 			pUser->Transfer(Money);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
+		}
 
 		return;
 	}
@@ -394,7 +410,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		{
 			pOwner->m_God^=true;
 			str_format(aBuf, sizeof(aBuf), "%s Godmode", pOwner->m_God?"Enabled":"Disabled");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}
 
 		return;
