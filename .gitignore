@@ -5,6 +5,9 @@ bam.exe
 *.o
 *.pyc
 config.lua
+teeworlds_srv
+bam
+autoexec.cfg
 accounts/**
 src/game/generated/server_data.h
 src/game/generated/server_data.cpp
