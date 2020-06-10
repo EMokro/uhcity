@@ -307,7 +307,7 @@ void CCharacter::HandleNinja()
 		// time's up, return
 		m_aWeapons[WEAPON_NINJA].m_Got = false;
 
-		m_ActiveWeapon = m_FreezeEnd?m_FreezeWeapon:m_LastWeapon;
+		m_ActiveWeapon = m_FreezeEnd ? m_FreezeWeapon : m_LastWeapon;
 
 		SetWeapon(m_ActiveWeapon);
 		return;
@@ -1428,7 +1428,7 @@ void CCharacter::Unfreeze()
 {
 	//m_EmoteType = EMOTE_NORMAL;
 	m_EmoteStop = Server()->Tick();
-	m_Frozen = m_Frozen?1:0;
+	m_Frozen = m_Frozen ? 1 : 0;
 }
 
 void CCharacter::Transfer(int Value)

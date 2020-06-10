@@ -58,7 +58,7 @@ void CGun::Tick()
 		pOwner->Buy("Gun explode", &pOwner->GetPlayer()->m_AccData.m_GunExplode, g_Config.m_EuGunExplode, Click, 1);
 		break;
 	case 3:
-		pOwner->Buy("Gun freeze", &pOwner->GetPlayer()->m_AccData.m_GunFreeze, g_Config.m_EuGunFreeze, Click, 10);
+		pOwner->Buy("Gun freeze", &pOwner->GetPlayer()->m_AccData.m_GunFreeze, g_Config.m_EuGunFreeze, Click, 3);
 		break;
 	}
 }
