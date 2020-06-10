@@ -274,12 +274,8 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v1.2.1 by NoHack2Win and Urinstone");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nPreviously known as xP|City, we'll be adding new features!");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nChangelog:");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nFixed many crash bugs");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded a new leveling system");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nAdded 50 and 1000 money tile chairs");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v0.4.2 by NoHack2Win and Urinstone\nPlease note that this mod is still in development!\n");
+
 		return;
     }
 	else if(!str_comp_nocase(Msg->m_pMessage, "/instagib") || !str_comp_nocase(Msg->m_pMessage, "/insta"))
@@ -351,7 +347,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =DONOR=\n\n\nWe accept donations of at least 10 Euro (as PaySafeCard) to fund our WebSite and Server. \nAs a little \"THANKS\" we'll enable some special stuff for you:\n\n- /Home (Own House - your Spawnpoint)\n\n- /Save, /Load (Position)\n\n- /Tele (Teleport to Cursor)\n\n- /Right, /Left, /Down, /Up (Walk through Walls)\n\n- /Crown (Crown as Stylistic Feature)\n\n- Money Tile (+1000TCs/Second)");
+		str_format(aBuf, sizeof(aBuf), "            =DONOR=\n\n\nContact an admin to get donor for free.\nPlease note that Donor will be removed with the final update.\n\n Donor provides following features:\n\n- /Home (Own House - your Spawnpoint)\n\n- /Save, /Load (Position)\n\n- /Tele (Teleport to Cursor)\n\n- /Right, /Left, /Down, /Up (Walk through Walls)\n\n- /Crown (Crown as Stylistic Feature)\n\n- Money Tile (+1000TCs/Second)");
 		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 		return;
 	}
@@ -359,7 +355,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =POLICE=\n\n\nHow to become a Police?\nWrite an Application on uTown-Tw.de (in english) and hope to be choosen...\n\nAvailable F2 - CMDs:\n\n- ban\n\n -bans\n\n- kick\n\n- jail\n\n- unjail\n\n- vote yes, no\n\n- status\n\n\nChat - Commands:\n\n- /JailRifle");
+		str_format(aBuf, sizeof(aBuf), "            =POLICE=\n\n\nHow to become a Police?\nWrite an application and send it to NoHack2Win#0001 or UrinStone#8404 on Discord\n\nAvailable F2 - CMDs:\n\n- ban\n\n -bans\n\n- kick\n\n- jail\n\n- unjail\n\n- vote yes, no\n\n- status\n\n\nChat - Commands:\n\n- /JailRifle");
 		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 		return;
 	}

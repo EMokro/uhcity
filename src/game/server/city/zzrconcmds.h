@@ -10,22 +10,23 @@
 CONSOLE_COMMAND("tele", "vi", CFGFLAG_SERVER, ConTeleport, this, "")
 
 //R�nge
-CONSOLE_COMMAND("Police", "vi", CFGFLAG_SERVER, ConPolice, this, "Enable disable Police on v")
-CONSOLE_COMMAND("Vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable Police on v")
-CONSOLE_COMMAND("Donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable Police on v")
+CONSOLE_COMMAND("police", "vi", CFGFLAG_SERVER, ConPolice, this, "Enable disable Police on v")
+CONSOLE_COMMAND("vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable Police on v")
+CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable Police on v")
 
 //Admincmds
-CONSOLE_COMMAND("Jail", "vi", CFGFLAG_SERVER, ConJail, this, "Jail v for i secounds")
+CONSOLE_COMMAND("jail", "vi", CFGFLAG_SERVER, ConJail, this, "jail v for i secounds")
 CONSOLE_COMMAND("up", "?v", CFGFLAG_SERVER, ConUp, this, "")
 CONSOLE_COMMAND("down", "?v", CFGFLAG_SERVER, ConDown, this, "")
 CONSOLE_COMMAND("left", "?v", CFGFLAG_SERVER, ConLeft, this, "")
 CONSOLE_COMMAND("right", "?v", CFGFLAG_SERVER, ConRight, this, "")
-CONSOLE_COMMAND("GiveMoney", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "GiveMoney (Player ID) (Money [1-5Mio])")
-CONSOLE_COMMAND("Set_Lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "Set level (Player ID) (level [1-800])")
+CONSOLE_COMMAND("add_money", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "add_money id money(1-5mio)")
+CONSOLE_COMMAND("set_money", "vi", CFGFLAG_SERVER, ConSetMoney, this, "set_money id money")
+CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "set_lvl id level(max 800)")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")
-CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "")
+CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v")
 
 
 #undef CONSOLE_COMMAND

@@ -107,6 +107,7 @@ void CGameContext::ConPolice(IConsole::IResult *pResult, void *pUserData)
 		pSelf->SendChat(-1, CHAT_ALL, aBuf);
 	}
 }
+
 void CGameContext::ConVip(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
@@ -203,6 +204,37 @@ void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 		}
 	}
 }
+
+void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
+	char aBuf[200];
+
+	if (Amount < 1)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value of at least 1");
+		return;
+	}
+
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
+	if (pChr)
+	{
+		if (pChr->IsAlive())
+		{
+			pChr->GetPlayer()->m_AccData.m_Money = Amount;
+
+			if (Amount)
+			{
+				str_format(aBuf, sizeof aBuf, "'%s' got %d TC", pSelf->Server()->ClientName(ID), Amount);
+				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
+
+			}
+		}
+	}
+}
+
 void CGameContext::ConLogout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;

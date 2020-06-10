@@ -158,6 +158,12 @@ void CCharacter::Tele()
 	if(!GameServer()->Collision()->CheckPoint(TelePos))
 	{
 		float Dist = distance(TelePos, m_Pos);
+
+		if (Dist > 500) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Out of range");
+			return;
+		}
+
 		for(int i = 1; i < Dist; i+=32)
 		{
 			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;

@@ -178,6 +178,7 @@ public:
 		static void ConDonor(IConsole::IResult *pResult, void *pUserData);
 		static void ConJail(IConsole::IResult *pResult, void *pUserData);
 		static void ConGiveMoney(IConsole::IResult *pResult, void *pUserData);
+		static void ConSetMoney(IConsole::IResult* pResult, void* pUserData);
 		static void ConLogout(IConsole::IResult *pResult, void *pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
