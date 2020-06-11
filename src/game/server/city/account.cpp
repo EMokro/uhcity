@@ -17,6 +17,7 @@
 	#include <unistd.h>
 #endif
 
+
 CAccount::CAccount(CPlayer *pPlayer, CGameContext *pGameServer)
 {
    m_pPlayer = pPlayer;
@@ -185,6 +186,8 @@ void CAccount::Login(char *Username, char *Password)
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
  
+	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
+		m_pPlayer->m_AccData.m_GunFreeze = 3;
 
 	if(str_comp(m_pPlayer->m_AccData.m_RconPassword,g_Config.m_SvRconModPassword) == 0)
 		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
@@ -256,7 +259,8 @@ void CAccount::Register(char *Username, char *Password)
 	FILE *Accfile;
 	Accfile = fopen(aBuf, "a+");
 
-	str_format(aBuf, sizeof(aBuf), "%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
+	str_format(aBuf, sizeof(aBuf),
+		"%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
 		Username, 
 		Password, 
 		"0",
@@ -314,6 +318,7 @@ void CAccount::Register(char *Username, char *Password)
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 	Login(Username, Password);
 }
+
 bool CAccount::Exists(const char *Username)
 {
 	char aBuf[128];
