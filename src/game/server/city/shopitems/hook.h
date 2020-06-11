@@ -3,16 +3,18 @@
 #ifndef GAME_SERVER_ENTITIES_HOOK_H
 #define GAME_SERVER_ENTITIES_HOOK_H
 
-class CHealthRegen : public CEntity
+class CHook : public CEntity
 {
-public:
-	CHealthRegen(CGameWorld* pGameWorld, int Owner, vec2 Pos);
+public:	
+	CHook(CGameWorld* pGameWorld, int Owner, vec2 Pos, int Type);
 
 	virtual void Reset();
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
 
 private:
+	int m_StartTick;
+	int m_Type;
 	int m_Owner;
 	int m_IDs[30];
 

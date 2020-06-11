@@ -61,9 +61,9 @@ void CCharacter::Reset()
 
 bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 {
-	m_EmoteStop = -1;
+	m_EmoteStop = 1;
 	m_LastAction = -1;
-	m_ActiveWeapon = pPlayer->m_Insta?WEAPON_RIFLE:WEAPON_GUN;
+	m_ActiveWeapon = pPlayer->m_Insta ? WEAPON_RIFLE:WEAPON_GUN;
 
 	if(pPlayer->m_Insta)
 		m_aWeapons[WEAPON_RIFLE].m_Ammo = 10;
@@ -1052,7 +1052,7 @@ unsigned long long calcExp(int level)
   if(level >= 800)
     exp = ~0;
   else
-    exp += ((15.0 * level + pow(2, level/20.0)) + pow(level, 1.5)) * pow(level, 2.15) - 150;
+    exp += ((15.0 * level + pow(2, level/25.0)) + pow(level, 2)) * pow(level, 3.1) - 150;
   return exp;
 }
 

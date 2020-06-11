@@ -100,7 +100,15 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		if(pOwner)
 		{
-			str_format(aBuf, sizeof(aBuf), "Money: %d TC\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d\nExp: %d", m_pPlayer->m_AccData.m_Money, pOwner->m_Health,m_pPlayer->m_AccData.m_Health, pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,m_pPlayer->m_AccData.m_UserID,m_pPlayer->m_AccData.m_ExpPoints);
+			str_format(
+				aBuf,
+				sizeof(aBuf),
+				"Money: %d TC\nExp: %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
+				m_pPlayer->m_AccData.m_Money,
+				m_pPlayer->m_AccData.m_ExpPoints,
+				pOwner->m_Health,m_pPlayer->m_AccData.m_Health,
+				pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,
+				m_pPlayer->m_AccData.m_UserID);
 			GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 			//GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}

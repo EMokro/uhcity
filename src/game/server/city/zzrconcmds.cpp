@@ -347,3 +347,17 @@ void CGameContext::ConSetArmor(IConsole::IResult* pResult, void* pUserData)
 		}
 	}
 }
+
+void CGameContext::ConSetClientName(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	char Value[16];
+	str_append(Value, pResult->GetString(0), sizeof(Value));
+	int ID = pResult->GetVictim();
+
+	if (Value) {
+		char aBuf[128];
+		pSelf->Server()->SetClientName(ID, Value);
+		str_format(aBuf, sizeof aBuf, "changed %s name to %s", pSelf->Server()->ClientName(ID), Value);
+	}
+}
