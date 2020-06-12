@@ -22,6 +22,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	if(!strncmp(Msg->m_pMessage, "/login", 6))
 	{
 		LastChat();
+
 		char Username[512];
 		char Password[512];
 		if(sscanf(Msg->m_pMessage, "/login %s %s", Username, Password) != 2)
@@ -103,9 +104,10 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			str_format(
 				aBuf,
 				sizeof(aBuf),
-				"Money: %d TC\nExp: %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
+				"Money: %d TC\nExp: %d / %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
 				m_pPlayer->m_AccData.m_Money,
 				m_pPlayer->m_AccData.m_ExpPoints,
+				pOwner->calcExp(m_pPlayer->m_AccData.m_Level),
 				pOwner->m_Health,m_pPlayer->m_AccData.m_Health,
 				pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,
 				m_pPlayer->m_AccData.m_UserID);
@@ -128,9 +130,63 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if(pOwner && pOwner->IsAlive())
 			pOwner->Tele();
 		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/up")) {
+		LastChat();
+		if (!m_pPlayer->m_AccData.m_VIP) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			return;
+		}
 
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (pOwner && pOwner->IsAlive()) {
+			pOwner->Move(0);
+		}
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/down")) {
+	LastChat();
+	if (!m_pPlayer->m_AccData.m_VIP) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+		return;
 	}
 
+	CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+	if (pOwner && pOwner->IsAlive()) {
+		pOwner->Move(2);
+	}
+	return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/left")) {
+	LastChat();
+	if (!m_pPlayer->m_AccData.m_VIP) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+		return;
+	}
+
+	CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+	if (pOwner && pOwner->IsAlive()) {
+		pOwner->Move(1);
+	}
+	return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/right")) {
+	LastChat();
+	if (!m_pPlayer->m_AccData.m_VIP) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+		return;
+	}
+
+	CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+	if (pOwner && pOwner->IsAlive()) {
+		pOwner->Move(3);
+	}
+	return;
+	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/home") || !str_comp_nocase(Msg->m_pMessage, "/house"))
 	{
 		LastChat();
@@ -172,6 +228,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!strncmp(Msg->m_pMessage, "/register", 9))
 	{
 		LastChat();
+
 		char Username[512];
 		char Password[512];
 		if(sscanf(Msg->m_pMessage, "/register %s %s", Username, Password) != 2)
@@ -185,12 +242,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/invi") || !str_comp_nocase(Msg->m_pMessage, "/invisible") || !str_comp_nocase(Msg->m_pMessage, "/invis"))
 	{
 		LastChat();
-
-		if(m_pPlayer->m_Score > 20)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Invisibility for player with score less than 20");
-			return;
-		}
 
 		if(m_pPlayer->m_Insta)
 		{

@@ -66,6 +66,7 @@ public:
 	// City
 	void SaveLoad(int Value);
 	void Tele();
+	void Move(int dir);
 	void Buy(const char *Name, int *Upgrade, int Price, int Click, int Max);
 	int MouseEvent(vec2 Pos);
 	int NewPlasma();
@@ -79,6 +80,7 @@ public:
 	void Unfreeze();
 	void Transfer(int Value);
 	bool Protected();
+	unsigned long long calcExp(int level);
 //KlickFoots Water zeugs 
 	bool m_SingleWater;
 	bool m_Water;
