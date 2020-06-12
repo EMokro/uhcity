@@ -79,6 +79,7 @@ public:
 	void Unfreeze();
 	void Transfer(int Value);
 	bool Protected();
+	unsigned long long calcExp(int level);
 //KlickFoots Water zeugs 
 	bool m_SingleWater;
 	bool m_Water;

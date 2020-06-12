@@ -1046,13 +1046,13 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 }
 
 // calculate exp needed to level up
-unsigned long long calcExp(int level)
+unsigned long long CCharacter::calcExp(int level)
 {
   unsigned long long exp = 3000;
   if(level >= 800)
     exp = ~0;
   else
-    exp += ((15.0 * level + pow(2, level/25.0)) + pow(level, 2)) * pow(level, 3.1) - 150;
+    exp += ((10.0 * level + pow(2, level/25.0)) + pow(level, 1.8)) * pow(level, 1.7) - 150;
   return exp;
 }
 

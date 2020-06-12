@@ -103,9 +103,10 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			str_format(
 				aBuf,
 				sizeof(aBuf),
-				"Money: %d TC\nExp: %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
+				"Money: %d TC\nExp: %d / %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
 				m_pPlayer->m_AccData.m_Money,
 				m_pPlayer->m_AccData.m_ExpPoints,
+				pOwner->calcExp(m_pPlayer->m_AccData.m_Level),
 				pOwner->m_Health,m_pPlayer->m_AccData.m_Health,
 				pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,
 				m_pPlayer->m_AccData.m_UserID);
