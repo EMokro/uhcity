@@ -245,11 +245,10 @@ void CCharacter::Move(int dir)
 	if (GameServer()->Collision()->IsTile(movePos, TILE_ANTI_TELE)
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_KILL))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_FREEZE))
-		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID())
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID()))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID())
 		|| GameServer()->Collision()->IsTile(movePos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor
-		|| GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor)
-
+		|| GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor))
 		return;
 
 	m_Core.m_Pos = movePos;

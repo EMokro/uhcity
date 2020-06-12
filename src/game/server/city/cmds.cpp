@@ -22,6 +22,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	if(!strncmp(Msg->m_pMessage, "/login", 6))
 	{
 		LastChat();
+
 		char Username[512];
 		char Password[512];
 		if(sscanf(Msg->m_pMessage, "/login %s %s", Username, Password) != 2)
@@ -227,6 +228,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!strncmp(Msg->m_pMessage, "/register", 9))
 	{
 		LastChat();
+
 		char Username[512];
 		char Password[512];
 		if(sscanf(Msg->m_pMessage, "/register %s %s", Username, Password) != 2)
