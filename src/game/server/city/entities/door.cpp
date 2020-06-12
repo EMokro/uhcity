@@ -243,6 +243,7 @@ void CDoor::Tick()
 	
 	for(int i = 0; i < 4; i++)
 	{
+		char aBuf[128];
 		vec2 ToPos = m_Pos;
 		if(m_aLength[i] && !m_Open)
 		{
@@ -258,7 +259,9 @@ void CDoor::Tick()
 				continue;
 			else
 			{
-				Hit->Die(Hit->GetPlayer()->GetCID(), WEAPON_WORLD);
+	
+				Hit->m_Core.m_Pos += vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
+				Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, 0);
 			}
 		}
 	}
