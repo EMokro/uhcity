@@ -243,12 +243,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 
-		if(m_pPlayer->m_Score > 20)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Invisibility for player with score less than 20");
-			return;
-		}
-
 		if(m_pPlayer->m_Insta)
 		{
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Cmd is not allowed while playing instagib");
