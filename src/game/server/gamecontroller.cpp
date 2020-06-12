@@ -409,7 +409,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 				char aKillmsg[50];
 			pKiller->m_Score; // normal kill
 			pKiller->m_AccData.m_Money += 500;
-			str_format(aKillmsg, sizeof(aKillmsg), "+500 TC || current %i TC",pKiller->m_AccData.m_Money);
+			str_format(aKillmsg, sizeof(aKillmsg), "+500$ || current %i$",pKiller->m_AccData.m_Money);
 				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aKillmsg);
 			}
 			else
@@ -419,7 +419,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 				pKiller->m_Score;
 				pKiller->GetCharacter()->m_InstaKills++;
 				pKiller->m_AccData.m_Money += 1000+(pKiller->GetCharacter()->m_InstaKills*100);
-				str_format(aKillmsg, sizeof(aKillmsg), "+%i TC || Current: %i TC || %i Insta-Kills",pKiller->GetCharacter()->m_InstaKills*100+1000,pKiller->m_AccData.m_Money,pKiller->GetCharacter()->m_InstaKills);
+				str_format(aKillmsg, sizeof(aKillmsg), "+%i$ || Current: %i$ || %i Insta-Kills",pKiller->GetCharacter()->m_InstaKills*100+1000,pKiller->m_AccData.m_Money,pKiller->GetCharacter()->m_InstaKills);
 				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aKillmsg);
 
 				if(pVictim->m_InstaKills >= 5)

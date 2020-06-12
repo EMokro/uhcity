@@ -1368,7 +1368,7 @@ void CCharacter::Booster()
 		{
 			if(Server()->Tick()%50 == 0)
 			{
-				char aBuf[50];
+				char aBuf[128];
 				int Money = 1000;
 				int ExpPoints = 10000;
 	
@@ -1381,7 +1381,7 @@ void CCharacter::Booster()
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
+					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
@@ -1422,7 +1422,7 @@ void CCharacter::Booster()
 					m_Health += m_NeedHealth;
 
 					GetPlayer()->m_AccData.m_Money -= m_LifeCost;
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC | -%d\nHealth: %d\nArmor: %d", m_pPlayer->m_AccData.m_Money, m_LifeCost, m_Health, m_Armor);
+					str_format(aBuf, sizeof(aBuf), "Money: %d$ | -%d$\nHealth: %d\nArmor: %d", m_pPlayer->m_AccData.m_Money, m_LifeCost, m_Health, m_Armor);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 				}
 			
@@ -1590,7 +1590,7 @@ void CCharacter::HandleCity()
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC | +%d\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
+					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
