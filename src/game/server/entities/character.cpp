@@ -217,6 +217,44 @@ void CCharacter::SaveLoad(int Value)
 		m_Core.m_Pos = m_SavePos;
 }
 
+void CCharacter::Move(int dir) 
+{
+	int toX = 0;
+	int toY = 0;
+
+	switch (dir)
+	{
+		case 0:
+			toY = -32;
+			break;
+		case 1:
+			toX = -32;
+			break;
+		case 2:
+			toY = 32;
+			break;
+		case 3:
+			toX = 32;
+			break;
+		default:
+			break;
+	}
+
+	vec2 movePos = m_Pos + vec2(toX, toY);
+
+	if (GameServer()->Collision()->IsTile(movePos, TILE_ANTI_TELE)
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_KILL))
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_FREEZE))
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID())
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID())
+		|| GameServer()->Collision()->IsTile(movePos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor
+		|| GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor)
+
+		return;
+
+	m_Core.m_Pos = movePos;
+}
+
 void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int Max)
 {
 	char aBuf[128];
@@ -1067,6 +1105,7 @@ void CCharacter::ResetInput()
 	m_Input.m_Jump = 0;
 	m_LatestPrevInput = m_LatestInput = m_Input;
 }
+
 void CCharacter::Booster()
 {
 	const float NORMAL = IsGrounded()?10:5;

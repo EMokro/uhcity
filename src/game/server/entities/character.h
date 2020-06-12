@@ -66,6 +66,7 @@ public:
 	// City
 	void SaveLoad(int Value);
 	void Tele();
+	void Move(int dir);
 	void Buy(const char *Name, int *Upgrade, int Price, int Click, int Max);
 	int MouseEvent(vec2 Pos);
 	int NewPlasma();
