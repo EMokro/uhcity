@@ -26,6 +26,7 @@ CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "set_lvl id le
 CONSOLE_COMMAND("set_life", "vi", CFGFLAG_SERVER, ConSetLife, this, "set_life id amount")
 CONSOLE_COMMAND("set_armor", "vi", CFGFLAG_SERVER, ConSetArmor, this, "set_armor id amount")
 CONSOLE_COMMAND("set_client_name", "vi", CFGFLAG_SERVER, ConSetClientName, this, "set_client_name id value")
+CONSOLE_COMMAND("kill", "i", CFGFLAG_SERVER, ConKill, this, "kill id")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")

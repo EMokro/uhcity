@@ -78,18 +78,12 @@ void CAccount::Login(char *Username, char *Password)
 	fscanf(Accfile, "%s\n%s\n%s\n%d", AccUsername, AccPassword, AccRcon, &AccID);
 	fclose(Accfile);
 
-	dbg_msg("account", "id: %i", AccID);
-	dbg_msg("account", "rcon: %s", AccRcon);
-
 	for(int i = 0; i < MAX_SERVER; i++)
 	{
 		for(int j = 0; j < MAX_CLIENTS; j++)
 		{
 			if(GameServer()->m_apPlayers[j] && GameServer()->m_apPlayers[j]->m_AccData.m_UserID == AccID)
 			{
-
-				dbg_msg("bug", "logged id: %i", GameServer()->m_apPlayers[j]->m_AccData.m_UserID);
-				dbg_msg("bug", "logged username: %s", GameServer()->m_apPlayers[j]->m_AccData.m_Username);
 				dbg_msg("account", "Account login failed ('%s' - already in use (local))", Username);
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
 				return;
@@ -193,10 +187,10 @@ void CAccount::Login(char *Username, char *Password)
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
 
-	if(str_comp(m_pPlayer->m_AccData.m_RconPassword,g_Config.m_SvRconModPassword) == 0)
+	if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconModPassword) == 0)
 		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
 
-	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword,g_Config.m_SvRconPassword) == 0)
+	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconPassword) == 0)
 		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),2);
 	
 

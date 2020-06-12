@@ -75,14 +75,13 @@ CGameContext *pSelf = (CGameContext *) pUserData;
 
 void CGameContext::ConRight(IConsole::IResult *pResult, void *pUserData)
 {
-CGameContext *pSelf = (CGameContext *) pUserData;
-	int Move = pResult->GetVictim();
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	int ID = pResult->GetVictim();
 
-
-	if (pSelf->m_apPlayers[Move])
+	if (pSelf->m_apPlayers[ID])
 	{
-		CCharacter* pChr = pSelf->GetPlayerChar(Move);
-		if (pChr && pSelf->GetPlayerChar(Move))
+		CCharacter* pChr = pSelf->GetPlayerChar(ID);
+		if (pChr && pSelf->GetPlayerChar(ID))
 		{
 			pChr->m_Core.m_Pos.x += 32;
 		}
@@ -359,5 +358,29 @@ void CGameContext::ConSetClientName(IConsole::IResult* pResult, void* pUserData)
 		char aBuf[128];
 		pSelf->Server()->SetClientName(ID, Value);
 		str_format(aBuf, sizeof aBuf, "changed %s name to %s", pSelf->Server()->ClientName(ID), Value);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
 	}
+}
+
+void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetInteger(0);
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+	CPlayer* pP = pSelf->m_apPlayers[ID];
+
+	if (pP) {
+		str_format(aBuf, sizeof aBuf, "'%s' killed by console.", pSelf->Server()->ClientName(ID));
+		pSelf->SendChat(-1, CHAT_ALL, aBuf);
+		pP->KillCharacter();
+	}
+	else
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+
 }
