@@ -199,6 +199,7 @@ void CServer::Logout(int ClientID)
 
 	m_aClients[ClientID].m_Authed = AUTHED_NO;
 }
+
 void CServer::Police(int ClientID, int Switch)
 {
 	CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
@@ -207,11 +208,11 @@ void CServer::Police(int ClientID, int Switch)
 	SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
 
 	if(Switch)
-	m_aClients[ClientID].m_Authed = AUTHED_MOD;
+		m_aClients[ClientID].m_Authed = AUTHED_MOD;
 	else
-	m_aClients[ClientID].m_Authed = AUTHED_NO;
-
+		m_aClients[ClientID].m_Authed = AUTHED_NO;
 }
+
 void CServer::SetRconlvl(int ClientID, int Level)
 {
 	CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
@@ -223,7 +224,7 @@ void CServer::SetRconlvl(int ClientID, int Level)
 	{
 		//int SendRconCmds = Unpacker.GetInt();
 		//if(Unpacker.Error() == 0 && SendRconCmds)
-				m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(Level == 1 ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_ADMIN, CFGFLAG_SERVER);
+		m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(Level == 1 ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_ADMIN, CFGFLAG_SERVER);
 	}
 
 	if(Level == 1)

@@ -78,7 +78,8 @@ void CAccount::Login(char *Username, char *Password)
 	fscanf(Accfile, "%s\n%s\n%s\n%d", AccUsername, AccPassword, AccRcon, &AccID);
 	fclose(Accfile);
 
-	
+	dbg_msg("account", "id: %i", AccID);
+	dbg_msg("account", "rcon: %s", AccRcon);
 
 	for(int i = 0; i < MAX_SERVER; i++)
 	{
@@ -86,6 +87,9 @@ void CAccount::Login(char *Username, char *Password)
 		{
 			if(GameServer()->m_apPlayers[j] && GameServer()->m_apPlayers[j]->m_AccData.m_UserID == AccID)
 			{
+
+				dbg_msg("bug", "logged id: %i", GameServer()->m_apPlayers[j]->m_AccData.m_UserID);
+				dbg_msg("bug", "logged username: %s", GameServer()->m_apPlayers[j]->m_AccData.m_Username);
 				dbg_msg("account", "Account login failed ('%s' - already in use (local))", Username);
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
 				return;

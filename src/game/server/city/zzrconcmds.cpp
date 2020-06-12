@@ -93,17 +93,17 @@ void CGameContext::ConPolice(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	int Switch = pResult->GetInteger(0);
-	int PoliceID = pResult->GetVictim();
+	int ID = pResult->GetVictim();
 	char aBuf[200];
 
-	CCharacter* pChr = pSelf->GetPlayerChar(PoliceID);
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if (pChr)
 	{
-		pSelf->Server()->Police(PoliceID,Switch?1:0);
+		pSelf->Server()->Police(ID, Switch ? 1 : 0);
 		if(Switch)
-			str_format(aBuf, sizeof aBuf, "'%s' is a Police now.", pSelf->Server()->ClientName(PoliceID));
+			str_format(aBuf, sizeof aBuf, "'%s' is a Police now.", pSelf->Server()->ClientName(ID));
 		else
-			str_format(aBuf, sizeof aBuf, "'%s' is no longer a Police.", pSelf->Server()->ClientName(PoliceID));
+			str_format(aBuf, sizeof aBuf, "'%s' is no longer a Police.", pSelf->Server()->ClientName(ID));
 		pSelf->SendChat(-1, CHAT_ALL, aBuf);
 	}
 }
