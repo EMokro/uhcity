@@ -86,11 +86,17 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 				return;
 			}
 		}
-			CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-			if(pOwner)
-				pOwner->SaveLoad(true);
+		if (m_pPlayer->GetCharacter()->m_Frozen) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
 			return;
+		}
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(pOwner)
+			pOwner->SaveLoad(true);
+		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/me") || !str_comp_nocase(Msg->m_pMessage, "/status") || !str_comp_nocase(Msg->m_pMessage, "/stats"))
 	{
@@ -125,6 +131,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
+		if (m_pPlayer->GetCharacter()->m_Frozen) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
+			return;
+		}
+
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 		
 		if(pOwner && pOwner->IsAlive())
@@ -135,6 +146,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		LastChat();
 		if (!m_pPlayer->m_AccData.m_VIP) {
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			return;
+		}
+
+		if (m_pPlayer->GetCharacter()->m_Frozen) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
 			return;
 		}
 
@@ -152,6 +168,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		return;
 	}
 
+	if (m_pPlayer->GetCharacter()->m_Frozen) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
+		return;
+	}
+
 	CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 	if (pOwner && pOwner->IsAlive()) {
@@ -163,6 +184,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	LastChat();
 	if (!m_pPlayer->m_AccData.m_VIP) {
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+		return;
+	}
+
+	if (m_pPlayer->GetCharacter()->m_Frozen) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
 		return;
 	}
 
@@ -180,6 +206,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		return;
 	}
 
+	if (m_pPlayer->GetCharacter()->m_Frozen) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
+		return;
+	}
+
 	CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 	if (pOwner && pOwner->IsAlive()) {
@@ -193,6 +224,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if(!m_pPlayer->m_AccData.m_Donor || !m_pPlayer->m_AccData.m_UserID)
 		{
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			return;
+		}
+
+		if (m_pPlayer->GetCharacter()->m_Frozen) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are frozen!");
 			return;
 		}
 

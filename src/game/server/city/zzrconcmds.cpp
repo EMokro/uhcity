@@ -382,5 +382,51 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}
 
+void CGameContext::ConFreeze(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CPlayer* pP = pSelf->m_apPlayers[ID];
+
+	if (pP) {
+		pP->GetCharacter()->Freeze(Amount * 50);
+
+		str_format(aBuf, sizeof aBuf, "You got freezed for %d seconds by console", Amount);
+		pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
+	}
+	else
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}
+
+void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetInteger(0);
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CPlayer* pP = pSelf->m_apPlayers[ID];
+
+	if (pP) {
+		pP->GetCharacter()->Unfreeze();
+		pP->GetCharacter()->GameServer()->SendChatTarget(ID, "You were thawed by console");
+	}
+	else
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
