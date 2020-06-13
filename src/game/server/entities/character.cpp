@@ -1645,8 +1645,6 @@ void CCharacter::Tick()
 			m_Core.m_Vel.y = -GameServer()->Tuning()->m_GroundJumpImpulse;
 	}
 
-	
-
 	if(m_Frozen)
 	{
 		if(m_Frozen%50==0 && m_FreezeTick+25 < Server()->Tick())

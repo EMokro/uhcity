@@ -26,6 +26,15 @@ public:
 
 	CCharacter(CGameWorld *pWorld);
 
+	struct WeaponStat
+	{
+		int m_AmmoRegenStart;
+		int m_Ammo;
+		int m_Ammocost;
+		bool m_Got;
+
+	} m_aWeapons[NUM_WEAPONS];
+
 	virtual void Reset();
 	virtual void Destroy();
 	virtual void Tick();
@@ -149,15 +158,6 @@ private:
 	// weapon info
 	CEntity *m_apHitObjects[10];
 	int m_NumObjectsHit;
-
-	struct WeaponStat
-	{
-		int m_AmmoRegenStart;
-		int m_Ammo;
-		int m_Ammocost;
-		bool m_Got;
-
-	} m_aWeapons[NUM_WEAPONS];
 
 	int m_ActiveWeapon;
 	int m_LastWeapon;

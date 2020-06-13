@@ -259,9 +259,16 @@ void CDoor::Tick()
 				continue;
 			else
 			{
-	
-				Hit->m_Core.m_Pos += vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
-				Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, 0);
+				str_format(aBuf, sizeof aBuf, "%d", (Hit->m_Input.m_Fire & 1));
+				dbg_msg("debug", aBuf);
+				if (!(Hit->ActiveWeapon() == WEAPON_NINJA && (Hit->m_Input.m_Fire & 1) == 1)) {
+					Hit->m_Core.m_Pos += vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
+					Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, -2);
+				}
+				else {
+					Hit->Die(0, WEAPON_GAME);
+				}
+
 			}
 		}
 	}
