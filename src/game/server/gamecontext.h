@@ -169,10 +169,6 @@ public:
 	private: //KlickFoots Rconcmdsachen^^
 
 		static void ConTeleport(IConsole::IResult *pResult, void *pUserData);
-		static void ConUp(IConsole::IResult *pResult, void *pUserData);
-		static void ConDown(IConsole::IResult *pResult, void *pUserData);
-		static void ConLeft(IConsole::IResult *pResult, void *pUserData);
-		static void ConRight(IConsole::IResult *pResult, void *pUserData);
 		static void ConPolice(IConsole::IResult *pResult, void *pUserData);
 		static void ConVip(IConsole::IResult *pResult, void *pUserData);
 		static void ConDonor(IConsole::IResult *pResult, void *pUserData);

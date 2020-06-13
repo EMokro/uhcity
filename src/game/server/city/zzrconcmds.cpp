@@ -25,69 +25,6 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
-void CGameContext::ConUp(IConsole::IResult *pResult, void *pUserData)
-{
-CGameContext *pSelf = (CGameContext *) pUserData;
-	int Move = pResult->GetVictim();
-
-
-	if (pSelf->m_apPlayers[Move])
-	{
-		CCharacter* pChr = pSelf->GetPlayerChar(Move);
-		if (pChr && pSelf->GetPlayerChar(Move))
-		{
-			pChr->m_Core.m_Pos.y += -32;
-		}
-	}
-}
-
-void CGameContext::ConDown(IConsole::IResult *pResult, void *pUserData)
-{
-CGameContext *pSelf = (CGameContext *) pUserData;
-	int Move = pResult->GetVictim();
-
-
-	if (pSelf->m_apPlayers[Move])
-	{
-		CCharacter* pChr = pSelf->GetPlayerChar(Move);
-		if (pChr && pSelf->GetPlayerChar(Move))
-		{
-			pChr->m_Core.m_Pos.y += 32;
-		}
-	}
-}
-
-void CGameContext::ConLeft(IConsole::IResult *pResult, void *pUserData)
-{
-CGameContext *pSelf = (CGameContext *) pUserData;
-	int Move = pResult->GetVictim();
-
-
-	if (pSelf->m_apPlayers[Move])
-	{
-		CCharacter* pChr = pSelf->GetPlayerChar(Move);
-		if (pChr && pSelf->GetPlayerChar(Move))
-		{
-			pChr->m_Core.m_Pos.x += -32;
-		}
-	}
-}
-
-void CGameContext::ConRight(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	int ID = pResult->GetVictim();
-
-	if (pSelf->m_apPlayers[ID])
-	{
-		CCharacter* pChr = pSelf->GetPlayerChar(ID);
-		if (pChr && pSelf->GetPlayerChar(ID))
-		{
-			pChr->m_Core.m_Pos.x += 32;
-		}
-	}
-}
-
 void CGameContext::ConPolice(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
@@ -111,18 +48,21 @@ void CGameContext::ConVip(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	int Switch = pResult->GetInteger(0);
-	int VipID = pResult->GetVictim();
+	int ID = pResult->GetVictim();
 	char aBuf[200];
 
-	CCharacter* pChr = pSelf->GetPlayerChar(VipID);
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if (pChr)
 	{
+		CPlayer* pP = pSelf->m_apPlayers[ID];
 		pChr->GetPlayer()->m_AccData.m_VIP = Switch;
+
 		if(Switch)
-			str_format(aBuf, sizeof aBuf, "'%s' is Vip now.", pSelf->Server()->ClientName(VipID));
+			str_format(aBuf, sizeof aBuf, "You are now vip.", pSelf->Server()->ClientName(ID));
 		else
-			str_format(aBuf, sizeof aBuf, "'%s' is no longer Vip.", pSelf->Server()->ClientName(VipID));
-		pSelf->SendChat(-1, CHAT_ALL, aBuf);
+			str_format(aBuf, sizeof aBuf, "You are no longer vip.", pSelf->Server()->ClientName(ID));
+
+		pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 	}
 }
 void CGameContext::ConDonor(IConsole::IResult *pResult, void *pUserData)
@@ -177,28 +117,32 @@ void CGameContext::ConJail(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Time = pResult->GetInteger(0);
-	int JailID = pResult->GetVictim();
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
 	char aBuf[200];
 
-	if(Time > 5000000 || Time < 1)
+	if(Amount > 5000000 || Amount < 1)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value between 1 and 5Mio");
 		return;
 	}
 
-	CCharacter* pChr = pSelf->GetPlayerChar(JailID);
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if(pChr)
 	{
 		if(pChr->IsAlive())
 		{
-			pChr->GetPlayer()->m_AccData.m_Money += Time;
+			pChr->GetPlayer()->m_AccData.m_Money += Amount;
 	
-			if(Time)
+			if(Amount)
 			{
-				str_format(aBuf, sizeof aBuf, "'%s' got %d TC", pSelf->Server()->ClientName(JailID), Time);
+				str_format(aBuf, sizeof aBuf, "'%s' got %d$", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
-			
+
+				CPlayer* pP = pSelf->m_apPlayers[ID];
+
+				str_format(aBuf, sizeof aBuf, "An Admin gave you %d$", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
 	}
@@ -222,25 +166,20 @@ void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 	{
 		if (pChr->IsAlive())
 		{
-			pChr->GetPlayer()->m_AccData.m_Money = Amount;
-
 			if (Amount)
 			{
-				str_format(aBuf, sizeof aBuf, "'%s' got %d TC", pSelf->Server()->ClientName(ID), Amount);
+				pChr->GetPlayer()->m_AccData.m_Money = Amount;
+
+				str_format(aBuf, sizeof aBuf, "'%s' got %d$", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
 
+				CPlayer* pP = pSelf->m_apPlayers[ID];
+
+				str_format(aBuf, sizeof aBuf, "An Admin set your money to %d$", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
 	}
-}
-
-void CGameContext::ConLogout(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Victim = pResult->m_ClientID;
-
-	if(Victim)
-	pSelf->Server()->Logout(Victim);
 }
 
 void CGameContext::ConUnjail(IConsole::IResult *pResult, void *pUserData)
@@ -253,36 +192,40 @@ void CGameContext::ConUnjail(IConsole::IResult *pResult, void *pUserData)
 	CCharacter* pChr = pSelf->GetPlayerChar(UnJailID);
 	if(pChr)
 	{
-	pChr->GetPlayer()->m_AccData.m_Arrested = 1;
+		pChr->GetPlayer()->m_AccData.m_Arrested = 1;
 	}
 }
 
 void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Time = pResult->GetInteger(0);
-	int JailID = pResult->GetVictim();
+	int Amount = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
 	char aBuf[200];
 
-	if(Time > 800 || Time < 1)
+	if(Amount > 800 || Amount < 1)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value between 1 and 800");
 		return;
 	}
 
-	CCharacter* pChr = pSelf->GetPlayerChar(JailID);
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if(pChr)
 	{
 		if(pChr->IsAlive())
 		{
-			pChr->GetPlayer()->m_AccData.m_Level = Time;
-			pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
-	
-			if(Time)
+			if(Amount)
 			{
-				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(JailID), Time);
+				CPlayer* pP = pSelf->m_apPlayers[ID];
+
+				pChr->GetPlayer()->m_AccData.m_Level = Amount;
+				pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
+
+				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
-			
+
+				str_format(aBuf, sizeof aBuf, "An Admin set your level to %d", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
 	}
@@ -306,13 +249,17 @@ void CGameContext::ConSetLife(IConsole::IResult* pResult, void* pUserData)
 	{
 		if (pChr->IsAlive())
 		{
-			pChr->GetPlayer()->m_AccData.m_Health = Amount;
-
 			if (Amount)
 			{
+				CPlayer* pP = pSelf->m_apPlayers[ID];
+
+				pChr->GetPlayer()->m_AccData.m_Health = Amount;
+
 				str_format(aBuf, sizeof aBuf, "'%s' got %d life", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
 
+				str_format(aBuf, sizeof aBuf, "An Admin set your life to %d", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
 	}
@@ -336,12 +283,17 @@ void CGameContext::ConSetArmor(IConsole::IResult* pResult, void* pUserData)
 	{
 		if (pChr->IsAlive())
 		{
-			pChr->GetPlayer()->m_AccData.m_Armor = Amount;
-
 			if (Amount)
 			{	
+				CPlayer* pP = pSelf->m_apPlayers[ID];
+
+				pChr->GetPlayer()->m_AccData.m_Armor = Amount;
+
 				str_format(aBuf, sizeof aBuf, "'%s' got %d armor", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
+
+				str_format(aBuf, sizeof aBuf, "An Admin set your armor to %d", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
 	}
@@ -356,8 +308,9 @@ void CGameContext::ConSetClientName(IConsole::IResult* pResult, void* pUserData)
 
 	if (Value) {
 		char aBuf[128];
+		str_format(aBuf, sizeof aBuf, "'%s' changed name to '%s'", pSelf->Server()->ClientName(ID), Value);
 		pSelf->Server()->SetClientName(ID, Value);
-		str_format(aBuf, sizeof aBuf, "changed %s name to %s", pSelf->Server()->ClientName(ID), Value);
+		pSelf->SendChat(-1, CHAT_ALL, aBuf);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
 	}
 }
@@ -376,8 +329,7 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 	CPlayer* pP = pSelf->m_apPlayers[ID];
 
 	if (pP) {
-		str_format(aBuf, sizeof aBuf, "'%s' killed by console.", pSelf->Server()->ClientName(ID));
-		pSelf->SendChat(-1, CHAT_ALL, aBuf);
+		pP->GetCharacter()->GameServer()->SendChatTarget(ID, "You got killed by console");
 		pP->KillCharacter();
 	}
 	else

@@ -16,10 +16,6 @@ CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable P
 
 //Admincmds
 CONSOLE_COMMAND("jail", "vi", CFGFLAG_SERVER, ConJail, this, "jail v for i secounds")
-CONSOLE_COMMAND("up", "?v", CFGFLAG_SERVER, ConUp, this, "")
-CONSOLE_COMMAND("down", "?v", CFGFLAG_SERVER, ConDown, this, "")
-CONSOLE_COMMAND("left", "?v", CFGFLAG_SERVER, ConLeft, this, "")
-CONSOLE_COMMAND("right", "?v", CFGFLAG_SERVER, ConRight, this, "")
 CONSOLE_COMMAND("add_money", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "add_money id money(1-5mio)")
 CONSOLE_COMMAND("set_money", "vi", CFGFLAG_SERVER, ConSetMoney, this, "set_money id money")
 CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "set_lvl id level(max 800)")
