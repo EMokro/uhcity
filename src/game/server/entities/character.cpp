@@ -248,7 +248,7 @@ void CCharacter::Move(int dir)
 	vec2 movePos = m_Pos + vec2(toX, toY);
 
 	if (GameServer()->Collision()->IsTile(movePos, TILE_ANTI_TELE)
-		|| (GameServer()->Collision()->IsTile(movePos, TILE_KILL))
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_DEATH))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_FREEZE))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID()))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID())
