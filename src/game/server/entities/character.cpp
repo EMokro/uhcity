@@ -164,13 +164,11 @@ void CCharacter::Tele()
 			return;
 		}
 
-		if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+		for (int i = 1; i < Dist; i += 32)
 		{
-			for (int i = 1; i < Dist; i += 32)
+			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
+			if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
 			{
-				vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-
-
 				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
@@ -181,24 +179,31 @@ void CCharacter::Tele()
 					return;
 				}
 			}
-
-			if (Protected())
-			{
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
-				return;
+			if (GameServer()->Collision()->IsTile(TestPos, TILE_WATER) && !m_Water) {
+				m_Water = true;
+			}
+			if (GameServer()->Collision()->IsTile(TestPos, TILE_NOWATER) && m_Water) {
+				m_Water = false;
 			}
 		}
 
-		m_Core.m_Pos = TelePos;
-		CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
-		if (pEvent)
+		if (Protected())
 		{
-			pEvent->m_X = (int)TelePos.x;
-			pEvent->m_Y = (int)TelePos.y;
-			pEvent->m_ClientID = m_pPlayer->GetCID();
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
+			return;
 		}
 	}
+
+	m_Core.m_Pos = TelePos;
+	CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
+	if (pEvent)
+	{
+		pEvent->m_X = (int)TelePos.x;
+		pEvent->m_Y = (int)TelePos.y;
+		pEvent->m_ClientID = m_pPlayer->GetCID();
+	}
 }
+
 
 void CCharacter::SaveLoad(int Value)
 {
@@ -1644,8 +1649,6 @@ void CCharacter::Tick()
 		else if(m_pPlayer->m_AccData.m_InfinityJumps ==  2 && m_Input.m_Jump)
 			m_Core.m_Vel.y = -GameServer()->Tuning()->m_GroundJumpImpulse;
 	}
-
-	
 
 	if(m_Frozen)
 	{
