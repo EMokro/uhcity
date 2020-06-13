@@ -184,6 +184,7 @@ public:
 		static void ConKill(IConsole::IResult* pResult, void* pUserData);
 		static void ConFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);
+		static void ConSameIP(IConsole::IResult* pResult, void* pUserData);
 
 		public: //Ende :D
 

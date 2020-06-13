@@ -25,6 +25,7 @@ CONSOLE_COMMAND("set_client_name", "vi", CFGFLAG_SERVER, ConSetClientName, this,
 CONSOLE_COMMAND("kill", "i", CFGFLAG_SERVER, ConKill, this, "kill id")
 CONSOLE_COMMAND("freeze", "vi", CFGFLAG_SERVER, ConFreeze, this, "freeze id seconds")
 CONSOLE_COMMAND("unfreeze", "vi", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id")
+CONSOLE_COMMAND("sameip", "?", CFGFLAG_SERVER, ConSameIP, this, "sameip")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")

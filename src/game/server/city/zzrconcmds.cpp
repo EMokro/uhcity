@@ -382,3 +382,38 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
+
+void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
+{
+	NETADDR Addr;
+	char aBuf[256];
+	char checkAddr[NETADDR_MAXSTRSIZE];
+	char resAddr[NETADDR_MAXSTRSIZE];
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int counter = 0;
+
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (pSelf->Server()->ClientIngame(i)) {
+
+			pSelf->Server()->GetClientAddr(i, checkAddr, NETADDR_MAXSTRSIZE);
+
+			for (int j = i + 1; j < MAX_CLIENTS; j++) {
+				if (pSelf->Server()->ClientIngame(j)) {
+					pSelf->Server()->GetClientAddr(i, resAddr, NETADDR_MAXSTRSIZE);
+
+					if (str_comp(checkAddr, resAddr) == 0) {
+
+						str_format(aBuf, sizeof aBuf, "ID %d, %d: IP %s", i, j, checkAddr);
+						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+						counter++;
+					}
+				}
+			}
+		}
+	}
+
+	str_format(aBuf, sizeof aBuf, "%d results found", counter);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+}
+
+
