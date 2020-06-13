@@ -364,7 +364,7 @@ void CGameContext::ConFreeze(IConsole::IResult* pResult, void* pUserData)
 void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
-	int ID = pResult->GetInteger(0);
+	int ID = pResult->GetVictim();
 	char aBuf[128];
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
@@ -378,6 +378,68 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 	if (pP) {
 		pP->GetCharacter()->Unfreeze();
 		pP->GetCharacter()->GameServer()->SendChatTarget(ID, "You were thawed by console");
+	}
+	else
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}
+
+void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
+{
+	NETADDR Addr;
+	char aBuf[256];
+	char checkAddr[NETADDR_MAXSTRSIZE];
+	char resAddr[NETADDR_MAXSTRSIZE];
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int counter = 0;
+
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (pSelf->Server()->ClientIngame(i)) {
+
+			pSelf->Server()->GetClientAddr(i, checkAddr, NETADDR_MAXSTRSIZE);
+
+			for (int j = i + 1; j < MAX_CLIENTS; j++) {
+				if (pSelf->Server()->ClientIngame(j)) {
+					pSelf->Server()->GetClientAddr(i, resAddr, NETADDR_MAXSTRSIZE);
+
+					if (str_comp(checkAddr, resAddr) == 0) {
+
+						str_format(aBuf, sizeof aBuf, "ID %d, %d: IP %s", i, j, checkAddr);
+						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+						counter++;
+					}
+				}
+			}
+		}
+	}
+
+	str_format(aBuf, sizeof aBuf, "%d results found", counter);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+}
+
+void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CPlayer* pP = pSelf->m_apPlayers[ID];
+
+	if (pP) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "** Look Up **");
+		str_format(aBuf, sizeof aBuf, "ID: %d", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		str_format(aBuf, sizeof aBuf, "AccID: %d", pP->m_AccData.m_UserID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		str_format(aBuf, sizeof aBuf, "Money: %d$", pP->m_AccData.m_Money);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");

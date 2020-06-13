@@ -175,7 +175,6 @@ public:
 		static void ConJail(IConsole::IResult *pResult, void *pUserData);
 		static void ConGiveMoney(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetMoney(IConsole::IResult* pResult, void* pUserData);
-		static void ConLogout(IConsole::IResult *pResult, void *pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLife(IConsole::IResult* pResult, void* pUserData);
@@ -184,6 +183,8 @@ public:
 		static void ConKill(IConsole::IResult* pResult, void* pUserData);
 		static void ConFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);
+		static void ConSameIP(IConsole::IResult* pResult, void* pUserData);
+		static void ConLookUp(IConsole::IResult* pResult, void* pUserData);
 
 		public: //Ende :D
 
