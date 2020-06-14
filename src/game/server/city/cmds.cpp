@@ -37,29 +37,34 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
 		if(!m_pPlayer->m_AccData.m_UserID)
 		{
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not logged in");
 			return;
 		}
+
 		m_pPlayer->m_pAccount->Apply();
 		m_pPlayer->m_pAccount->Reset();
 
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Logout succesful");
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-		{
-			if(pOwner->IsAlive())
-				pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
-		}
-
+		pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/save"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive() && !m_pPlayer->m_Insta))
+			return;
+
 		if(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 		{
 			if(!m_pPlayer->m_AccData.m_Donor)
@@ -69,15 +74,18 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			}
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-			pOwner->SaveLoad(false);
+		pOwner->SaveLoad(false);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/load"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive() && !m_pPlayer->m_Insta))
+			return;
+
 		if(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 		{
 			if (!m_pPlayer->m_AccData.m_Donor
@@ -89,10 +97,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			}
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-			pOwner->SaveLoad(true);
+		pOwner->SaveLoad(true);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/me") || !str_comp_nocase(Msg->m_pMessage, "/status") || !str_comp_nocase(Msg->m_pMessage, "/stats"))
@@ -127,6 +132,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!(pOwner && pOwner->IsAlive()))
 			return;
 
+		if (m_pPlayer->m_Insta)
+			return;
+
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
@@ -143,6 +151,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
 			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
@@ -163,6 +174,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!(pOwner && pOwner->IsAlive()))
 			return;
 
+		if (m_pPlayer->m_Insta)
+			return;
+
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
@@ -181,6 +195,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!(pOwner && pOwner->IsAlive()))
 			return;
 
+		if (m_pPlayer->m_Insta)
+			return;
+
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
@@ -196,7 +213,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		LastChat();
 		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
+		if (m_pPlayer->m_Insta)
+			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -215,6 +236,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
 			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
@@ -236,6 +260,12 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/jailrifle"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
 		char aBuf[200];
 		
 		if(!GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()))
@@ -314,7 +344,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			str_format(aBuf, sizeof(aBuf), "%s Crown", m_pPlayer->m_Crown ? "Enabled" : "Disabled");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}
-		
 
 		return;
 	}
