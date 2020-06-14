@@ -1,0 +1,4 @@
+until /home/nohack/uhcity/teeworlds_srv; do
+	echo "teeworlds_sv crashed with exit code $?" >&2
+	sleep 1
+done
