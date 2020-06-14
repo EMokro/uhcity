@@ -264,9 +264,8 @@ void CDoor::Tick()
 					Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, -2);
 				}
 				else {
-					Hit->Die(0, WEAPON_GAME);
+					Hit->Die(Hit->GetPlayer()->GetCID(), WEAPON_GAME);
 				}
-
 			}
 		}
 	}

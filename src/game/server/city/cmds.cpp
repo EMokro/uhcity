@@ -122,8 +122,12 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/tele"))
 	{
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -131,14 +135,15 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-		
-		if(pOwner && pOwner->IsAlive())
-			pOwner->Tele();
+		pOwner->Tele();
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/up")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -148,15 +153,15 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(0);
-		}
+		pOwner->Move(0);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/down")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -166,15 +171,15 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(2);
-		}
+		pOwner->Move(2);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/left")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -184,15 +189,14 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(1);
-		}
+		pOwner->Move(1);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/right")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -202,16 +206,16 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(3);
-		}
+		pOwner->Move(3);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/home") || !str_comp_nocase(Msg->m_pMessage, "/house"))
 	{
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
 		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
@@ -221,14 +225,10 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 		
-		if(pOwner && pOwner->IsAlive())
-		{
-			pOwner->m_Home = m_pPlayer->m_AccData.m_UserID;
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
-			dbg_msg("-.-", "/home: %i", pOwner->m_Home);
-		}
+		pOwner->m_Home = m_pPlayer->m_AccData.m_UserID;
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
+		dbg_msg("-.-", "/home: %i", pOwner->m_Home);
 
 		return;
 
@@ -478,7 +478,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
-
 	else if(!str_comp_nocase(Msg->m_pMessage, "/god"))
     {
 		char aBuf[200];
@@ -498,7 +497,34 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		}
 
 		return;
-    }
+    } // Item cmds
+	else if (!str_comp_nocase(Msg->m_pMessage, "/walls")) {
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (pOwner->GetPlayer()->m_AccData.m_HammerWalls) {
+			if (pOwner->SetActiveUpgrade(WEAPON_HAMMER, 3)) 
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Walls Enabled");
+			else
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Walls Disabled");
+		} else
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Walls first");
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/plasma")) {
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (pOwner->GetPlayer()->m_AccData.m_HammerWalls) {
+			if (pOwner->SetActiveUpgrade(WEAPON_HAMMER, 2))
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Plasma Enabled");
+			else
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Plasma Disabled");
+		}
+		else
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Plasma first");
+
+		return;
+	}
 
 	if(!strncmp(Msg->m_pMessage, "/", 1))
 	{

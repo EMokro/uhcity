@@ -700,8 +700,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pMessage++;
 		}
 
-	 if(pMsg->m_pMessage[0] == '/')
-			pPlayer->m_pChatCmd->ChatCmd(pMsg);
+		if (pMsg->m_pMessage[0] == '/') 
+				pPlayer->m_pChatCmd->ChatCmd(pMsg);
 		else
 			SendChat(ClientID, Team, pMsg->m_pMessage);
 	}

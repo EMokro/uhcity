@@ -42,7 +42,6 @@ CInputCount CountInput(int Prev, int Cur)
 	return c;
 }
 
-
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -150,7 +149,6 @@ bool CCharacter::IsGrounded()
 	return false;
 }
 
-
 // City
 void CCharacter::Tele()
 {
@@ -203,7 +201,6 @@ void CCharacter::Tele()
 		pEvent->m_ClientID = m_pPlayer->GetCID();
 	}
 }
-
 
 void CCharacter::SaveLoad(int Value)
 {
@@ -314,6 +311,7 @@ int CCharacter::ActiveWeapon()
 {
 	return m_ActiveWeapon;
 }
+
 int CCharacter::MouseEvent(vec2 Pos)
 {
 	if(distance(Pos, m_Pos+vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY)) < 64)
@@ -421,7 +419,6 @@ void CCharacter::HandleNinja()
 
 	return;
 }
-
 
 void CCharacter::DoWeaponSwitch()
 {
@@ -557,10 +554,12 @@ void CCharacter::ChangeUpgrade(int Value)
 		{
 			
 		} break;
-
 	}
+}
 
-
+int CCharacter::SetActiveUpgrade(int weapon, int upgrade) {
+	m_pPlayer->m_AciveUpgrade[weapon] = upgrade == m_pPlayer->m_AciveUpgrade[weapon] ? 0 : upgrade;
+	return m_pPlayer->m_AciveUpgrade[weapon];
 }
 
 void CCharacter::FireWeapon()
@@ -645,15 +644,14 @@ void CCharacter::FireWeapon()
 				else
 					Dir = vec2(0.f, -1.f);
 
-				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-					m_pPlayer->GetCID(), m_ActiveWeapon);
-				Hits++;
-
-				if(m_pPlayer->m_AccData.m_HammerKill && !pTarget->Protected() && !pTarget->m_God && !m_GameZone && !pTarget->m_IsHammerKilled)
-				{
+				if (m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3) {
 					new CHammerKill(GameWorld(), m_pPlayer->GetCID(), pTarget->GetPlayer()->GetCID());
 					pTarget->m_IsHammerKilled = true;
 				}
+
+				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
+					m_pPlayer->GetCID(), m_ActiveWeapon);
+				Hits++;
 
 				if(pTarget->m_GameZone && m_GameZone && pTarget->m_Frozen)
 					pTarget->Unfreeze();
@@ -663,13 +661,7 @@ void CCharacter::FireWeapon()
 			// if we Hit anything, we have to wait for the reload
 			if(Hits)
 				m_ReloadTimer = Server()->TickSpeed()/3;
-			else if(m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2 && !m_GameZone)
-			{
-				NewPlasma();
-				m_ReloadTimer = Server()->TickSpeed()/3;
-			}
-
-			if(m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1 && !Hits && !m_GameZone)
+			else if(m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1 && !Hits && !m_GameZone)
 			{
 				m_ReloadTimer = Server()->TickSpeed()/3;
 
@@ -695,7 +687,15 @@ void CCharacter::FireWeapon()
 					m_HammerPos2 = vec2(0, 0);
 				}
 			}
-
+			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2 && !m_GameZone)
+			{
+				NewPlasma();
+				m_ReloadTimer = Server()->TickSpeed() / 3;
+			}
+			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3 && !m_GameZone)
+			{
+				m_ReloadTimer = Server()->TickSpeed() / 3;
+			}
 		} break;
 
 		case WEAPON_GUN:
@@ -1809,10 +1809,15 @@ bool CCharacter::IncreaseArmor(int Amount)
 
 void CCharacter::Die(int Killer, int Weapon)
 {
+	if (!m_Alive) {
+		dbg_msg("debug", "player already dead");
+		return;
+	}
+
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
-	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle|| m_God && !pKiller->m_JailRifle))
+	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_God && !pKiller->m_JailRifle))
 		return;
 
 	// we got to wait 0.5 secs before respawning
