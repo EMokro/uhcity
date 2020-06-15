@@ -9,7 +9,6 @@ CLayers::CLayers()
 	m_LayersNum = 0;
 	m_LayersStart = 0;
 	m_pGameGroup = 0;
-	m_pGameLayer = 0;
 	m_pMap = 0;
 }
 
@@ -19,8 +18,14 @@ void CLayers::Init(class IKernel *pKernel)
 	m_pMap->GetType(MAPITEMTYPE_GROUP, &m_GroupsStart, &m_GroupsNum);
 	m_pMap->GetType(MAPITEMTYPE_LAYER, &m_LayersStart, &m_LayersNum);
 
+	bool hasGameLayer = false;
+	char aBuf[64];
+
 	for(int g = 0; g < NumGroups(); g++)
 	{
+		if (hasGameLayer)
+			break;
+
 		CMapItemGroup *pGroup = GetGroup(g);
 		for(int l = 0; l < pGroup->m_NumLayers; l++)
 		{
@@ -31,8 +36,12 @@ void CLayers::Init(class IKernel *pKernel)
 				CMapItemLayerTilemap *pTilemap = reinterpret_cast<CMapItemLayerTilemap *>(pLayer);
 				if(pTilemap->m_Flags&1)
 				{
-					m_pGameLayer = pTilemap;
+					m_pGameLayers[l] = pTilemap;
 					m_pGameGroup = pGroup;
+					hasGameLayer = true;
+
+					str_format(aBuf, sizeof aBuf, "gamelayer in group %d at %d", g, l);
+					dbg_msg("debug", aBuf);
 
 					// make sure the game group has standard settings
 					m_pGameGroup->m_OffsetX = 0;
@@ -48,8 +57,12 @@ void CLayers::Init(class IKernel *pKernel)
 						m_pGameGroup->m_ClipW = 0;
 						m_pGameGroup->m_ClipH = 0;
 					}
+				}
+				else if (hasGameLayer) {
+					str_format(aBuf, sizeof aBuf, "subGameLayer in group %d at %d", g, l);
+					dbg_msg("debug", aBuf);
 
-					break;
+					m_pGameLayers[l] = pTilemap;
 				}
 			}
 		}

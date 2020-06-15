@@ -8,7 +8,7 @@
 class CCollision
 {
 	class CTile *m_pTiles;
-	class CTile *m_pCityTiles;
+	class CTile *m_pCityTiles[16];
 	int m_Width;
 	int m_Height;
 	class CLayers *m_pLayers;
