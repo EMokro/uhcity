@@ -10,6 +10,10 @@ CLayers::CLayers()
 	m_LayersStart = 0;
 	m_pGameGroup = 0;
 	m_pMap = 0;
+
+	for (int i = 0; i < 16; i++) {
+		m_pGameLayers[i] = 0;
+	}
 }
 
 void CLayers::Init(class IKernel *pKernel)
@@ -23,9 +27,6 @@ void CLayers::Init(class IKernel *pKernel)
 
 	for(int g = 0; g < NumGroups(); g++)
 	{
-		if (hasGameLayer)
-			break;
-
 		CMapItemGroup *pGroup = GetGroup(g);
 		for(int l = 0; l < pGroup->m_NumLayers; l++)
 		{
@@ -61,11 +62,14 @@ void CLayers::Init(class IKernel *pKernel)
 				else if (hasGameLayer) {
 					str_format(aBuf, sizeof aBuf, "subGameLayer in group %d at %d", g, l);
 					dbg_msg("debug", aBuf);
-
+					pTilemap->m_SubGameLayer = 1;
 					m_pGameLayers[l] = pTilemap;
 				}
 			}
 		}
+
+		if (hasGameLayer)
+			break;
 	}
 }
 

@@ -1498,8 +1498,12 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//	game.players[i].core.world = &game.world.core;
 
 	// create all entities from the game layer
-	CMapItemLayerTilemap *pTileMap = m_Layers.GameLayer();
-	CTile *pTiles = (CTile *)Kernel()->RequestInterface<IMap>()->GetData(pTileMap->m_Data);
+	CMapItemLayerTilemap *pTileMap[16] = m_Layers.m_pGameLayers;
+	CTile* pTiles[16];
+	for (int i = 0; i < 16; i++) {
+		if (pTileMap[i])
+			pTiles[i] = (CTile*)Kernel()->RequestInterface<IMap>()->GetData(pTileMap[i]->m_Data);
+	}
 
 
 
@@ -1510,7 +1514,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	num_spawn_points[2] = 0;
 	*/
 
-	for(int y = 0; y < pTileMap->m_Height; y++)
+	for(int y = 0; y < pTileMap.t; y++)
 	{
 		for(int x = 0; x < pTileMap->m_Width; x++)
 		{

@@ -19,7 +19,9 @@ CCollision::CCollision()
 	m_Height = 0;
 	m_pLayers = 0;
 
-	//m_pEnteties = 0;
+	for (int i = 0; i < 16; i++) {
+		m_pCityTiles[i] = 0;
+	}
 }
 
 CCollision::~CCollision()
@@ -33,25 +35,24 @@ CCollision::~CCollision()
 
 void CCollision::Init(class CLayers *pLayers)
 {
-	int layerCounter = 0;
 	char aBuf[128];
 
 	m_pLayers = pLayers;
 	m_Width = m_pLayers->GameLayer()->m_Width;
 	m_Height = m_pLayers->GameLayer()->m_Height;
 	m_pTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
+
+	str_format(aBuf, sizeof aBuf, "width: %d, height: %d", m_Width, m_Height);
+	dbg_msg("debug", aBuf);
 	
 	for (int i = 0; i < 16; i++) {
 		if (m_pLayers->m_pGameLayers[i]) {
-			m_pCityTiles[i] = new CTile[m_Width * m_Height];
-			layerCounter++;
+			m_pCityTiles[i] = static_cast<CTile*>(m_pLayers->Map()->GetData(m_pLayers->m_pGameLayers[i]->m_Data));
 
 			str_format(aBuf, sizeof aBuf, "got %d", i);
 			dbg_msg("debug", aBuf);
 		}
 	}
-
-	mem_copy(m_pCityTiles, m_pLayers->m_pGameLayers, sizeof(CTile)*m_Width*m_Height*layerCounter);
 	// City
     //m_pCityTiles = new int[m_Width*m_Height];
     //m_pEnteties = new int[m_Width*m_Height];
@@ -62,9 +63,10 @@ void CCollision::Init(class CLayers *pLayers)
     //    //m_pEnteties[i] = 0;
     //}
 
+
 	for(int i = 0; i < m_Width*m_Height; i++)
 	{
-		int Index = m_pTiles[i].m_Index;
+		int Index = m_pCityTiles[0][i].m_Index;
 
 		if(Index > 128)
 			continue;
@@ -104,12 +106,23 @@ int CCollision::TileMoney(int x, int y)
 
 int CCollision::Number(int x, int y)
 {
-	for (int i = 0; i < 16; i++) {
-		int Nx = clamp(x / 32, 0, m_Width - 1);
-		int Ny = clamp(y / 32, 0, m_Height - 1);
+	char aBuf[64];
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
 
-		if (m_pCityTiles[i][Ny * m_Width + Nx].m_Index > TILE_0 || m_pCityTiles[i][Ny * m_Width + Nx].m_Index < TILE_9)
+	str_format(aBuf, sizeof aBuf, "searching at %d, %d", x, y);
+	dbg_msg("debug", aBuf);
+
+	for (int i = 0; i < 16; i++) {
+		if (!m_pCityTiles[i])
+			break;
+
+		if (m_pCityTiles[i][Ny * m_Width + Nx].m_Index > TILE_0 && m_pCityTiles[i][Ny * m_Width + Nx].m_Index < TILE_9) {
+			str_format(aBuf, sizeof aBuf, "found %d", m_pCityTiles[i][Ny * m_Width + Nx].m_Index - TILE_0);
+			dbg_msg("debug", aBuf);
 			return m_pCityTiles[i][Ny * m_Width + Nx].m_Index - TILE_0;
+
+		}
 	}
 
 	return -1;
@@ -117,36 +130,52 @@ int CCollision::Number(int x, int y)
 
 int CCollision::TileShop(int x, int y)
 {
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
+
+
 	for (int i = 0; i < 16; i++) {
-		int Nx = clamp(x / 32, 0, m_Width - 1);
-		int Ny = clamp(y / 32, 0, m_Height - 1);
+		if (!m_pCityTiles[i])
+			break;
 
 		if (m_pCityTiles[i][Ny * m_Width + Nx].m_Index == TILE_SHOP)
-			return 1;
+			return m_pCityTiles[i][Ny * m_Width + Nx].m_Index == TILE_SHOP;
 	}
 
-	return 0;
+	return m_pTiles[Ny * m_Width + Nx].m_Index == TILE_SHOP;
 }
 
 int CCollision::IsTile(int x, int y, int Type)
 {
+	char aBuf[64];
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
+
 	for (int i = 0; i < 16; i++) {
-		int Nx = clamp(x / 32, 0, m_Width - 1);
-		int Ny = clamp(y / 32, 0, m_Height - 1);
+		if (!m_pCityTiles[i])
+			break;
 
 		if (m_pCityTiles[i][Ny * m_Width + Nx].m_Index == Type)
-			return 1;
+			return m_pCityTiles[i][Ny * m_Width + Nx].m_Index == Type;
 	}
 
-	return 0;
+	return false;
 }
 
 int CCollision::GetTile(int x, int y)
 {
-	int Nx = clamp(x/32, 0, m_Width-1);
-	int Ny = clamp(y/32, 0, m_Height-1);
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
 
-	return m_pTiles[Ny*m_Width+Nx].m_Index > 128 ? 0 : m_pTiles[Ny*m_Width+Nx].m_Index;
+	for (int i = 0; i < 16; i++) {
+		if (!m_pCityTiles[i])
+			break;
+
+		if (m_pTiles[Ny * m_Width + Nx].m_Index <= 128)
+			return m_pCityTiles[i][Ny * m_Width + Nx].m_Index;
+	}
+
+	return 0;
 }
 
 bool CCollision::IsTileSolid(int x, int y)

@@ -242,6 +242,9 @@ struct CMapItemLayerTilemap
 	int m_Data;
 
 	int m_aName[3];
+
+	// city
+	int m_SubGameLayer;
 } ;
 
 struct CMapItemLayerQuads
