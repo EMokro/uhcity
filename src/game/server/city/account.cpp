@@ -37,7 +37,7 @@ CAccount::CAccount(CPlayer *pPlayer, CGameContext *pGameServer)
 
 void CAccount::Login(char *Username, char *Password)
 {
-	char aBuf[125];
+	char aBuf[128];
 	if(m_pPlayer->m_AccData.m_UserID)
 	{
 		dbg_msg("account", "Account login failed ('%s' - Already logged in)", Username);

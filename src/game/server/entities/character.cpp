@@ -259,7 +259,8 @@ void CCharacter::Move(int dir)
 void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int Max)
 {
 	char aBuf[128];
-	
+	char numBuf[2][16];
+
 	if(Click == 1)
 	{
 		if(*Upgrade < Max)
@@ -278,13 +279,16 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 
 					m_BuyTick = Server()->Tick();
 					GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC", m_pPlayer->m_AccData.m_Money);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					str_format(aBuf, sizeof(aBuf), "Money: %s$", numBuf[0]);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 				}
 			}
 			else
 			{
-				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %d TC\nMoney: %d TC", Name, Price, m_pPlayer->m_AccData.m_Money);
+				GameServer()->FormatInt(Price, numBuf[0]);
+				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
+				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
 				m_LastBroadcast = Server()->Tick();
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
@@ -300,8 +304,10 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 	{
 		if(Server()->Tick()-m_LastBroadcast>50)
 		{
+			GameServer()->FormatInt(Price, numBuf[0]);
+			GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 			m_LastBroadcast = Server()->Tick();
-			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nP: %d TC\nMoney: %d TC", Name, *Upgrade, Max, Price, m_pPlayer->m_AccData.m_Money);
+			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
@@ -1334,7 +1340,6 @@ void CCharacter::Booster()
 
 		if(m_Health <= 0)
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-
 		}
 	}
 	else
@@ -1370,25 +1375,38 @@ void CCharacter::Booster()
 		{
 			if(Server()->Tick()%50 == 0)
 			{
-				char aBuf[128];
+				char aBuf[256];
+				char numBuf[4][16];
+
 				int Money = 1000;
 				int ExpPoints = 10000;
 	
 				if(Money && ExpPoints)
 				{
-					//if(m_pPlayer->m_AccData.m_VIP)
-					//	Money *= 2;
+					int NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
 
-					
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					GameServer()->FormatInt(Money, numBuf[1]);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+
+					if (m_pPlayer->m_AccData.m_VIP) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
+						Money += 3;
+						ExpPoints *= 3;
+					}
+					else 
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
-					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+					if ( m_pPlayer->m_AccData.m_ExpPoints >= NeededExp)
 					{
-						m_pPlayer->m_AccData.m_ExpPoints = 0;
+						m_pPlayer->m_AccData.m_ExpPoints = (m_pPlayer->m_AccData.m_ExpPoints - NeededExp) % NeededExp;
 						m_pPlayer->m_AccData.m_Level++;
 						m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 

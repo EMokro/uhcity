@@ -216,10 +216,11 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 		{
 			if(Amount)
 			{
-				CPlayer* pP = pSelf->m_apPlayers[ID];
+				CPlayer* pP = pChr->GetPlayer();
 
-				pChr->GetPlayer()->m_AccData.m_Level = Amount;
-				pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
+				pP->m_AccData.m_Level = Amount;
+				pP->m_AccData.m_ExpPoints = 0;
+				pP->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
 
 				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
