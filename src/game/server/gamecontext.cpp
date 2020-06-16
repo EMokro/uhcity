@@ -1076,6 +1076,27 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		pPlayer->m_LastEmote = Server()->Tick();
 
 		SendEmoticon(ClientID, pMsg->m_Emoticon);
+
+		int eicon = EMOTE_NORMAL;
+			switch (pMsg->m_Emoticon) {
+			case EMOTICON_OOP: eicon = EMOTE_PAIN; break;
+			case EMOTICON_EXCLAMATION: eicon = EMOTE_SURPRISE; break;
+			case EMOTICON_HEARTS: eicon = EMOTE_HAPPY; break;
+			case EMOTICON_DROP: eicon = EMOTE_BLINK; break;
+			case EMOTICON_DOTDOT: eicon = EMOTE_BLINK; break;
+			case EMOTICON_MUSIC: eicon = EMOTE_HAPPY; break;
+			case EMOTICON_SORRY: eicon = EMOTE_PAIN; break;
+			case EMOTICON_GHOST: eicon = EMOTE_SURPRISE; break;
+			case EMOTICON_SUSHI: eicon = EMOTE_PAIN; break;
+			case EMOTICON_SPLATTEE: eicon = EMOTE_ANGRY;  break;
+			case EMOTICON_DEVILTEE: eicon = EMOTE_ANGRY; break;
+			case EMOTICON_ZOMG: eicon = EMOTE_ANGRY; break;
+			case EMOTICON_ZZZ: eicon = EMOTE_BLINK; break;
+			case EMOTICON_WTF: eicon = EMOTE_SURPRISE; break;
+			case EMOTICON_EYES: eicon = EMOTE_HAPPY; break;
+			case EMOTICON_QUESTION: eicon = EMOTE_SURPRISE; break;
+			}
+			if (pPlayer->GetCharacter()) pPlayer->GetCharacter()->SetEmote(eicon, Server()->Tick() + Server()->TickSpeed()*2.5f);
 	}
 	else if (MsgID == NETMSGTYPE_CL_KILL && !m_World.m_Paused)
 	{
