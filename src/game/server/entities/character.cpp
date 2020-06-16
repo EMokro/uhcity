@@ -261,6 +261,8 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 	char aBuf[128];
 	char numBuf[2][16];
 
+	Price = floor(pow(*Upgrade + 1, 1.5) * Price);
+
 	if(Click == 1)
 	{
 		if(*Upgrade < Max)
@@ -270,7 +272,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 				if(Server()->Tick() - m_BuyTick > 50)
 				{
 					*Upgrade += 1;
-					m_pPlayer->m_AccData.m_Money-=Price;
+					m_pPlayer->m_AccData.m_Money -= Price;
 					str_format(aBuf, sizeof(aBuf), "%s (%d/%d)", Name, *Upgrade, Max);
 					m_LastBroadcast = Server()->Tick();
 
