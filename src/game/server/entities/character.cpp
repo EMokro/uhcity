@@ -1406,7 +1406,7 @@ void CCharacter::Booster()
 					if (m_pPlayer->m_AccData.m_VIP) {
 						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
 
-						Money += 3;
+						Money *= 3;
 						ExpPoints *= 3;
 					}
 					else 
@@ -1616,14 +1616,23 @@ void CCharacter::HandleCity()
 	
 				if(Money && ExpPoints)
 				{
-					//if(m_pPlayer->m_AccData.m_VIP)
-					//	Money *= 2;
+					char numBuf[4][16];
 
-					
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					GameServer()->FormatInt(Money, numBuf[1]);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+
+					if (m_pPlayer->m_AccData.m_VIP) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+						Money *= 3;
+						ExpPoints *= 3;
+					} else
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
