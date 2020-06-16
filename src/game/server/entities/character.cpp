@@ -153,12 +153,13 @@ bool CCharacter::IsGrounded()
 void CCharacter::Tele()
 {
 	vec2 TelePos = m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY);
-	if(!GameServer()->Collision()->CheckPoint(TelePos))
+
+	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID))
 	{
 		float Dist = distance(TelePos, m_Pos);
 
 		if (Dist > 500) {
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Out of range");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Out of Range");
 			return;
 		}
 
@@ -173,7 +174,7 @@ void CCharacter::Tele()
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
 				{
-					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied");
+					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't teleport there.");
 					return;
 				}
 			}
@@ -187,18 +188,19 @@ void CCharacter::Tele()
 
 		if (Protected())
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't tele while being protected");
 			return;
 		}
 	}
+	else
+		return;
 
 	m_Core.m_Pos = TelePos;
-	CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
+	CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
 	if (pEvent)
 	{
 		pEvent->m_X = (int)TelePos.x;
 		pEvent->m_Y = (int)TelePos.y;
-		pEvent->m_ClientID = m_pPlayer->GetCID();
 	}
 }
 
