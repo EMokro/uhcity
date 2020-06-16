@@ -498,6 +498,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Home teleport");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Save and load a position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Exclusive 1000$ money tiles");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Checkout /donorcmds for more information.");
 
 		return;
 	}
@@ -520,6 +521,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		LastChat();
 
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR COMMANDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/tele -- Teleports you to your cursor");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/crown -- The nice crown");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/save -- Saves your position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/load -- Teleports to the saved position");
