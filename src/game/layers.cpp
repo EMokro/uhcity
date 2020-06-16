@@ -38,6 +38,7 @@ void CLayers::Init(class IKernel *pKernel)
 				if(pTilemap->m_Flags&1)
 				{
 					m_pGameLayers[l] = pTilemap;
+					m_pGameLayer = pTilemap;
 					m_pGameGroup = pGroup;
 					hasGameLayer = true;
 
