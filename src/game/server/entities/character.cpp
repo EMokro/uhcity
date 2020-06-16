@@ -154,7 +154,7 @@ void CCharacter::Tele()
 {
 	vec2 TelePos = m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY);
 
-	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) && !m_God)
+	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) || m_God)
 	{
 		float Dist = distance(TelePos, m_Pos);
 
@@ -166,7 +166,7 @@ void CCharacter::Tele()
 		for (int i = 1; i < Dist; i += 32)
 		{
 			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-			if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+			if (!m_God)
 			{
 				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
