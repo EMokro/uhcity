@@ -247,14 +247,14 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!(pOwner && pOwner->IsAlive()))
 			return;
 
-		if (m_pPlayer->m_Insta)
-			return;
-
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (m_pPlayer->m_Insta 
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_Donor)
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Only for Donors!");
 			return;
 		}
 

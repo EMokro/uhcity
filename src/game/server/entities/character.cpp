@@ -154,7 +154,7 @@ void CCharacter::Tele()
 {
 	vec2 TelePos = m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY);
 
-	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID))
+	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) && !m_God)
 	{
 		float Dist = distance(TelePos, m_Pos);
 
@@ -217,8 +217,17 @@ void CCharacter::SaveLoad(int Value)
 		return;
 	}
 	
-	if(!Protected())
+	if (!Protected()) {
 		m_Core.m_Pos = m_SavePos;
+
+		CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
+
+		if (pEvent)
+		{
+			pEvent->m_X = m_SavePos.x;
+			pEvent->m_Y = m_SavePos.y;
+		}
+	}
 }
 
 void CCharacter::Move(int dir) 
