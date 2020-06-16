@@ -634,7 +634,7 @@ void IGameController::Tick()
 
 	// Scheduled server message
 	if (Server()->Tick() % 30000 == 0) { // every 10 min
-		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, "Visit our Discord server https://discord.gg/kwmM6V");
+		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, "Visit our Discord server https://discord.gg/Rstb8ge");
 	}
 
 	DoWincheck();

@@ -104,6 +104,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
 
+	m_pPlayer->m_Crown = true;
+
 	if(!m_pPlayer->m_Insta)
 		new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 
@@ -114,8 +116,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Home = 0;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
-
-	
 
 	return true;
 }
@@ -1327,12 +1327,9 @@ void CCharacter::Booster()
 	{
 		m_Luft++;
 
-		if(m_Luft >= 50)
+		if(m_Luft >= 50 && m_pPlayer->m_AccData.m_HealthRegen == 0)
 		{
-			if(m_Armor)
-				m_Armor--;
-			else
-				m_Health--;
+			TakeDamage(vec2(0,0), 1, -1, WEAPON_GAME);
 		m_Luft = 1;
 
 		if(m_Health <= 0)
