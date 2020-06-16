@@ -1618,9 +1618,6 @@ void CCharacter::HandleCity()
 				{
 					char numBuf[4][16];
 
-					m_pPlayer->m_AccData.m_Money += Money;
-					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
 					GameServer()->FormatInt(Money, numBuf[1]);
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
@@ -1632,6 +1629,9 @@ void CCharacter::HandleCity()
 						ExpPoints *= 3;
 					} else
 						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
+					m_pPlayer->m_AccData.m_Money += Money;
+					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
