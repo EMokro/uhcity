@@ -165,7 +165,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -186,7 +186,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -207,7 +207,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -228,7 +228,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
