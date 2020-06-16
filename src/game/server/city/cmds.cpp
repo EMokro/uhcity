@@ -467,6 +467,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
 
 		return;
 	}
@@ -497,6 +498,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Home teleport");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Save and load a position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Exclusive 1000$ money tiles");
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/vip"))
+	{
+		LastChat();
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- VIP ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "VIP gives you x3 money and exp.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use movement cmds:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /up");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /down");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /left");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /right");
 
 		return;
 	}
