@@ -21,6 +21,13 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 		if (pChr && pSelf->GetPlayerChar(TeleTo))
 		{
 			pChr->m_Core.m_Pos = pSelf->m_apPlayers[TeleTo]->m_ViewPos;
+			CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)pChr->GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
+
+			if (pEvent)
+			{
+				pEvent->m_X = pChr->m_Core.m_Pos.x;
+				pEvent->m_Y = pChr->m_Core.m_Pos.y;
+			}
 		}
 	}
 }
@@ -216,10 +223,11 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 		{
 			if(Amount)
 			{
-				CPlayer* pP = pSelf->m_apPlayers[ID];
+				CPlayer* pP = pChr->GetPlayer();
 
-				pChr->GetPlayer()->m_AccData.m_Level = Amount;
-				pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
+				pP->m_AccData.m_Level = Amount;
+				pP->m_AccData.m_ExpPoints = 0;
+				pP->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
 
 				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);

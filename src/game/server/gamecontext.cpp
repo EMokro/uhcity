@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <new>
 #include <base/math.h>
+#include <string.h>
 #include <engine/shared/config.h>
 #include <engine/map.h>
 #include <engine/console.h>
@@ -93,6 +94,7 @@ void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
 	//float a = get_angle(dir);
 	float s = a-pi/3;
 	float e = a+pi/3;
+
 	for(int i = 0; i < Amount; i++)
 	{
 		float f = mix(s, e, float(i+1)/float(Amount+2));
@@ -662,6 +664,67 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 		if(m_apPlayers[i] && m_apPlayers[i]->m_SpectatorID == ClientID)
 			m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
 	}
+}
+// Usage:
+// char numBuf[16];
+// int someNum = 1000000;
+// FormatInt(someNum, numBuf);
+// numBuf should output "1.000.000"
+void CGameContext::FormatInt(int n, char* out) {
+	int i;
+	int digit;
+	int out_index = 0;
+
+	if (n == 0) {
+		out[0] = '0';
+		return;
+	}
+
+	for (i = n; i != 0; i /= 10) {
+		digit = i % 10;
+
+		if ((out_index + 1) % 4 == 0) {
+			out[out_index++] = '.';
+		}
+		out[out_index++] = digit + '0';
+	}
+	out[out_index] = '\0';
+
+	strrev(out);
+}
+
+void CGameContext::strrev(char *str)
+{
+	int length, c;
+	char* begin, * end, temp;
+
+	length = string_length(str);
+
+	begin = str;
+	end = str;
+
+	for (c = 0; c < (length - 1); c++)
+		end++;
+
+	for (c = 0; c < length / 2; c++)
+	{
+		temp = *end;
+		*end = *begin;
+		*begin = temp;
+
+		begin++;
+		end--;
+	}
+}
+
+int CGameContext::string_length(char* pointer)
+{
+	int c = 0;
+
+	while (*(pointer + c) != '\0')
+		c++;
+
+	return c;
 }
 
 void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)

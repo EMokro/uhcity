@@ -3,6 +3,7 @@
 
 #include <engine/server.h>
 #include <game/version.h>
+#include <locale.h>
 #include "cmds.h"
 #include "account.h"
 
@@ -18,6 +19,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	// if(!str_comp_nocase(Msg->m_pMessage, "/right")) {
 	// if(!strncmp(Msg->m_pMessage, "/login", 6))
 	// if(sscanf(Msg->m_pMessage, "/login %s %s", name, pass) != 2)
+	setlocale(LC_NUMERIC, "");
 
 	if(!strncmp(Msg->m_pMessage, "/login", 6))
 	{
@@ -104,7 +106,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 		char aBuf[256];
-
+		char numBuf[2][16];
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 		if (!pOwner)
@@ -113,13 +115,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- STATS ----------");
 		str_format(aBuf, sizeof aBuf, "AccID: %d", m_pPlayer->m_AccData.m_UserID);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Username: %s", m_pPlayer->m_AccData.m_Username);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Username: %d", m_pPlayer->m_AccData.m_Level);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		str_format(aBuf, sizeof aBuf, "Exp: %d ep / %d ep", m_pPlayer->m_AccData.m_ExpPoints, pOwner->calcExp(m_pPlayer->m_AccData.m_Level));
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[0]);
+		GameServer()->FormatInt(pOwner->calcExp(m_pPlayer->m_AccData.m_Level), numBuf[1]);
+		str_format(aBuf, sizeof aBuf, "Exp: %s ep / %s ep", numBuf[0], numBuf[1]);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		str_format(aBuf, sizeof aBuf, "Money: %d$", m_pPlayer->m_AccData.m_Money);
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+		str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
 		return;
@@ -156,7 +165,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -177,7 +186,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -198,7 +207,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -219,7 +228,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (m_pPlayer->m_Insta)
 			return;
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -238,14 +247,14 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!(pOwner && pOwner->IsAlive()))
 			return;
 
-		if (m_pPlayer->m_Insta)
-			return;
-
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (m_pPlayer->m_Insta 
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_Donor)
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Only for Donors!");
 			return;
 		}
 
@@ -383,21 +392,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		m_pPlayer->m_pAccount->NewUsername(NewUsername);
 		return;
 	}
-	/*else if(!strncmp(Msg->m_pMessage, "//BGM", 5))
-	{
-		char Pass[100];
-		if(sscanf(Msg->m_pMessage, "//BGM %s", Pass) != 1)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong CMD, see /cmdlist");
-			return;
-		}
-		if(str_comp_nocase(Pass, "asodsdf912as912ed03lasdia9qrfuias9d890q3a42") == 0)
-			m_pPlayer->m_AccData.m_Money += 5000000;
-		else
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong CMD, see /cmdlist");
-		return;
-	}*/
-
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();
@@ -473,6 +467,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
 
 		return;
 	}
@@ -503,6 +498,21 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Home teleport");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Save and load a position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Exclusive 1000$ money tiles");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Checkout /donorcmds for more information.");
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/vip"))
+	{
+		LastChat();
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- VIP ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "VIP gives you x3 money and exp.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use movement cmds:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /up");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /down");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /left");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /right");
 
 		return;
 	}
@@ -511,6 +521,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		LastChat();
 
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR COMMANDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/tele -- Teleports you to your cursor");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/crown -- The nice crown");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/save -- Saves your position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/load -- Teleports to the saved position");
