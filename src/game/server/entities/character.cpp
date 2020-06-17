@@ -272,7 +272,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 	char aBuf[128];
 	char numBuf[2][16];
 
-	Price = floor(pow(*Upgrade + 1, 1.5) * Price);
+	Price = floor(Price * pow(*Upgrade + 1, 2) * pow(*Upgrade + 1, -1.7));
 
 	if(Click == 1)
 	{

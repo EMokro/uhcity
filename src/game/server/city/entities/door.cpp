@@ -103,6 +103,24 @@ void CDoor::DoorNR()
 	}	
 }
 
+void CDoor::ResetCollision()
+{
+	for (int i = 0; i < m_Length - 1; i++)
+	{
+		vec2 CurrentPos(m_Pos.x + (m_Direction.x * i),
+			m_Pos.y + (m_Direction.y * i));
+		if (GameServer()->Collision()->CheckPoint(CurrentPos)
+			|| GameServer()->Collision()->GetTile(m_Pos.x, m_Pos.y)
+			|| GameServer()->Collision()->GetFTile(m_Pos.x, m_Pos.y))
+			break;
+		else
+			GameServer()->Collision()->SetDCollisionAt(
+				m_Pos.x + (m_Direction.x * i),
+				m_Pos.y + (m_Direction.y * i), TILE_STOPA, 0/*Flags*/,
+				m_Number);
+	}
+}
+
 void CDoor::Tick()
 {
 	const int MAX_TILES = 5;
@@ -260,7 +278,22 @@ void CDoor::Tick()
 			else
 			{
 				if (!(Hit->ActiveWeapon() == WEAPON_NINJA && (Hit->m_Input.m_Fire & 1) == 1)) {
-					Hit->m_Core.m_Pos += vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
+
+					/*char aBuf[64];
+
+
+					int dirX = Hit->m_Core.m_Vel.x / abs(Hit->m_Core.m_Vel.x);
+					int dirY = Hit->m_Core.m_Vel.y / abs(Hit->m_Core.m_Vel.y);
+
+					Hit->m_Core.m_Vel += vec2(2 * -Hit->m_Core.m_Vel.x, 2 * -Hit->m_Core.m_Vel.y);
+					Hit->m_Core.m_Pos += vec2(-dirX * 64, -dirY * 64);*/
+
+					vec2 NextPos = vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
+					
+					if (!GameServer()->Collision()->CheckPoint(NextPos))
+						return;
+
+					Hit->m_Core.m_Pos += NextPos;
 					Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, -2);
 				}
 				else {
