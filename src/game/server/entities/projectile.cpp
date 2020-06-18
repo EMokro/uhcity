@@ -106,10 +106,7 @@ void CProjectile::Tick()
 	// City
 	if(OwnerChar && TargetChr)
 	{
-		if(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze
-		&& m_Type == WEAPON_GUN && !TargetChr->m_God
-		&& !TargetChr->Protected()
-		&& OwnerChar->GetPlayer()->m_AciveUpgrade[WEAPON_GUN] == 1)
+		if(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze && m_Type == WEAPON_GUN && !TargetChr->m_God && !TargetChr->Protected())
 			TargetChr->Freeze(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze * Server()->TickSpeed());
 	}
 

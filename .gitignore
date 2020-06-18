@@ -5,6 +5,7 @@ bam.exe
 *.o
 *.pyc
 config.lua
+teeworlds_srv
 bam
 autoexec.cfg
 accounts/**
@@ -14,4 +15,3 @@ src/game/generated/server_data.cpp
 src/game/generated/protocol.h
 src/game/generated/protocol.cpp
 src/game/generated/nethash.cpp
-teeworlds_srv

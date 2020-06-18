@@ -38,6 +38,12 @@ void CWall::Tick()
 		return;
 	}	
 
+	if(m_Counter >= pOwner->GetPlayer()->m_AccData.m_HammerWalls)
+	{
+		Reset();
+		return;
+	}	
+
 	vec2 Intersection;
 	CCharacter *pTargetChr = GameServer()->m_World.IntersectCharacter(m_Pos, m_Pos2, 1.0f, Intersection, 0x0);
 
@@ -51,12 +57,8 @@ void CWall::Tick()
 
 		if(pTargetChr != pOwner && !pTargetChr->Protected() && !pTargetChr->m_God)
 		{
-			int Dmg = (pTargetChr->m_Health + pTargetChr->m_Armor) / 5;
-
-			if (Dmg < 5)
-				Dmg = 5;
-
-			pTargetChr->TakeDamage(vec2(0, 0), Dmg, pOwner->GetPlayer()->GetCID(), WEAPON_HAMMER);
+			pTargetChr->Die(m_Owner, WEAPON_HAMMER);
+			m_Counter++;
 		}
 	}
 
