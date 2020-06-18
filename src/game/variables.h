@@ -34,7 +34,7 @@ MACRO_CONFIG_INT(EuGunSpread, eu_gun_spread, 180000, 0, 1000000, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(EuGunExplode, eu_gun_explode, 360000, 0, 1000000, CFGFLAG_SERVER, "Price - Gun explode")
 MACRO_CONFIG_INT(EuGunFreeze, eu_gun_freeze, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Gun ammo")
 
-MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer walls")
+MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 150000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer walls")
 MACRO_CONFIG_INT(EuHammerShot, eu_hammer_shot, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer shot")
 MACRO_CONFIG_INT(EuHammerKill, eu_hammer_kill, 36000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer kill")
 
