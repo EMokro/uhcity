@@ -866,7 +866,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			CCharacter *pOwner = GetPlayerChar(pPlayer->GetCID());
 
 			if(pOwner)
-				pOwner->ChangeUpgrade(pMsg->m_Vote);
+				pOwner->SwitchShop(pMsg->m_Vote);
 				
 			return;
 		}

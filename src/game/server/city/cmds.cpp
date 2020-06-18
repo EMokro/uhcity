@@ -426,6 +426,39 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
+	if(!strncmp(Msg->m_pMessage, "/login", 6))
+	{
+		LastChat();
+		char Username[512];
+		char Password[512];
+		if(sscanf(Msg->m_pMessage, "/login %s %s", Username, Password) != 2)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use '/login <username> <password>'");
+			return;
+		}
+		m_pPlayer->m_pAccount->Login(Username, Password);
+		return;
+	}
+	else if(!str_comp_nocase(Msg->m_pMessage, "/god"))
+    {
+		char aBuf[128];
+		if(!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are not admin! Access denied");
+			return;
+		}
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+		{
+			pOwner->m_God^=true;
+			str_format(aBuf, sizeof(aBuf), "%s Godmode", pOwner->m_God?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+
+		return;
+    } // info
 	else if(!str_comp_nocase(Msg->m_pMessage, "/cmdlist"))
 	{
 		LastChat();
@@ -458,47 +491,119 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		str_format(aBuf, sizeof(aBuf), "            =POLICE=\n\n\nHow to become a Police?\nWrite an application and send it to NoHack2Win#0001 or UrinStone#8404 on Discord\n\nAvailable F2 - CMDs:\n\n- ban\n\n -bans\n\n- kick\n\n- jail\n\n- unjail\n\n- vote yes, no\n\n- status\n\n\nChat - Commands:\n\n- /JailRifle");
 		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 		return;
-	}
-	if(!strncmp(Msg->m_pMessage, "/login", 6))
-	{
-		LastChat();
-		char Username[512];
-		char Password[512];
-		if(sscanf(Msg->m_pMessage, "/login %s %s", Username, Password) != 2)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use '/login <username> <password>'");
-			return;
-		}
-		m_pPlayer->m_pAccount->Login(Username, Password);
-		return;
-	}
-	else if(!str_comp_nocase(Msg->m_pMessage, "/acc") || !str_comp_nocase(Msg->m_pMessage, "/account"))
-	{
-		LastChat();
-
-		return;
-	}
-
-	else if(!str_comp_nocase(Msg->m_pMessage, "/god"))
-    {
-		char aBuf[200];
-		if(!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are not admin! Access denied");
-			return;
-		}
+	} // Items
+	else if (!str_comp_nocase(Msg->m_pMessage, "/walls")) {
+		char aBuf[64];
 
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+		if(m_pPlayer->m_AccData.m_HammerWalls)
 		{
-			pOwner->m_God^=true;
-			str_format(aBuf, sizeof(aBuf), "%s Godmode", pOwner->m_God?"Enabled":"Disabled");
+			pOwner->ChangeUpgrade(ITEM_HAMMER, UPGRADE_HAMMERWALLS);
+			str_format(aBuf, sizeof(aBuf), "%s Walls", m_pPlayer->m_AciveUpgrade[ITEM_HAMMER] == UPGRADE_HAMMERWALLS ?"Enabled":"Disabled");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Walls first!");
 		}
 
 		return;
-    }
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/plasma")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_HammerShot)
+		{
+			pOwner->ChangeUpgrade(ITEM_HAMMER, UPGRADE_HAMMERSHOT);
+			str_format(aBuf, sizeof(aBuf), "%s Plasma", m_pPlayer->m_AciveUpgrade[ITEM_HAMMER] == UPGRADE_HAMMERSHOT ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Plasma first!");
+		}
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/hammerkill")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_HammerKill)
+		{
+			pOwner->ChangeUpgrade(ITEM_HAMMER, UPGRADE_HAMMERKILL);
+			str_format(aBuf, sizeof(aBuf), "%s Hammerkill", m_pPlayer->m_AciveUpgrade[ITEM_HAMMER] == UPGRADE_HAMMERKILL ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Hammerkill first!");
+		}
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/gfreeze")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_GunFreeze)
+		{
+			pOwner->ChangeUpgrade(ITEM_GUN, UPGRADE_GUNFREEZE);
+			str_format(aBuf, sizeof(aBuf), "%s Freezegun", m_pPlayer->m_AciveUpgrade[ITEM_GUN] == UPGRADE_GUNFREEZE ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Freezegun first!");
+		}
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/rplasma")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_RiflePlasma)
+		{
+			pOwner->ChangeUpgrade(ITEM_RIFLE, UPGRADE_RIFLEPLASMA);
+			str_format(aBuf, sizeof(aBuf), "%s Rifle plasma", m_pPlayer->m_AciveUpgrade[ITEM_RIFLE] == UPGRADE_RIFLEPLASMA ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Rifle plasma first!");
+		}
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/swap")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_RiflePlasma)
+		{
+			pOwner->ChangeUpgrade(ITEM_RIFLE, UPGRADE_RIFLESWAP);
+			str_format(aBuf, sizeof(aBuf), "%s Swap", m_pPlayer->m_AciveUpgrade[ITEM_RIFLE] == UPGRADE_RIFLESWAP ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy Swap first!");
+		}
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/fly")) {
+		char aBuf[64];
+
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if(m_pPlayer->m_AccData.m_InfinityJumps == 2)
+		{
+			pOwner->ChangeUpgrade(ITEM_JUMP, UPGRADE_FLY);
+			str_format(aBuf, sizeof(aBuf), "%s fly", m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY ?"Enabled":"Disabled");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Buy infinite jumps 2 first!");
+		}
+
+		return;
+	}
 
 	if(!strncmp(Msg->m_pMessage, "/", 1))
 	{

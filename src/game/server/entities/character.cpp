@@ -475,11 +475,8 @@ void CCharacter::HandleWeaponSwitch()
 	DoWeaponSwitch();
 }
 
-void CCharacter::ChangeUpgrade(int Value)
-{
-	// m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1
-	
-	if(GameServer()->Collision()->TileShop(m_Pos))
+void CCharacter::SwitchShop(int Value) {
+		if(GameServer()->Collision()->TileShop(m_Pos))
 	{
 		m_Menu += Value;
 
@@ -491,76 +488,11 @@ void CCharacter::ChangeUpgrade(int Value)
 		return;
 	}
 
-	m_pPlayer->m_AciveUpgrade[m_ActiveWeapon]+=Value;
+}
 
-	switch(m_ActiveWeapon)
-	{
-		case WEAPON_HAMMER:
-		{
-			if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] > 2)
-				m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] = 0;
-			else if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] < 0)
-			{
-				m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] = 3;
-				ChangeUpgrade(Value);
-				return;
-			}
-			else if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1)
-			{
-				if(!m_pPlayer->m_AccData.m_HammerWalls)
-				{
-					ChangeUpgrade(Value);
-					return;
-				}
-			}
-			else if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2)
-			{
-				if(!m_pPlayer->m_AccData.m_HammerShot)
-				{
-					ChangeUpgrade(Value);
-					return;
-				}
-			}
-		} break;
-
-		case WEAPON_GUN:
-		{
-			
-		} break;
-
-		case WEAPON_SHOTGUN:
-		{
-			
-		} break;
-
-		case WEAPON_RIFLE:
-		{
-			if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] > 1)
-				m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] = 0;
-			else if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] < 0)
-			{
-				m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] = 2;
-				ChangeUpgrade(Value);
-				return;
-			}
-			else if(m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1)
-			{
-				if(!m_pPlayer->m_AccData.m_RiflePlasma)
-				{
-					ChangeUpgrade(Value);
-					return;
-				}
-			}
-		} break;
-
-		case WEAPON_NINJA:
-		{
-			
-		} break;
-
-	}
-
-
+void CCharacter::ChangeUpgrade(int Weapon, int Value)
+{	
+	m_pPlayer->m_AciveUpgrade[Weapon] = Value == m_pPlayer->m_AciveUpgrade[Weapon] ? 0 : Value;
 }
 
 void CCharacter::FireWeapon()
@@ -663,13 +595,13 @@ void CCharacter::FireWeapon()
 			// if we Hit anything, we have to wait for the reload
 			if(Hits)
 				m_ReloadTimer = Server()->TickSpeed()/3;
-			else if(m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2 && !m_GameZone)
+			else if(m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERSHOT && !m_GameZone)
 			{
 				NewPlasma();
 				m_ReloadTimer = Server()->TickSpeed()/3;
 			}
 
-			if(m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1 && !Hits && !m_GameZone)
+			if(m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERWALLS && !Hits && !m_GameZone)
 			{
 				m_ReloadTimer = Server()->TickSpeed()/3;
 
@@ -883,12 +815,19 @@ void CCharacter::FireWeapon()
 
 			if(!m_pPlayer->m_Insta && !m_GameZone && !m_JailRifle)
 			{
-				if(m_pPlayer->m_AccData.m_RiflePlasma && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 1)
+				if(m_pPlayer->m_AccData.m_RiflePlasma && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_RIFLEPLASMA)
 				{
 					m_ReloadTimer = Server()->TickSpeed()/3;
 					new CPlasma(GameWorld(), WEAPON_RIFLE, m_Pos, m_pPlayer->GetCID(), Direction);
+				} else if(m_pPlayer->m_AccData.m_RifleSwap && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_RIFLESWAP)
+				{
+					FullAuto = false;
+					m_ReloadTimer = Server()->TickSpeed();
+
+					float a = GetAngle(Direction);
+					new CLaser(GameWorld(), m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_RIFLE);
 				}
-				else if(m_pPlayer->m_AccData.m_RifleSpread)
+				else if(m_pPlayer->m_AccData.m_RifleSpread && !m_pPlayer->m_AciveUpgrade[m_ActiveWeapon])
 				{
 					int ShotSpread = m_pPlayer->m_AccData.m_RifleSpread;
 					float Spreading[18*2+1];
@@ -1643,11 +1582,10 @@ void CCharacter::Tick()
 
 	if(!m_Frozen && !m_pPlayer->m_Insta && !m_GameZone && !m_Water && !m_SingleWater)
 	{
-		
-		if(m_pPlayer->m_AccData.m_InfinityJumps == 1)
-			m_Core.m_Jumped &= ~2;
-		else if(m_pPlayer->m_AccData.m_InfinityJumps ==  2 && m_Input.m_Jump)
+		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY && m_Input.m_Jump)
 			m_Core.m_Vel.y = -GameServer()->Tuning()->m_GroundJumpImpulse;
+		else if(m_pPlayer->m_AccData.m_InfinityJumps >= 1)
+			m_Core.m_Jumped &= ~2;
 	}
 
 	if(m_Frozen)
