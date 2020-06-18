@@ -119,7 +119,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		str_format(aBuf, sizeof aBuf, "Username: %s", m_pPlayer->m_AccData.m_Username);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
-		str_format(aBuf, sizeof aBuf, "Username: %d", m_pPlayer->m_AccData.m_Level);
+		str_format(aBuf, sizeof aBuf, "Level: %d", m_pPlayer->m_AccData.m_Level);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
 		GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[0]);
@@ -438,6 +438,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	if(!strncmp(Msg->m_pMessage, "/transfer", 9))
 	{
 		LastChat();
+		char aBuf[128];
 		int Money;
 
 		if(sscanf(Msg->m_pMessage, "/transfer %i", &Money) != 1)
@@ -450,7 +451,8 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		if (pUser) {
 			pUser->Transfer(Money);
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
+			str_format(aBuf, sizeof aBuf, "You transfered %d$", Money);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}
 
 		return;
