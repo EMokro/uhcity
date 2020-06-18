@@ -67,9 +67,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	// City
 	if(OwnerChar && !Hit->GetPlayer()->m_AccData.m_Arrested && !Hit->GetPlayer()->m_Insta && !Hit->Protected())
 	{
-		if(GameServer()->m_apPlayers[m_Owner]->m_AccData.m_RifleSwap
-		&& !OwnerChar->GetPlayer()->m_Insta
-		&& GameServer()->m_apPlayers[m_Owner]->m_AciveUpgrade[WEAPON_RIFLE] == UPGRADE_RIFLESWAP)
+		if(GameServer()->m_apPlayers[m_Owner]->m_AccData.m_RifleSwap && !OwnerChar->GetPlayer()->m_Insta)
 		{
 			if(!OwnerChar->Protected() && !OwnerChar->m_JailRifle && !OwnerChar->GetPlayer()->m_AccData.m_Arrested)
 			{
