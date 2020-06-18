@@ -42,7 +42,6 @@ CInputCount CountInput(int Prev, int Cur)
 	return c;
 }
 
-
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -105,6 +104,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
 
+	m_pPlayer->m_Crown = true;
+
 	if(!m_pPlayer->m_Insta)
 		new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 
@@ -115,8 +116,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Home = 0;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
-
-	
 
 	return true;
 }
@@ -150,24 +149,24 @@ bool CCharacter::IsGrounded()
 	return false;
 }
 
-
 // City
 void CCharacter::Tele()
 {
 	vec2 TelePos = m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY);
-	if(!GameServer()->Collision()->CheckPoint(TelePos))
+
+	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) || m_God)
 	{
 		float Dist = distance(TelePos, m_Pos);
 
 		if (Dist > 500) {
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Out of range");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Out of Range");
 			return;
 		}
 
 		for (int i = 1; i < Dist; i += 32)
 		{
 			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-			if (!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
+			if (!m_God)
 			{
 				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
@@ -175,7 +174,7 @@ void CCharacter::Tele()
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
 				{
-					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: /Tele denied");
+					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't teleport there.");
 					return;
 				}
 			}
@@ -189,21 +188,21 @@ void CCharacter::Tele()
 
 		if (Protected())
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Antitele]: Disable Protection first");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't tele while being protected");
 			return;
 		}
 	}
+	else
+		return;
 
 	m_Core.m_Pos = TelePos;
-	CNetEvent_Death* pEvent = (CNetEvent_Death*)GameServer()->m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death));
+	CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
 	if (pEvent)
 	{
 		pEvent->m_X = (int)TelePos.x;
 		pEvent->m_Y = (int)TelePos.y;
-		pEvent->m_ClientID = m_pPlayer->GetCID();
 	}
 }
-
 
 void CCharacter::SaveLoad(int Value)
 {
@@ -218,8 +217,17 @@ void CCharacter::SaveLoad(int Value)
 		return;
 	}
 	
-	if(!Protected())
+	if (!Protected()) {
 		m_Core.m_Pos = m_SavePos;
+
+		CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
+
+		if (pEvent)
+		{
+			pEvent->m_X = m_SavePos.x;
+			pEvent->m_Y = m_SavePos.y;
+		}
+	}
 }
 
 void CCharacter::Move(int dir) 
@@ -262,7 +270,10 @@ void CCharacter::Move(int dir)
 void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int Max)
 {
 	char aBuf[128];
-	
+	char numBuf[2][16];
+
+	Price = floor(Price * pow(*Upgrade + 1, 2) * pow(*Upgrade + 1, -1.7));
+
 	if(Click == 1)
 	{
 		if(*Upgrade < Max)
@@ -272,7 +283,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 				if(Server()->Tick() - m_BuyTick > 50)
 				{
 					*Upgrade += 1;
-					m_pPlayer->m_AccData.m_Money-=Price;
+					m_pPlayer->m_AccData.m_Money -= Price;
 					str_format(aBuf, sizeof(aBuf), "%s (%d/%d)", Name, *Upgrade, Max);
 					m_LastBroadcast = Server()->Tick();
 
@@ -281,13 +292,16 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 
 					m_BuyTick = Server()->Tick();
 					GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-					str_format(aBuf, sizeof(aBuf), "Money: %d TC", m_pPlayer->m_AccData.m_Money);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					str_format(aBuf, sizeof(aBuf), "Money: %s$", numBuf[0]);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 				}
 			}
 			else
 			{
-				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %d TC\nMoney: %d TC", Name, Price, m_pPlayer->m_AccData.m_Money);
+				GameServer()->FormatInt(Price, numBuf[0]);
+				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
+				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
 				m_LastBroadcast = Server()->Tick();
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
@@ -303,8 +317,10 @@ void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int M
 	{
 		if(Server()->Tick()-m_LastBroadcast>50)
 		{
+			GameServer()->FormatInt(Price, numBuf[0]);
+			GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 			m_LastBroadcast = Server()->Tick();
-			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nP: %d TC\nMoney: %d TC", Name, *Upgrade, Max, Price, m_pPlayer->m_AccData.m_Money);
+			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
@@ -314,6 +330,7 @@ int CCharacter::ActiveWeapon()
 {
 	return m_ActiveWeapon;
 }
+
 int CCharacter::MouseEvent(vec2 Pos)
 {
 	if(distance(Pos, m_Pos+vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY)) < 64)
@@ -421,7 +438,6 @@ void CCharacter::HandleNinja()
 
 	return;
 }
-
 
 void CCharacter::DoWeaponSwitch()
 {
@@ -577,15 +593,14 @@ void CCharacter::FireWeapon()
 				else
 					Dir = vec2(0.f, -1.f);
 
-				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-					m_pPlayer->GetCID(), m_ActiveWeapon);
-				Hits++;
-
-				if(m_pPlayer->m_AccData.m_HammerKill && !pTarget->Protected() && !pTarget->m_God && !m_GameZone && !pTarget->m_IsHammerKilled)
-				{
+				if (m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3) {
 					new CHammerKill(GameWorld(), m_pPlayer->GetCID(), pTarget->GetPlayer()->GetCID());
 					pTarget->m_IsHammerKilled = true;
 				}
+
+				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
+					m_pPlayer->GetCID(), m_ActiveWeapon);
+				Hits++;
 
 				if(pTarget->m_GameZone && m_GameZone && pTarget->m_Frozen)
 					pTarget->Unfreeze();
@@ -627,7 +642,15 @@ void CCharacter::FireWeapon()
 					m_HammerPos2 = vec2(0, 0);
 				}
 			}
-
+			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2 && !m_GameZone)
+			{
+				NewPlasma();
+				m_ReloadTimer = Server()->TickSpeed() / 3;
+			}
+			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3 && !m_GameZone)
+			{
+				m_ReloadTimer = Server()->TickSpeed() / 3;
+			}
 		} break;
 
 		case WEAPON_GUN:
@@ -1266,17 +1289,13 @@ void CCharacter::Booster()
 	{
 		m_Luft++;
 
-		if(m_Luft >= 50)
+		if(m_Luft >= 50 && m_pPlayer->m_AccData.m_HealthRegen == 0)
 		{
-			if(m_Armor)
-				m_Armor--;
-			else
-				m_Health--;
+			TakeDamage(vec2(0,0), 1, -1, WEAPON_GAME);
 		m_Luft = 1;
 
 		if(m_Health <= 0)
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-
 		}
 	}
 	else
@@ -1312,25 +1331,38 @@ void CCharacter::Booster()
 		{
 			if(Server()->Tick()%50 == 0)
 			{
-				char aBuf[128];
+				char aBuf[256];
+				char numBuf[4][16];
+
 				int Money = 1000;
 				int ExpPoints = 10000;
 	
 				if(Money && ExpPoints)
 				{
-					//if(m_pPlayer->m_AccData.m_VIP)
-					//	Money *= 2;
+					int NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
 
-					
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					GameServer()->FormatInt(Money, numBuf[1]);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+
+					if (m_pPlayer->m_AccData.m_VIP) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
+						Money *= 3;
+						ExpPoints *= 3;
+					}
+					else 
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
-					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+					if ( m_pPlayer->m_AccData.m_ExpPoints >= NeededExp)
 					{
-						m_pPlayer->m_AccData.m_ExpPoints = 0;
+						m_pPlayer->m_AccData.m_ExpPoints = (m_pPlayer->m_AccData.m_ExpPoints - NeededExp) % NeededExp;
 						m_pPlayer->m_AccData.m_Level++;
 						m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 
@@ -1527,14 +1559,23 @@ void CCharacter::HandleCity()
 	
 				if(Money && ExpPoints)
 				{
-					//if(m_pPlayer->m_AccData.m_VIP)
-					//	Money *= 2;
+					char numBuf[4][16];
 
-					
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+					GameServer()->FormatInt(Money, numBuf[1]);
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+
+					if (m_pPlayer->m_AccData.m_VIP) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+						Money *= 3;
+						ExpPoints *= 3;
+					} else
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-					str_format(aBuf, sizeof(aBuf), "Money: %d$ | +%d$\nExp: %d exp | +%d", m_pPlayer->m_AccData.m_Money, Money, m_pPlayer->m_AccData.m_ExpPoints, ExpPoints);
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
@@ -1747,10 +1788,15 @@ bool CCharacter::IncreaseArmor(int Amount)
 
 void CCharacter::Die(int Killer, int Weapon)
 {
+	if (!m_Alive) {
+		dbg_msg("debug", "player already dead");
+		return;
+	}
+
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
-	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle|| m_God && !pKiller->m_JailRifle))
+	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_God && !pKiller->m_JailRifle))
 		return;
 
 	// we got to wait 0.5 secs before respawning

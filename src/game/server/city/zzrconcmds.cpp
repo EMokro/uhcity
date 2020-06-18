@@ -21,6 +21,13 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 		if (pChr && pSelf->GetPlayerChar(TeleTo))
 		{
 			pChr->m_Core.m_Pos = pSelf->m_apPlayers[TeleTo]->m_ViewPos;
+			CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)pChr->GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
+
+			if (pEvent)
+			{
+				pEvent->m_X = pChr->m_Core.m_Pos.x;
+				pEvent->m_Y = pChr->m_Core.m_Pos.y;
+			}
 		}
 	}
 }
@@ -216,10 +223,11 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 		{
 			if(Amount)
 			{
-				CPlayer* pP = pSelf->m_apPlayers[ID];
+				CPlayer* pP = pChr->GetPlayer();
 
-				pChr->GetPlayer()->m_AccData.m_Level = Amount;
-				pChr->GetPlayer()->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
+				pP->m_AccData.m_Level = Amount;
+				pP->m_AccData.m_ExpPoints = 0;
+				pP->m_Score = pChr->GetPlayer()->m_AccData.m_Level;
 
 				str_format(aBuf, sizeof aBuf, "'%s' is now level %d", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
@@ -421,6 +429,7 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 	CGameContext* pSelf = (CGameContext*)pUserData;
 	int ID = pResult->GetVictim();
 	char aBuf[128];
+	char addrBuf[NETADDR_MAXSTRSIZE];
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
@@ -432,12 +441,20 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 
 	if (pP) {
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "** Look Up **");
+
 		str_format(aBuf, sizeof aBuf, "ID: %d", ID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "AccID: %d", pP->m_AccData.m_UserID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		
+		pSelf->Server()->GetClientAddr(pP->GetCID(), addrBuf, NETADDR_MAXSTRSIZE);
+		str_format(aBuf, sizeof aBuf, "IP: %s", addrBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Money: %d$", pP->m_AccData.m_Money);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 	}

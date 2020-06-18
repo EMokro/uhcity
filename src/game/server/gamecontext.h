@@ -197,8 +197,11 @@ public:
 	int64 m_LastBroadcast;
 	int m_TeleNR[MAX_CLIENTS];
 	int m_TeleNum;
-	//int m_TeleID[MAX_CLIENTS];
 
+	void FormatInt(int n, char* out);
+	void strrev(char* str);
+	int string_length(char* pointer);
+	//int m_TeleID[MAX_CLIENTS];
 };
 
 inline int CmaskAll() { return -1; }

@@ -15,6 +15,7 @@ public:
 private:
 	void DoorID();
 	void DoorNR();
+	void ResetCollision();
 	bool m_Open;
 	int m_aLength[4];
 	int m_ItemID[4];

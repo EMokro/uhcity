@@ -3,6 +3,7 @@
 
 #include <engine/server.h>
 #include <game/version.h>
+#include <locale.h>
 #include "cmds.h"
 #include "account.h"
 
@@ -18,6 +19,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	// if(!str_comp_nocase(Msg->m_pMessage, "/right")) {
 	// if(!strncmp(Msg->m_pMessage, "/login", 6))
 	// if(sscanf(Msg->m_pMessage, "/login %s %s", name, pass) != 2)
+	setlocale(LC_NUMERIC, "");
 
 	if(!strncmp(Msg->m_pMessage, "/login", 6))
 	{
@@ -37,29 +39,34 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
 		if(!m_pPlayer->m_AccData.m_UserID)
 		{
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not logged in");
 			return;
 		}
+
 		m_pPlayer->m_pAccount->Apply();
 		m_pPlayer->m_pAccount->Reset();
 
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Logout succesful");
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-		{
-			if(pOwner->IsAlive())
-				pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
-		}
-
+		pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/save"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive() && !m_pPlayer->m_Insta))
+			return;
+
 		if(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 		{
 			if(!m_pPlayer->m_AccData.m_Donor)
@@ -69,15 +76,18 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			}
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-			pOwner->SaveLoad(false);
+		pOwner->SaveLoad(false);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/load"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive() && !m_pPlayer->m_Insta))
+			return;
+
 		if(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 		{
 			if (!m_pPlayer->m_AccData.m_Donor
@@ -89,41 +99,52 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			}
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(pOwner)
-			pOwner->SaveLoad(true);
+		pOwner->SaveLoad(true);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/me") || !str_comp_nocase(Msg->m_pMessage, "/status") || !str_comp_nocase(Msg->m_pMessage, "/stats"))
 	{
 		LastChat();
-		char aBuf[200];
-
+		char aBuf[256];
+		char numBuf[2][16];
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(pOwner)
-		{
-			str_format(
-				aBuf,
-				sizeof(aBuf),
-				"Money: %d TC\nExp: %d / %d\nHealth: %d|%d\nArmor: %d|%d\nAccountID: %d",
-				m_pPlayer->m_AccData.m_Money,
-				m_pPlayer->m_AccData.m_ExpPoints,
-				pOwner->calcExp(m_pPlayer->m_AccData.m_Level),
-				pOwner->m_Health,m_pPlayer->m_AccData.m_Health,
-				pOwner->m_Armor,m_pPlayer->m_AccData.m_Armor,
-				m_pPlayer->m_AccData.m_UserID);
-			GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
-			//GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		}
+		if (!pOwner)
+			return;
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- STATS ----------");
+		str_format(aBuf, sizeof aBuf, "AccID: %d", m_pPlayer->m_AccData.m_UserID);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+		str_format(aBuf, sizeof aBuf, "Username: %s", m_pPlayer->m_AccData.m_Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+		str_format(aBuf, sizeof aBuf, "Username: %d", m_pPlayer->m_AccData.m_Level);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[0]);
+		GameServer()->FormatInt(pOwner->calcExp(m_pPlayer->m_AccData.m_Level), numBuf[1]);
+		str_format(aBuf, sizeof aBuf, "Exp: %s ep / %s ep", numBuf[0], numBuf[1]);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+		str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/tele"))
 	{
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if(!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_Donor
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -131,16 +152,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-		
-		if(pOwner && pOwner->IsAlive())
-			pOwner->Tele();
+		pOwner->Tele();
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/up")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -148,17 +173,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(0);
-		}
+		pOwner->Move(0);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/down")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -166,17 +194,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(2);
-		}
+		pOwner->Move(2);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/left")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -184,17 +215,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(1);
-		}
+		pOwner->Move(1);
 		return;
 	}
 	else if (!str_comp_nocase(Msg->m_pMessage, "/right")) {
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_VIP
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
 		{
@@ -202,33 +236,32 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if (pOwner && pOwner->IsAlive()) {
-			pOwner->Move(3);
-		}
+		pOwner->Move(3);
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/home") || !str_comp_nocase(Msg->m_pMessage, "/house"))
 	{
 		LastChat();
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (!m_pPlayer->m_AccData.m_Donor
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
+		if (m_pPlayer->m_Insta 
 			|| m_pPlayer->GetCharacter()->m_Frozen
 			|| m_pPlayer->m_AccData.m_Arrested)
+			return;
+
+		if (!m_pPlayer->m_AccData.m_Donor)
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Access denied");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Only for Donors!");
 			return;
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 		
-		if(pOwner && pOwner->IsAlive())
-		{
-			pOwner->m_Home = m_pPlayer->m_AccData.m_UserID;
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
-			dbg_msg("-.-", "/home: %i", pOwner->m_Home);
-		}
+		pOwner->m_Home = m_pPlayer->m_AccData.m_UserID;
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Welcome Home :)");
+		dbg_msg("-.-", "/home: %i", pOwner->m_Home);
 
 		return;
 
@@ -236,6 +269,12 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/jailrifle"))
 	{
 		LastChat();
+
+		CCharacter* pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
+
 		char aBuf[200];
 		
 		if(!GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()))
@@ -314,7 +353,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			str_format(aBuf, sizeof(aBuf), "%s Crown", m_pPlayer->m_Crown ? "Enabled" : "Disabled");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		}
-		
 
 		return;
 	}
@@ -354,25 +392,16 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		m_pPlayer->m_pAccount->NewUsername(NewUsername);
 		return;
 	}
-	/*else if(!strncmp(Msg->m_pMessage, "//BGM", 5))
-	{
-		char Pass[100];
-		if(sscanf(Msg->m_pMessage, "//BGM %s", Pass) != 1)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong CMD, see /cmdlist");
-			return;
-		}
-		if(str_comp_nocase(Pass, "asodsdf912as912ed03lasdia9qrfuias9d890q3a42") == 0)
-			m_pPlayer->m_AccData.m_Money += 5000000;
-		else
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong CMD, see /cmdlist");
-		return;
-	}*/
-
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "\nUH|City v0.4.2 by NoHack2Win and Urinstone\nPlease note that this mod is still in development!\n");
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- INFO ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is made by UrinStone and Nohack.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "It's still in early access, but we are updating almoast daily.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "--");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Always remember your password. Admins or police won't ask for it!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you have any problems you can contact us on discord https://discord.gg/Rstb8ge");
 
 		return;
     }
@@ -462,34 +491,75 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	else if(!str_comp_nocase(Msg->m_pMessage, "/cmdlist"))
 	{
 		LastChat();
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =CMD-LIST=\n\n\n/info - Some information\n\n/invi - Invisibility (Score < 20)\n\n/rainbow - Rainbow colors\n\n/help - Accounthelp\n\n/me - Accountstats\n\n/transfer <money>\n\n/donor, /police - What is it?");
-		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR COMMANDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/info -- Infos about the server");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/help -- Help if you are new");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Sends money");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
 
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/help"))
 	{
 		LastChat();
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =HELP=\n\n\n/me - Accountstats\n\n/register <username> <password>\n- e.g. /register con 123\n\n/login <username> <password>\n- e.g. /login con 123\n\n/rename <newname>\n- change account name\n\n/password <password>\n- change account password\n\n/logout\n- Logout?!\n\n/del\n- delete account");
-		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- HELP ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This mod is currently in early access.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You need to register enter the game.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "    /register username password");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you already have an account you can login with");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "    /login username password");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you have any questions you can always ask a team member.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Join our discord to contact us https://discord.gg/Rstb8ge");
+
 		return;
 	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/donor"))
 	{
 		LastChat();
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =DONOR=\n\n\nContact an admin to get donor for free.\nPlease note that Donor will be removed with the final update.\n\n Donor provides following features:\n\n- /Home (Own House - your Spawnpoint)\n\n- /Save, /Load (Position)\n\n- /Tele (Teleport to Cursor)\n\n- /Right, /Left, /Down, /Up (Walk through Walls)\n\n- /Crown (Crown as Stylistic Feature)\n\n- Money Tile (+1000TCs/Second)");
-		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Donor is currently for free. Ask an Admin to get donor.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "It will be removed with the final state of the mod.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Donor provides following features:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- The nice crown");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Home teleport");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Save and load a position");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Exclusive 1000$ money tiles");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Checkout /donorcmds for more information.");
+
 		return;
 	}
-	else if(!str_comp_nocase(Msg->m_pMessage, "/police"))
+	else if (!str_comp_nocase(Msg->m_pMessage, "/vip"))
 	{
 		LastChat();
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "            =POLICE=\n\n\nHow to become a Police?\nWrite an application and send it to NoHack2Win#0001 or UrinStone#8404 on Discord\n\nAvailable F2 - CMDs:\n\n- ban\n\n -bans\n\n- kick\n\n- jail\n\n- unjail\n\n- vote yes, no\n\n- status\n\n\nChat - Commands:\n\n- /JailRifle");
-		GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- VIP ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "VIP gives you x3 money and exp.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use movement cmds:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /up");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /down");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /left");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- /right");
+
+		return;
+	}
+	else if (!str_comp_nocase(Msg->m_pMessage, "/donorcmds"))
+	{
+		LastChat();
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR COMMANDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/tele -- Teleports you to your cursor");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/crown -- The nice crown");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/save -- Saves your position");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/load -- Teleports to the saved position");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/home -- Teleports to your home");
+
 		return;
 	} // Items
 	else if (!str_comp_nocase(Msg->m_pMessage, "/walls")) {
