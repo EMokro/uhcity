@@ -429,6 +429,7 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 	CGameContext* pSelf = (CGameContext*)pUserData;
 	int ID = pResult->GetVictim();
 	char aBuf[128];
+	char addrBuf[NETADDR_MAXSTRSIZE];
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
@@ -440,12 +441,20 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 
 	if (pP) {
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "** Look Up **");
+
 		str_format(aBuf, sizeof aBuf, "ID: %d", ID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "AccID: %d", pP->m_AccData.m_UserID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		
+		pSelf->Server()->GetClientAddr(pP->GetCID(), addrBuf, NETADDR_MAXSTRSIZE);
+		str_format(aBuf, sizeof aBuf, "IP: %s", addrBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+
 		str_format(aBuf, sizeof aBuf, "Money: %d$", pP->m_AccData.m_Money);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 	}
