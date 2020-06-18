@@ -81,7 +81,8 @@ public:
 	int MouseEvent(vec2 Pos);
 	int NewPlasma();
 	int ActiveWeapon();
-	void ChangeUpgrade(int Value);
+	void ChangeUpgrade(int Weapon, int Value);
+	void SwitchShop(int Value);
 	void HealthRegeneration();
 	void HandleCity();
 	void Booster();
@@ -91,10 +92,10 @@ public:
 	void Transfer(int Value);
 	bool Protected();
 	unsigned long long calcExp(int level);
-//KlickFoots Water zeugs 
+	//KlickFoots Water zeugs 
 	bool m_SingleWater;
 	bool m_Water;
-//KlickFoots Space zeugs
+	//KlickFoots Space zeugs
 	bool m_SingleSpace;
 	bool m_Space;
 	//Beides 
@@ -112,7 +113,6 @@ public:
 	//Save/Load
 	vec2 m_SavePos;
 	
-
 	bool m_God;
 	bool m_Protected;
 	bool m_GameZone;
