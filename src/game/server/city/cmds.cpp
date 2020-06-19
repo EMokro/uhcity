@@ -521,6 +521,22 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
+	else if(!str_comp_nocase(Msg->m_pMessage, "/rules"))
+	{
+		LastChat();
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- RULES ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Don't use Bots / Lua scripts");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- no Multiacc (logging in with multiple accounts)");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Don't abuse Bugs!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Don't insult other players");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Don't Spam");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Don't Funvote");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- Respect the Police");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You will be punished if you disregard the rules");
+
+		return;
+	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/donor"))
 	{
 		LastChat();
