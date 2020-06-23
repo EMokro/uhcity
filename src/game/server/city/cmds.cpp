@@ -579,6 +579,50 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/home -- Teleports to your home");
 
 		return;
+	}
+	else if (!strncmp(Msg->m_pMessage, "/upgrcmds", 9))
+	{
+		LastChat();
+		char aBuf[128];
+		sscanf(Msg->m_pMessage, "/upgrcmds %s", aBuf);
+
+		if (!strcmp(aBuf, "hammer") || !strcmp(aBuf, "Hammer")) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/walls -- Laser walls");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/hammerkill -- Your target can't escape!");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/plasma -- Beat them with your Pasma");
+
+
+			return;
+		}
+		if (!str_comp(aBuf, "gun") || !strcmp(aBuf, "Gun")) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/gfreeze -- Freeze gun");
+
+			return;
+		}
+		if (!strcmp(aBuf, "rifle") || !strcmp(aBuf, "Rifle") || !strcmp(aBuf, "laser") || !strcmp(aBuf, "Laser")) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/swap -- Swaps the position with your target");
+
+			return;
+		}
+		if (!strcmp(aBuf, "jump") || !strcmp(aBuf, "Jump")) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/fly -- Fly");
+
+			return;
+		}
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please use '/upgrcmds <item>'");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can checkout following items:");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- hammer");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- gun");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- rifle");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "- jump");
+
+		return;
 	} // Items
 	else if (!str_comp_nocase(Msg->m_pMessage, "/walls")) {
 		char aBuf[64];
