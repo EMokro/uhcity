@@ -593,7 +593,7 @@ void CCharacter::FireWeapon()
 				else
 					Dir = vec2(0.f, -1.f);
 
-				if (m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3) {
+				if (m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3 && !GameServer()->HasDmgDisabled(m_pPlayer->GetCID(), pTarget->m_pPlayer->GetCID())) {
 					new CHammerKill(GameWorld(), m_pPlayer->GetCID(), pTarget->GetPlayer()->GetCID());
 					pTarget->m_IsHammerKilled = true;
 				}
@@ -909,6 +909,7 @@ void CCharacter::FireWeapon()
 }
 
 // City
+
 int CCharacter::NewPlasma()
 {
 	if(m_Plasma > m_pPlayer->m_AccData.m_HammerShot)
@@ -1831,7 +1832,7 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
-	if((Protected() && !m_GameZone) || m_God || m_pPlayer->m_Insta)
+	if((Protected() && !m_GameZone) || m_God || m_pPlayer->m_Insta || GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()))
 		return false;
 
 	m_Core.m_Vel += Force;

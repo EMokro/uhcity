@@ -470,6 +470,68 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		m_pPlayer->m_pAccount->Login(Username, Password);
 		return;
 	}
+	else if (!strncmp(Msg->m_pMessage, "/disabledmg", 11)) {
+		LastChat();
+		char aBuf[128];
+		int TargetID;
+
+		if (sscanf(Msg->m_pMessage, "/disabledmg %d", &TargetID) != 1) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use /disabledmg <id>");
+			return;
+		}
+
+		if (!GameServer()->Server()->ClientIngame(TargetID)) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "No such player");
+			return;
+		}
+
+		if (m_pPlayer->GetCID() == TargetID) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't disabledmg on yourself!");
+			return;
+		}
+
+		if (TargetID < 0 || TargetID >= MAX_CLIENTS) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Invalid ID");
+			return;
+		}
+
+		GameServer()->DisableDmg(m_pPlayer->GetCID(), TargetID);
+
+		str_format(aBuf, sizeof aBuf, "You won't hurt %s anymore", GameServer()->Server()->ClientName(TargetID));
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+	}
+	else if (!strncmp(Msg->m_pMessage, "/enabledmg", 10)) {
+		LastChat();
+		char aBuf[128];
+		int TargetID;
+
+		if (sscanf(Msg->m_pMessage, "/enabledmg %d", &TargetID) != 1) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use /enabledmg <id>");
+			return;
+		}
+
+		if (!GameServer()->Server()->ClientIngame(TargetID)) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "No such player");
+			return;
+		}
+
+		if (m_pPlayer->GetCID() == TargetID) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't enabledmg on yourself!");
+			return;
+		}
+
+		if (TargetID < 0 || TargetID >= MAX_CLIENTS) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Invalid ID");
+			return;
+		}
+
+		GameServer()->EnableDmg(m_pPlayer->GetCID(), TargetID);
+
+		str_format(aBuf, sizeof aBuf, "You can hurt %s now", GameServer()->Server()->ClientName(TargetID));
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/god"))
     {
 		char aBuf[128];
@@ -494,7 +556,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	{
 		LastChat();
 
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- DONOR COMMANDS ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- COMMAND LIST ----------");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/info -- Infos about the server");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/help -- Help if you are new");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");

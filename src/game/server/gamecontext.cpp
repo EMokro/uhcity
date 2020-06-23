@@ -655,6 +655,8 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
 
+	ResetDisabledDmg(ClientID);
+
 	(void)m_pController->CheckTeamBalance();
 	m_VoteUpdate = true;
 
@@ -1168,6 +1170,55 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 		pPlayer->m_LastKill = Server()->Tick();
 		pPlayer->KillCharacter(WEAPON_SELF);
+	}
+}
+
+void CGameContext::DisableDmg(int Owner, int Target) {
+	char aBuf[128];
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (!m_NoDmgIDs[Owner][i]) {
+			m_NoDmgIDs[Owner][i] = Target + 1;
+		}
+	}
+}
+
+void CGameContext::EnableDmg(int Owner, int Target) {
+	char aBuf[128];
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (!m_NoDmgIDs[Owner][i])
+			break;
+
+		if (m_NoDmgIDs[Owner][i] == Target + 1)
+			m_NoDmgIDs[Owner][i] = 0;
+	}
+}
+
+bool CGameContext::HasDmgDisabled(int Owner, int Target) {
+
+	char aBuf[128];
+
+	for (int i = 0; i < sizeof m_NoDmgIDs; i++) {
+		if (!m_NoDmgIDs[Owner][i])
+			break;
+
+		if (m_NoDmgIDs[Owner][i] == Target + 1)  {
+			str_format(aBuf, sizeof aBuf, "%d. no dmg for %d", i, m_NoDmgIDs[Owner][i] - 1);
+			dbg_msg("debug", aBuf);
+		
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void CGameContext::ResetDisabledDmg(int ID) {
+	dbg_msg("debug", "Reset Dmg");
+	for (int j = 0; j < MAX_CLIENTS; j++) {
+		for (int i = 0; i < MAX_CLIENTS; i++) {
+			if (m_NoDmgIDs[j][i] = ID + 1 || j == ID)
+				m_NoDmgIDs[j][i] = 0;
+		}
 	}
 }
 

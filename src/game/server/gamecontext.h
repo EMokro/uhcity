@@ -191,17 +191,23 @@ public:
 	// City
 	void RefreshIDs();
 	void SendMotd(int ClientID, const char *pText);
+	void DisableDmg(int Owner, int target);
+	void EnableDmg(int Owner, int target);
+	bool HasDmgDisabled(int Owner, int target);
+	void FormatInt(int n, char* out);
+	void strrev(char* str);
+	int string_length(char* pointer);
+
 	NETADDR addr;
 	NETSOCKET Socket;
 	int m_aaExtIDs[2][MAX_CLIENTS];
 	int64 m_LastBroadcast;
 	int m_TeleNR[MAX_CLIENTS];
 	int m_TeleNum;
-
-	void FormatInt(int n, char* out);
-	void strrev(char* str);
-	int string_length(char* pointer);
+	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];
 	//int m_TeleID[MAX_CLIENTS];
+private:
+	void ResetDisabledDmg(int ID);
 };
 
 inline int CmaskAll() { return -1; }
