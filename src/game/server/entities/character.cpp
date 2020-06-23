@@ -1789,10 +1789,8 @@ bool CCharacter::IncreaseArmor(int Amount)
 
 void CCharacter::Die(int Killer, int Weapon)
 {
-	if (!m_Alive) {
-		dbg_msg("debug", "player already dead");
+	if (!m_Alive)
 		return;
-	}
 
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)

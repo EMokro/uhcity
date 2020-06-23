@@ -1194,26 +1194,18 @@ void CGameContext::EnableDmg(int Owner, int Target) {
 }
 
 bool CGameContext::HasDmgDisabled(int Owner, int Target) {
-
-	char aBuf[128];
-
 	for (int i = 0; i < sizeof m_NoDmgIDs; i++) {
 		if (!m_NoDmgIDs[Owner][i])
 			break;
 
-		if (m_NoDmgIDs[Owner][i] == Target + 1)  {
-			str_format(aBuf, sizeof aBuf, "%d. no dmg for %d", i, m_NoDmgIDs[Owner][i] - 1);
-			dbg_msg("debug", aBuf);
-		
+		if (m_NoDmgIDs[Owner][i] == Target + 1)
 			return true;
-		}
 	}
 
 	return false;
 }
 
 void CGameContext::ResetDisabledDmg(int ID) {
-	dbg_msg("debug", "Reset Dmg");
 	for (int j = 0; j < MAX_CLIENTS; j++) {
 		for (int i = 0; i < MAX_CLIENTS; i++) {
 			if (m_NoDmgIDs[j][i] = ID + 1 || j == ID)
