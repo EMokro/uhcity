@@ -102,21 +102,26 @@ public:
 	struct
 	{
 		// Main
+		int m_UserID;
 		char m_Username[32];
 		char m_Password[32];
 		char m_RconPassword[32];
-		int m_UserID;
 
-		int m_HouseID;
+		// basic
+		unsigned int m_Level;
+		unsigned int m_ExpPoints;
 		unsigned int m_Money;
 		unsigned long long m_exp;
 		int m_Health;
 		int m_Armor;	
 		int m_Kills;
+		int m_HouseID;
 
 		// Rank
 		int m_Donor;
 		int m_VIP;
+
+		// Punishments
 		int m_Arrested;
 
 		// Player
@@ -151,10 +156,6 @@ public:
 		int m_NinjaPermanent;
 		int m_NinjaStart;
 		int m_NinjaSwitch;
-
-		int m_Level;
-		int m_ExpPoints;
-
 	} m_AccData;
 
 	int m_RainbowColor;

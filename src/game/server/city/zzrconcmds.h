@@ -28,9 +28,14 @@ CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id
 CONSOLE_COMMAND("sameip", "?", CFGFLAG_SERVER, ConSameIP, this, "sameip")
 CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 
+
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")
 CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
+
+// Sytem stuff
+CONSOLE_COMMAND("sv_update_accounts", "", CFGFLAG_SERVER, ConSvUpdateAccounts, this, "WARNING! Make a Backup before running this!")
+CONSOLE_COMMAND("sv_backup_accounts", "", CFGFLAG_SERVER, ConSvBackupAccounts, this, "Makes a backup")
 
 
 #undef CONSOLE_COMMAND

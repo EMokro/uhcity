@@ -260,8 +260,8 @@ void CDoor::Tick()
 			else
 			{
 				if (!(Hit->ActiveWeapon() == WEAPON_NINJA && (Hit->m_Input.m_Fire & 1) == 1)) {
-					Hit->m_Core.m_Pos += vec2(1.5 * -Hit->m_Core.m_Vel.x, 1.5 * -Hit->m_Core.m_Vel.y);
-					Hit->m_Core.m_Vel = vec2(Hit->m_Core.m_Vel.x, -2);
+					Hit->m_Core.m_Pos = Hit->m_DesiredPos;
+					Hit->m_Core.m_Vel = vec2(0, 0);
 				}
 				else {
 					Hit->Die(Hit->GetPlayer()->GetCID(), WEAPON_GAME);

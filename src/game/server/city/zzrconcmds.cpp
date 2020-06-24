@@ -3,10 +3,8 @@
 #include <engine/shared/config.h>
 #include <game/version.h>
 #include <game/generated/nethash.cpp>
-#if defined(CONF_SQL)
-#include <game/server/score/sql_score.h>
-#include <engine/server/server.h>
-#endif
+#include <game/server/city/account.h>
+
 
 void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 {
@@ -460,4 +458,23 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}
+
+void CGameContext::ConSvUpdateAccounts(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (pSelf->Server()->ClientIngame(i))
+			pSelf->Server()->Kick(i, "Server Update");
+	}
+
+	 pSelf->Filesystem()->UpdateAccounts();
+}
+
+void CGameContext::ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+
+	pSelf->Filesystem()->BackupAccounts();
 }

@@ -7,6 +7,7 @@
 #include <engine/map.h>
 #include <engine/console.h>
 #include "gamecontext.h"
+#include "game/server/city/filesys.h"
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
@@ -39,7 +40,7 @@ void CGameContext::Construct(int Resetting)
 		m_pVoteOptionHeap = new CHeap();
 
 	m_TeleNum = 0;
-	
+	m_pFilesys = new CFileSys(this);
 }
 
 CGameContext::CGameContext(int Resetting)

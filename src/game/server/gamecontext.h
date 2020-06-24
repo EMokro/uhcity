@@ -14,6 +14,7 @@
 #include "gamecontroller.h"
 #include "gameworld.h"
 #include "player.h"
+#include "game/server/city/filesys.h"
 
 /*
 	Tick
@@ -40,6 +41,7 @@ class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
 	class IConsole *m_pConsole;
+	class CFileSys *m_pFilesys;
 	CLayers m_Layers;
 	CCollision m_Collision;
 	CNetObjHandler m_NetObjHandler;
@@ -68,6 +70,7 @@ class CGameContext : public IGameServer
 public:
 	IServer *Server() const { return m_pServer; }
 	class IConsole *Console() { return m_pConsole; }
+	CFileSys *Filesystem() { return m_pFilesys; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
 
@@ -185,6 +188,9 @@ public:
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConSameIP(IConsole::IResult* pResult, void* pUserData);
 		static void ConLookUp(IConsole::IResult* pResult, void* pUserData);
+
+		static void ConSvUpdateAccounts(IConsole::IResult* pResult, void* pUserData);
+		static void ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
 		public: //Ende :D
 

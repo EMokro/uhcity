@@ -72,6 +72,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
+	m_DesiredPos = Pos;
 
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
@@ -1690,6 +1691,8 @@ void CCharacter::Tick()
 
 void CCharacter::TickDefered()
 {
+	m_DesiredPos = m_Core.m_Pos;
+
 	// advance the dummy
 	{
 		CWorldCore TempWorld;
