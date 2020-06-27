@@ -116,7 +116,7 @@ void CAccount::Login(char *Username, char *Password)
 	}
 
 
-	Accfile = fopen(aBuf, "r"); 		
+	Accfile = fopen(aBuf, "r"); 		//
 
 	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
 		m_pPlayer->m_AccData.m_Username, // Done
