@@ -676,11 +676,12 @@ void CGameContext::FormatInt(int n, char* out) {
 	int i;
 	int digit;
 	int out_index = 0;
+	char aBuf[128];
 
-	if (n == 0) {
-		out[0] = '0';
-		return;
-	}
+	str_format(aBuf, sizeof aBuf, "%d", n);
+	dbg_msg("debug", aBuf);
+
+
 
 	for (i = n; i != 0; i /= 10) {
 		digit = i % 10;
@@ -691,6 +692,11 @@ void CGameContext::FormatInt(int n, char* out) {
 		out[out_index++] = digit + '0';
 	}
 	out[out_index] = '\0';
+
+	if (n == 0) {
+		out[out_index] = '0';
+		out[out_index+1] = '\0';
+	}
 
 	strrev(out);
 }
