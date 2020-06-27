@@ -64,10 +64,6 @@ void CTransfer::Tick()
 
 		m_Value = 0;
 
-		if (m_pOwner->m_Transfers > 0)
-			m_pOwner->m_Transfers--;
-
-		m_pOwner->m_Transfers--;
 		Reset();
 		return;
 	}
@@ -92,10 +88,6 @@ void CTransfer::Tick()
 			}
 		}
 	}
-
-	// spam protection
-	if (Server()->Tick() % 50 == 0 && m_pOwner->m_Transfers > 0)
-		m_pOwner->m_Transfers--;
 }
 
 void CTransfer::Snap(int SnappingClient)

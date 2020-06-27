@@ -173,6 +173,7 @@ void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 		{
 			if (Amount)
 			{
+				char numBuf[16];
 				pChr->GetPlayer()->m_AccData.m_Money = Amount;
 
 				str_format(aBuf, sizeof aBuf, "'%s' got %d$", pSelf->Server()->ClientName(ID), Amount);
@@ -180,7 +181,8 @@ void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 
 				CPlayer* pP = pSelf->m_apPlayers[ID];
 
-				str_format(aBuf, sizeof aBuf, "An Admin set your money to %d$", Amount);
+				pSelf->FormatInt(Amount, numBuf);
+				str_format(aBuf, sizeof aBuf, "An Admin set your money to %s$", numBuf);
 				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}

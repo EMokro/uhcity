@@ -107,10 +107,16 @@ void CProjectile::Tick()
 	if(OwnerChar && TargetChr)
 	{
 		if(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze
-		&& m_Type == WEAPON_GUN && !TargetChr->m_God
+		&& m_Type == WEAPON_GUN 
+		&& !TargetChr->m_God
 		&& !TargetChr->Protected()
-		&& OwnerChar->GetPlayer()->m_AciveUpgrade[WEAPON_GUN] == 1)
+		&& !TargetChr->m_Frozen
+		&& !TargetChr->m_GunFreezeCooldown
+		&& !GameServer()->HasDmgDisabled(OwnerChar->GetPlayer()->GetCID(), TargetChr->GetPlayer()->GetCID())
+		&& OwnerChar->GetPlayer()->m_AciveUpgrade[WEAPON_GUN] == UPGRADE_GUNFREEZE) {
 			TargetChr->Freeze(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze * Server()->TickSpeed());
+			TargetChr->m_GunFreezeCooldown = 5;
+		}
 	}
 
 	if(OwnerChar)

@@ -73,6 +73,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
 	m_DesiredPos = Pos;
+	m_GunFreezeCooldown = 0;
 
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
@@ -643,12 +644,12 @@ void CCharacter::FireWeapon()
 					m_HammerPos2 = vec2(0, 0);
 				}
 			}
-			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 2 && !m_GameZone)
+			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERSHOT && !m_GameZone)
 			{
 				NewPlasma();
 				m_ReloadTimer = Server()->TickSpeed() / 3;
 			}
-			else if (m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == 3 && !m_GameZone)
+			else if (m_pPlayer->m_AccData.m_HammerKill && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERKILL && !m_GameZone)
 			{
 				m_ReloadTimer = Server()->TickSpeed() / 3;
 			}
@@ -1450,6 +1451,7 @@ void CCharacter::Unfreeze()
 void CCharacter::Transfer(int Value)
 {
 	char aBuf[256];
+	char numBuf[2][32];
 
 	if(Value <= 0)
 	{
@@ -1498,7 +1500,11 @@ void CCharacter::Transfer(int Value)
 
 		m_pPlayer->m_AccData.m_Money -= Value;
 		new CTransfer(GameWorld(), Value, SnapPos, this);
-		str_format(aBuf, sizeof(aBuf), "Your money (%i) | -%i", m_pPlayer->m_AccData.m_Money, Value);
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+		GameServer()->FormatInt(Value, numBuf[1]);
+
+		str_format(aBuf, sizeof(aBuf), "Your money (%s$) | -%s$", numBuf[0], numBuf[1]);
 		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
@@ -1646,6 +1652,9 @@ void CCharacter::Tick()
 
 		if(!m_Frozen)
 			m_FreezeEnd = true;
+	} else {
+		if (Server()->Tick() % 50 == 0 && m_GunFreezeCooldown)
+			m_GunFreezeCooldown--;
 	}
 	
 	m_Core.m_Input = m_Input;
@@ -1681,7 +1690,8 @@ void CCharacter::Tick()
 		m_FreezeEnd = false;
 	}
 
-	
+	if (Server()->Tick() % 50 == 0 && m_Transfers > 0)
+		m_Transfers--;
 	
 	if(m_Health <= 0 && m_Armor <= 0)
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);

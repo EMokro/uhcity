@@ -574,7 +574,6 @@ void CGameContext::OnTick()
 			SendBroadcast(g_Config.m_SvBroadcast, -1);
 	}
 
-
 #ifdef CONF_DEBUG
 	if(g_Config.m_DbgDummies)
 	{
