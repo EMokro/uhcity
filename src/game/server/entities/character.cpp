@@ -1338,7 +1338,7 @@ void CCharacter::Booster()
 				char numBuf[4][16];
 				char progressBuf[128];
 				
-				int barWidth = 20;
+				int barWidth = 40;
 				int Money = 1000;
 				int ExpPoints = 10000;
 	
@@ -1348,6 +1348,7 @@ void CCharacter::Booster()
 
 					double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 					int pos = barWidth * progress;
+					int percent = floor(progress * 100);
 
 					progressBuf[0] = '[';
 					for (int i = 0; i < barWidth; ++i) {
@@ -1355,21 +1356,21 @@ void CCharacter::Booster()
 						else progressBuf[i+1] = ' ';
 					}
 					progressBuf[barWidth+1] = ']';
+					progressBuf[barWidth+2] = '\0';
 
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
 					GameServer()->FormatInt(Money, numBuf[1]);
-					GameServer()->FormatInt(ExpPoints, numBuf[2]);
-
-					
+					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+					GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
 					if (m_pPlayer->m_AccData.m_VIP) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\n%s | +%s ep x3", numBuf[0], numBuf[1], progressBuf, numBuf[2]);
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 						Money *= 3;
 						ExpPoints *= 3;
 					}
 					else 
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
@@ -1580,40 +1581,62 @@ void CCharacter::HandleCity()
 		int Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
 		int ExpPoints = Money * 10;
 	
-				if(Money && ExpPoints)
-				{
-					char numBuf[4][16];
+		char aBuf[256];
+		char numBuf[4][16];
+		char progressBuf[128];
+		
+		int barWidth = 40;
+		Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
+		ExpPoints = Money * 10;
+		
+		if(Money && ExpPoints)
+		{
+			int NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
 
-					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
-					GameServer()->FormatInt(Money, numBuf[1]);
-					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
-					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+			double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
+			int pos = barWidth * progress;
+			int percent = floor(progress * 100);
 
-					if (m_pPlayer->m_AccData.m_VIP) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
-						Money *= 3;
-						ExpPoints *= 3;
-					} else
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %s ep | +%s ep", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+			progressBuf[0] = '[';
+			for (int i = 0; i < barWidth; ++i) {
+				if (i < pos) progressBuf[i+1] = ':';
+				else progressBuf[i+1] = ' ';
+			}
+			progressBuf[barWidth+1] = ']';
+			progressBuf[barWidth+2] = '\0';
 
-					m_pPlayer->m_AccData.m_Money += Money;
-					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+			GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
+			GameServer()->FormatInt(Money, numBuf[1]);
+			GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
+			GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+			if (m_pPlayer->m_AccData.m_VIP) {
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
-					if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
-					{
-						m_pPlayer->m_AccData.m_ExpPoints = 0;
-						m_pPlayer->m_AccData.m_Level++;
-						m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
+				Money *= 3;
+				ExpPoints *= 3;
+			}
+			else 
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
-						char aBuf[256];
-						str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
-						GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+			m_pPlayer->m_AccData.m_Money += Money;
+			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
 
-						
-					}
-				}
+			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+
+			if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+			{
+				m_pPlayer->m_AccData.m_ExpPoints = 0;
+				m_pPlayer->m_AccData.m_Level++;
+				m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
+
+				char aBuf[256];
+				str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+				
+			}
+		}
 	
 
 		if(m_pPlayer->m_AccData.m_UserID)

@@ -676,12 +676,6 @@ void CGameContext::FormatInt(int n, char* out) {
 	int i;
 	int digit;
 	int out_index = 0;
-	char aBuf[128];
-
-	str_format(aBuf, sizeof aBuf, "%d", n);
-	dbg_msg("debug", aBuf);
-
-
 
 	for (i = n; i != 0; i /= 10) {
 		digit = i % 10;
