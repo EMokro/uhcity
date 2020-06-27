@@ -1176,40 +1176,45 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 void CGameContext::DisableDmg(int Owner, int Target) {
 	char aBuf[128];
-	for (int i = 0; i < MAX_CLIENTS; i++) {
-		if (!m_NoDmgIDs[Owner][i]) {
-			m_NoDmgIDs[Owner][i] = Target + 1;
-		}
+	
+	if (!m_NoDmgIDs[Owner][Target]) {
+		m_NoDmgIDs[Owner][Target] = 1;
+
+		str_format(aBuf, sizeof aBuf, "You won't hurt %s anymore", Server()->ClientName(Target));
+		SendChatTarget(Owner, aBuf);
 	}
+	else 
+		SendChatTarget(Owner, "You already disabled dmg on this player");
 }
 
 void CGameContext::EnableDmg(int Owner, int Target) {
 	char aBuf[128];
-	for (int i = 0; i < MAX_CLIENTS; i++) {
-		if (!m_NoDmgIDs[Owner][i])
-			break;
+	
+	if (m_NoDmgIDs[Owner][Target]) {
+		m_NoDmgIDs[Owner][Target] = 0;
 
-		if (m_NoDmgIDs[Owner][i] == Target + 1)
-			m_NoDmgIDs[Owner][i] = 0;
+		str_format(aBuf, sizeof aBuf, "You will hurt %s now", Server()->ClientName(Target));
+		SendChatTarget(Owner, aBuf);
 	}
+	else 
+		SendChatTarget(Owner, "You already enabled dmg on this player");
 }
 
 bool CGameContext::HasDmgDisabled(int Owner, int Target) {
-	for (int i = 0; i < sizeof m_NoDmgIDs; i++) {
-		if (!m_NoDmgIDs[Owner][i])
-			break;
-
-		if (m_NoDmgIDs[Owner][i] == Target + 1)
-			return true;
-	}
-
-	return false;
+	if (!m_NoDmgIDs[Owner][Target])
+		return false;
+	else
+		return true;
 }
 
 void CGameContext::ResetDisabledDmg(int ID) {
 	for (int j = 0; j < MAX_CLIENTS; j++) {
-		for (int i = 0; i < MAX_CLIENTS; i++) {
-			if (m_NoDmgIDs[j][i] = ID + 1 || j == ID)
+		m_NoDmgIDs[ID][j] = 0;
+		if (j == ID)
+			continue;
+
+		for (int i = 0; i  < MAX_CLIENTS; i++) {
+			if (m_NoDmgIDs[j][i] && i == ID)
 				m_NoDmgIDs[j][i] = 0;
 		}
 	}

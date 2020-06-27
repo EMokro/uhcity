@@ -493,9 +493,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		}
 
 		GameServer()->DisableDmg(m_pPlayer->GetCID(), TargetID);
-
-		str_format(aBuf, sizeof aBuf, "You won't hurt %s anymore", GameServer()->Server()->ClientName(TargetID));
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
 	}
 	else if (!strncmp(Msg->m_pMessage, "/enabledmg", 10)) {
@@ -557,6 +554,8 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/info -- Infos about the server");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/help -- Help if you are new");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/disabledmg -- disables damage on someone");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/enabledmg -- enables damage on someone");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Sends money");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
