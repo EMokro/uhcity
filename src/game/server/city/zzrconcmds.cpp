@@ -460,18 +460,6 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
 
-void CGameContext::ConSvUpdateAccounts(IConsole::IResult* pResult, void* pUserData)
-{
-	CGameContext* pSelf = (CGameContext*)pUserData;
-
-	for (int i = 0; i < MAX_CLIENTS; i++) {
-		if (pSelf->Server()->ClientIngame(i))
-			pSelf->Server()->Kick(i, "Server Update");
-	}
-
-	 pSelf->Filesystem()->UpdateAccounts();
-}
-
 void CGameContext::ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
