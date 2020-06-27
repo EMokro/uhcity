@@ -34,7 +34,6 @@ CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 
 // Sytem stuff
-CONSOLE_COMMAND("sv_update_accounts", "", CFGFLAG_SERVER, ConSvUpdateAccounts, this, "WARNING! Make a Backup before running this!")
 CONSOLE_COMMAND("sv_backup_accounts", "", CFGFLAG_SERVER, ConSvBackupAccounts, this, "Makes a backup")
 
 
