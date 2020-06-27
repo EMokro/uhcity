@@ -1336,7 +1336,9 @@ void CCharacter::Booster()
 			{
 				char aBuf[256];
 				char numBuf[4][16];
-
+				char progressBuf[128];
+				
+				int barWidth = 20;
 				int Money = 1000;
 				int ExpPoints = 10000;
 	
@@ -1344,13 +1346,24 @@ void CCharacter::Booster()
 				{
 					int NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
 
+					double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
+					int pos = barWidth * progress;
+
+					progressBuf[0] = '[';
+					for (int i = 0; i < barWidth; ++i) {
+						if (i < pos) progressBuf[i+1] = ':';
+						else progressBuf[i+1] = ' ';
+					}
+					progressBuf[barWidth+1] = ']';
+
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
 					GameServer()->FormatInt(Money, numBuf[1]);
-					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
-					GameServer()->FormatInt(ExpPoints, numBuf[3]);
+					GameServer()->FormatInt(ExpPoints, numBuf[2]);
+
+					
 
 					if (m_pPlayer->m_AccData.m_VIP) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %s ep | +%s ep x3", numBuf[0], numBuf[1], numBuf[2], numBuf[3]);
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\n%s | +%s ep x3", numBuf[0], numBuf[1], progressBuf, numBuf[2]);
 
 						Money *= 3;
 						ExpPoints *= 3;
