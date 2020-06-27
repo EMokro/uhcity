@@ -449,11 +449,8 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		
 		CCharacter *pUser = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
-		if (pUser) {
+		if (pUser)
 			pUser->Transfer(Money);
-			str_format(aBuf, sizeof aBuf, "You transfered %d$", Money);
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		}
 
 		return;
 	}

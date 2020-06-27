@@ -5,12 +5,14 @@
 #include "transfer.h"
 #include <game/server/entities/projectile.h>
 
-CTransfer::CTransfer(CGameWorld *pGameWorld, int Value, vec2 Pos)
+CTransfer::CTransfer(CGameWorld *pGameWorld, int Value, vec2 Pos, CCharacter *pOwner)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_TRANSFER)
 {
 	m_Value = Value;
 	m_Pos = Pos;
 	m_Vel = vec2(0, 0);
+	m_pOwner = pOwner;
+	m_pOwner->m_Transfers++;
 
 	for(int i = 0; i < 2; i++)
 		m_IDs[i] = Server()->SnapNewID();
@@ -29,6 +31,7 @@ void CTransfer::Reset()
 void CTransfer::Tick()
 {
 	char aBuf[256];
+	char numBuf[2][32];
 	m_Vel.y += GameServer()->m_World.m_Core.m_Tuning.m_Gravity;
 	GameServer()->Collision()->MoveBox(&m_Pos, &m_Vel, vec2(28, 28), 0.5f);
 
@@ -51,9 +54,20 @@ void CTransfer::Tick()
 	for(int i = 0; i < Num; i++)
 	{
 		apEnts[i]->GetPlayer()->m_AccData.m_Money += m_Value;
-		str_format(aBuf, sizeof(aBuf), "Money-Transfer-Object (%i) | +%i", apEnts[i]->GetPlayer()->m_AccData.m_Money, m_Value);
-		GameServer()->SendBroadcast(aBuf, apEnts[i]->GetPlayer()->GetCID());
+
+		str_format(aBuf, sizeof(aBuf), "You received money from %s", Server()->ClientName(m_pOwner->GetPlayer()->GetCID()));
+		GameServer()->SendChatTarget(apEnts[i]->GetPlayer()->GetCID(), aBuf);
+		GameServer()->FormatInt(apEnts[i]->GetPlayer()->m_AccData.m_Money, numBuf[0]);
+		GameServer()->FormatInt(m_Value, numBuf[1]);
+		str_format(aBuf, sizeof(aBuf), "%s$ | +%s$", numBuf[0], numBuf[1]);
+		GameServer()->SendChatTarget(apEnts[i]->GetPlayer()->GetCID(), aBuf);
+
 		m_Value = 0;
+
+		if (m_pOwner->m_Transfers > 0)
+			m_pOwner->m_Transfers--;
+
+		m_pOwner->m_Transfers--;
 		Reset();
 		return;
 	}
@@ -78,8 +92,11 @@ void CTransfer::Tick()
 			}
 		}
 	}
-}
 
+	// spam protection
+	if (Server()->Tick() % 50 == 0 && m_pOwner->m_Transfers > 0)
+		m_pOwner->m_Transfers--;
+}
 
 void CTransfer::Snap(int SnappingClient)
 {
@@ -103,8 +120,4 @@ void CTransfer::Snap(int SnappingClient)
 		pProj[i]->m_Type = WEAPON_RIFLE;
 
 	}
-
-	
-	
-	
 }

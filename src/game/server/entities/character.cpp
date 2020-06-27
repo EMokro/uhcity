@@ -1451,30 +1451,32 @@ void CCharacter::Transfer(int Value)
 {
 	char aBuf[256];
 
-		if(Value <= 0)
-		{
-			if(!Value)
-				GameServer()->SendBroadcast("Ever seen a 0$ dollar bill?", m_pPlayer->GetCID());
-			else
-				GameServer()->SendBroadcast("Are you trying to cheat money?", m_pPlayer->GetCID());
-			return;
-		}
-
+	if(Value <= 0)
+	{
+		if(!Value)
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Ever seen a 0$ bill?");
+		else
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Are you trying to cheat money?");
+			
+		return;
+	}
 	else if(m_pPlayer->m_AccData.m_Money < Value)
 	{
-		GameServer()->SendBroadcast("Not enough money", m_pPlayer->GetCID());
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not enough money.");
+		return;
+	}
+	else if (m_Transfers > 5) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Too many transfers");
 		return;
 	}
 	else
 	{
-
-
 		int TestLength = 32;
 		vec2 SnapPos = vec2(m_Pos.x+m_LatestInput.m_TargetX,m_Pos.y+m_LatestInput.m_TargetY);
 
 		if(GameServer()->Collision()->CheckPoint(SnapPos))
 		{
-			GameServer()->SendBroadcast("The wall doesn't need money...", m_pPlayer->GetCID());
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "The wall doesn't need money...");
 			return;
 		}
 
@@ -1495,8 +1497,8 @@ void CCharacter::Transfer(int Value)
 		}*/
 
 		m_pPlayer->m_AccData.m_Money -= Value;
-		new CTransfer(GameWorld(), Value, SnapPos);
-		str_format(aBuf, sizeof(aBuf), "Money-Transfer-Object (%i) | -%i", m_pPlayer->m_AccData.m_Money, Value);
+		new CTransfer(GameWorld(), Value, SnapPos, this);
+		str_format(aBuf, sizeof(aBuf), "Your money (%i) | -%i", m_pPlayer->m_AccData.m_Money, Value);
 		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }

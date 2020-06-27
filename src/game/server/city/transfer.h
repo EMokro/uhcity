@@ -6,7 +6,7 @@
 class CTransfer : public CEntity
 {
 public:
-	CTransfer(CGameWorld *pGameWorld, int Value, vec2 Pos);
+	CTransfer(CGameWorld *pGameWorld, int Value, vec2 Pos, CCharacter *pOwner);
 
 	virtual void Reset();
 	virtual void Tick();
@@ -16,7 +16,7 @@ private:
 	vec2 m_Vel;
 	//int m_Value;
 	int m_IDs[2];
-	
+	CCharacter *m_pOwner;
 };
 
 #endif

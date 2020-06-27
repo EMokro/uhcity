@@ -127,6 +127,7 @@ public:
 	int m_EmoteStop;
 	int m_Menu;
 	int m_FreezeWeapon;
+	int m_Transfers;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
 	int64 m_LastBroadcast;
