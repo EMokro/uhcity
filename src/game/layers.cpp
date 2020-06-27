@@ -11,6 +11,10 @@ CLayers::CLayers()
 	m_pGameGroup = 0;
 	m_pGameLayer = 0;
 	m_pMap = 0;
+
+	for (int i = 0; i < 4; i++) {
+		m_pSubGameLayers[i] = 0;
+	}
 }
 
 void CLayers::Init(class IKernel *pKernel)
@@ -18,6 +22,10 @@ void CLayers::Init(class IKernel *pKernel)
 	m_pMap = pKernel->RequestInterface<IMap>();
 	m_pMap->GetType(MAPITEMTYPE_GROUP, &m_GroupsStart, &m_GroupsNum);
 	m_pMap->GetType(MAPITEMTYPE_LAYER, &m_LayersStart, &m_LayersNum);
+
+	for (int i = 0; i < 4; i++) {
+		m_pSubGameLayers[i] = 0;
+	}
 
 	for(int g = 0; g < NumGroups(); g++)
 	{
@@ -49,10 +57,13 @@ void CLayers::Init(class IKernel *pKernel)
 						m_pGameGroup->m_ClipH = 0;
 					}
 
-					break;
-				}
+					// break;
+				} else if (m_pGameLayer && l <= 4)
+					m_pSubGameLayers[l-1] = pTilemap;
 			}
 		}
+		if (m_pGameLayer)
+			break;
 	}
 }
 

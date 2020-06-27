@@ -1633,14 +1633,16 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	CMapItemLayerTilemap *pTileMap = m_Layers.GameLayer();
 	CTile *pTiles = (CTile *)Kernel()->RequestInterface<IMap>()->GetData(pTileMap->m_Data);
 
+	// city
+	CMapItemLayerTilemap *pSubTileMap[4];
+	CTile *pSubTiles[4];
 
+	for (int i = 0; i < 4; i++) {
+		pSubTileMap[i] = m_Layers.SubGameLayer(i);
 
-
-	/*
-	num_spawn_points[0] = 0;
-	num_spawn_points[1] = 0;
-	num_spawn_points[2] = 0;
-	*/
+		if (pSubTileMap[i])
+			pSubTiles[i] = (CTile *)Kernel()->RequestInterface<IMap>()->GetData(pSubTileMap[i]->m_Data);
+	}
 
 	for(int y = 0; y < pTileMap->m_Height; y++)
 	{
@@ -1652,6 +1654,25 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			{
 				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
 				m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+			}
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		if (!pSubTileMap[i])
+			break;
+			
+		for(int y = 0; y < pSubTileMap[i]->m_Height; y++)
+		{
+			for(int x = 0; x < pSubTileMap[i]->m_Width; x++)
+			{
+				int Index = pSubTiles[i][y*pSubTileMap[i]->m_Width+x].m_Index;
+
+				if(Index >= ENTITY_OFFSET)
+				{
+					vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
+					m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+				}
 			}
 		}
 	}

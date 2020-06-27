@@ -25,6 +25,11 @@ public:
 	CMapItemLayerTilemap *GameLayer() const { return m_pGameLayer; };
 	CMapItemGroup *GetGroup(int Index) const;
 	CMapItemLayer *GetLayer(int Index) const;
+
+	// City
+	CMapItemLayerTilemap *SubGameLayer(int id) { return m_pSubGameLayers[id]; };
+private:
+	CMapItemLayerTilemap *m_pSubGameLayers[4];
 };
 
 #endif

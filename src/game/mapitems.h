@@ -279,4 +279,10 @@ struct CMapItemEnvelope
 	int m_aName[8];
 } ;
 
+// city
+class CSubGameLayer {
+	public:
+		unsigned char m_Type;
+} ;
+
 #endif
