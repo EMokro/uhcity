@@ -440,6 +440,11 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		LastChat();
 		char aBuf[128];
 		int Money;
+		
+		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+		if (!(pOwner && pOwner->IsAlive()))
+			return;
 
 		if(sscanf(Msg->m_pMessage, "/transfer %i", &Money) != 1)
 		{
