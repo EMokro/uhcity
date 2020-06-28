@@ -19,11 +19,13 @@ CCollision::CCollision()
 	m_Height = 0;
 	m_pLayers = 0;
 
-	
-
 	// City
-	m_pCityTiles = 0;
-	//m_pEnteties = 0;
+	m_pCityTiles[0] = 0;
+
+	for (int i = 0; i < 4; i++) {
+		m_pSubGameLayer[i] = 0;
+		m_pCityTiles[i+1] = 0;
+	}
 }
 
 CCollision::~CCollision()
@@ -37,22 +39,35 @@ CCollision::~CCollision()
 
 void CCollision::Init(class CLayers *pLayers)
 {
+	Dest();
+	char aBuf[128];
 	m_pLayers = pLayers;
 	m_Width = m_pLayers->GameLayer()->m_Width;
 	m_Height = m_pLayers->GameLayer()->m_Height;
 	m_pTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
-	m_pCityTiles = new CTile[m_Width*m_Height];
-	mem_copy(m_pCityTiles, m_pTiles, sizeof(CTile)*m_Width*m_Height);
 
-	// City
-    //m_pCityTiles = new int[m_Width*m_Height];
-    //m_pEnteties = new int[m_Width*m_Height];
+	str_format(aBuf, sizeof aBuf, "m_Data %d",m_pLayers->GameLayer()->m_Data);
+	dbg_msg("debug", aBuf);
 
-    //for(int i = 0; i < m_Width*m_Height; i++)
-    //{
-    //    m_pCityTiles[i] = 0;
-    //    //m_pEnteties[i] = 0;
-    //}
+	m_pCityTiles[0] = new CTile[m_Width*m_Height];
+	mem_copy(m_pCityTiles[0], m_pTiles, sizeof(CTile)*m_Width*m_Height);
+	
+	for (int i = 0; i < 4; i++) {
+		if (m_pLayers->SubGameLayer(i)) {
+			
+			unsigned int Size = m_pLayers->Map()->GetUncompressedDataSize(m_pLayers->SubGameLayer(i)->m_Data);
+			
+			if (Size >= m_Width*m_Height*sizeof(CTile)) {
+				m_pSubGameLayer[i] = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->SubGameLayer(i)->m_Data));
+
+				dbg_msg("debug", "hello");
+
+				m_pCityTiles[i+1] = new CTile[m_Width*m_Height];
+				mem_copy(m_pCityTiles[i+1], m_pSubGameLayer[i], sizeof(CTile)*m_Width*m_Height);
+			}
+			
+		}
+	}
 
 	for(int i = 0; i < m_Width*m_Height; i++)
 	{
@@ -77,6 +92,7 @@ void CCollision::Init(class CLayers *pLayers)
 		}
 	}
 }
+
 int CCollision::TileMoney(int x, int y)
 {
 	if(IsTile(x, y, TILE_MONEY50))
@@ -98,10 +114,13 @@ int CCollision::Number(int x, int y)
 	int Nx = clamp(x/32, 0, m_Width-1);
 	int Ny = clamp(y/32, 0, m_Height-1);
 
-	if(m_pCityTiles[Ny*m_Width+Nx].m_Index < TILE_0 || m_pCityTiles[Ny*m_Width+Nx].m_Index > TILE_9)
-		return -1;
-
-	return m_pCityTiles[Ny*m_Width+Nx].m_Index-TILE_0;
+	for (int i = 0; i < 5; i ++) {
+		if (m_pCityTiles[i]) {
+			if (m_pCityTiles[i][Ny*m_Width+Nx].m_Index >= TILE_0 && m_pCityTiles[i][Ny*m_Width+Nx].m_Index <= TILE_9)
+				return m_pCityTiles[i][Ny*m_Width+Nx].m_Index-TILE_0;
+		} else 
+			break;
+	}
 
 	return -1;
 }
@@ -111,7 +130,15 @@ int CCollision::TileShop(int x, int y)
 	int Nx = clamp(x/32, 0, m_Width-1);
 	int Ny = clamp(y/32, 0, m_Height-1);
 
-	return m_pCityTiles[Ny*m_Width+Nx].m_Index == TILE_SHOP;
+	for (int i = 0; i < 5; i ++) {
+		if (m_pCityTiles[i]) {
+			if (m_pCityTiles[i][Ny*m_Width+Nx].m_Index == TILE_SHOP)
+				return 1;
+		} else 
+			break;
+	}
+
+	return 0;
 }
 
 int CCollision::IsTile(int x, int y, int Type)
@@ -119,7 +146,16 @@ int CCollision::IsTile(int x, int y, int Type)
 	int Nx = clamp(x/32, 0, m_Width-1);
 	int Ny = clamp(y/32, 0, m_Height-1);
 
-	return m_pCityTiles[Ny*m_Width+Nx].m_Index == Type;
+	for (int i = 0; i < 5; i ++) {
+		if (m_pCityTiles[i]) {
+			if (m_pCityTiles[i][Ny*m_Width+Nx].m_Index == Type)
+				return 1;
+		} else 
+			break;
+	}
+
+
+	return 0;
 }
 
 int CCollision::GetTile(int x, int y)
@@ -272,4 +308,16 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 
 	*pInoutPos = Pos;
 	*pInoutVel = Vel;
+}
+
+// City
+
+void CCollision::Dest() {
+	m_pTiles = 0;
+	m_Width = 0;
+	m_Height = 0;
+	m_pLayers = 0;
+
+	for (int i = 0; i < 4; i++)
+		m_pSubGameLayer[i] = 0;
 }
