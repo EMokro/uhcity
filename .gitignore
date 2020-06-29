@@ -4,12 +4,15 @@ bam.exe
 *.exe
 *.o
 *.pyc
+*.bat
+*.res
 config.lua
 bam
 autoexec.cfg
 accounts/**
 backups/**
 logs/**
+objs/
 data/maps
 src/game/generated/server_data.h
 src/game/generated/server_data.cpp
