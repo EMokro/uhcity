@@ -4,6 +4,7 @@ bam.exe
 *.exe
 *.o
 *.pyc
+*.bat
 config.lua
 bam
 autoexec.cfg
