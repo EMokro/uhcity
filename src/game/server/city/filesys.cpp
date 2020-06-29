@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <engine/config.h>
 #include "filesys.h"
-#include "account.h"
 
 CFileSys::CFileSys(CGameContext *pGameServer) {
     m_pGameServer = pGameServer;
