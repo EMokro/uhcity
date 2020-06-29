@@ -802,6 +802,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			unsigned int Offset = Chunk * ChunkSize;
 			int Last = 0;
 
+			m_aClients[ClientID].m_LastMapAsk = Chunk;
+			m_aClients[ClientID].m_LastMapAskTick = Tick();
+			if (Chunk == 0)
+				m_aClients[ClientID].m_LastMapSent = 0;
+
 			// drop faulty map data requests
 			if(Chunk < 0 || Offset > m_CurrentMapSize)
 				return;
@@ -813,6 +818,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					ChunkSize = 0;
 				Last = 1;
 			}
+
+			if (m_aClients[ClientID].m_LastMapSent < Chunk + g_Config.m_SvMapWindow && g_Config.m_SvFastDownload)
+				return;
 
 			CMsgPacker Msg(NETMSG_MAP_DATA);
 			Msg.AddInt(Last);
@@ -1158,6 +1166,49 @@ void CServer::PumpNetwork()
 		}
 		else
 			ProcessClientPacket(&Packet);
+	}
+
+	if (g_Config.m_SvFastDownload)
+	{
+		for (int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if (m_aClients[i].m_State != CClient::STATE_CONNECTING)
+				continue;
+
+			if (m_aClients[i].m_LastMapAskTick < Tick() - TickSpeed())
+			{
+				m_aClients[i].m_LastMapSent = m_aClients[i].m_LastMapAsk;
+				m_aClients[i].m_LastMapAskTick = Tick();
+			}
+
+			if (m_aClients[i].m_LastMapAsk < m_aClients[i].m_LastMapSent - g_Config.m_SvMapWindow)
+				continue;
+
+			int Chunk = m_aClients[i].m_LastMapSent++;
+			unsigned int ChunkSize = 1024 - 128;
+			unsigned int Offset = Chunk * ChunkSize;
+			int Last = 0;
+
+			// drop faulty map data requests
+			if (Chunk < 0 || Offset > m_CurrentMapSize)
+				continue;
+
+			if (Offset + ChunkSize >= m_CurrentMapSize)
+			{
+				ChunkSize = m_CurrentMapSize - Offset;
+				if (ChunkSize < 0)
+					ChunkSize = 0;
+				Last = 1;
+			}
+
+			CMsgPacker Msg(NETMSG_MAP_DATA);
+			Msg.AddInt(Last);
+			Msg.AddInt(m_CurrentMapCrc);
+			Msg.AddInt(Chunk);
+			Msg.AddInt(ChunkSize);
+			Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
+			SendMsgEx(&Msg, MSGFLAG_FLUSH, i, true);
+		}
 	}
 
 	m_Econ.Update();
