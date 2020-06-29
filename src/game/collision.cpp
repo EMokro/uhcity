@@ -46,9 +46,6 @@ void CCollision::Init(class CLayers *pLayers)
 	m_Height = m_pLayers->GameLayer()->m_Height;
 	m_pTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
 
-	str_format(aBuf, sizeof aBuf, "m_Data %d",m_pLayers->GameLayer()->m_Data);
-	dbg_msg("debug", aBuf);
-
 	m_pCityTiles[0] = new CTile[m_Width*m_Height];
 	mem_copy(m_pCityTiles[0], m_pTiles, sizeof(CTile)*m_Width*m_Height);
 	
@@ -59,8 +56,6 @@ void CCollision::Init(class CLayers *pLayers)
 			
 			if (Size >= m_Width*m_Height*sizeof(CTile)) {
 				m_pSubGameLayer[i] = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->SubGameLayer(i)->m_Data));
-
-				dbg_msg("debug", "hello");
 
 				m_pCityTiles[i+1] = new CTile[m_Width*m_Height];
 				mem_copy(m_pCityTiles[i+1], m_pSubGameLayer[i], sizeof(CTile)*m_Width*m_Height);
