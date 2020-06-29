@@ -197,14 +197,12 @@ function build(settings)
 			client_settings.link.libs:Add("X11")
 			client_settings.link.libs:Add("GL")
 			client_settings.link.libs:Add("GLU")
-			server_settings.link.libs:Add("stdc++fs")
 		end
 
 	elseif family == "windows" then
 		client_settings.link.libs:Add("opengl32")
 		client_settings.link.libs:Add("glu32")
 		client_settings.link.libs:Add("winmm")
-		server_settings.link.libs:Add("stdc++fs")
 	end
 
 	-- apply sdl settings
