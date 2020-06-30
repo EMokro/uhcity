@@ -3,15 +3,18 @@
 
 #include <engine/server.h>
 #include "game/server/gamecontext.h"
+#include "base/rapidjson/document.h"
 
 class CFileSys 
 {
 public:
     CFileSys(CGameContext *pGameServer);
 
+    void Init();
     void BackupAccounts();
     void CreateRconLog();
     void CreateLoginLog(CPlayer *Player);
+    void CreateNote(char *Msg, char *OwnerID);
 
 private:
 	CGameContext *m_pGameServer;

@@ -17,7 +17,6 @@
 	#include <unistd.h>
 #endif
 
-
 CAccount::CAccount(CPlayer *pPlayer, CGameContext *pGameServer)
 {
    m_pPlayer = pPlayer;
@@ -542,5 +541,3 @@ int CAccount::NextID()
 
 	return 1;
 }
-
-
