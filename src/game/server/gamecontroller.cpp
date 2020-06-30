@@ -201,9 +201,9 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	}
 	else if(Index == ENTITY_CAROUSEL)
 		new CCarousel(&GameServer()->m_World, Pos);
-			else if(Index == ENTITY_FLAGSTAND_BLUE)
+	else if(Index == ENTITY_FLAGSTAND_BLUE)
 		new CVip(&GameServer()->m_World, Pos);
-			else if(Index == ENTITY_FLAGSTAND_RED)
+	else if(Index == ENTITY_FLAGSTAND_RED)
 		new CBuyHealth(&GameServer()->m_World, Pos);
 	/*else if(Index == ENTITY_JAIL)
 		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;*/
@@ -605,7 +605,9 @@ void IGameController::Tick()
 					case 0:
 						{
 							// move player to spectator
-							GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+							// GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+
+							GameServer()->m_apPlayers[i]->GetCharacter()->SendAfk();
 						}
 						break;
 					case 1:

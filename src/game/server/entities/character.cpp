@@ -1666,6 +1666,10 @@ bool CCharacter::Protected()
 	return false;
 }
 
+void CCharacter::SendAfk() {
+	
+}
+
 void CCharacter::Tick()
 {
 	if(m_pPlayer->m_ForceBalanced)
