@@ -186,6 +186,7 @@ public:
 	int m_HookState;
 	int m_HookedPlayer;
 	bool m_Protected;
+	bool m_Afk;
 
 	int m_Jumped;
 

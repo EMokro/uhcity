@@ -340,7 +340,7 @@ void CCharacterCore::Tick(bool UseInput)
 			// handle hook influence
 			if(m_HookedPlayer == i)
 			{
-			if(pCharCore->m_Protected)
+			if(pCharCore->m_Protected || pCharCore->m_Afk)
 			return;
 				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
 				{

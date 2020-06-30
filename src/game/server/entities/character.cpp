@@ -102,6 +102,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_HammerPos1 = vec2(0, 0);
 	m_HammerPos2 = vec2(0, 0);
 	m_SpawnProtection = Server()->Tick();
+	m_Afk = false;
 
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
@@ -1532,7 +1533,7 @@ void CCharacter::HandleCity()
 	HealthRegeneration();
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE))
-			m_Core.m_Vel.y -= GameServer()->Tuning()->m_Gravity;
+		m_Core.m_Vel.y -= GameServer()->Tuning()->m_Gravity;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
 	{
@@ -1575,6 +1576,15 @@ void CCharacter::HandleCity()
 		GameServer()->SendBroadcast("Invisibility disabled, Score > 20", m_pPlayer->GetCID());
 		m_Invisible = 0;
 	}
+
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_AFK)) {
+		if (!m_Core.m_Afk)
+			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
+
+		m_Core.m_Afk = true;
+		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());
+	} else 
+		m_Core.m_Afk = false;
 
 	if(Server()->Tick()%50 == 0)
 	{
@@ -1647,7 +1657,10 @@ void CCharacter::HandleCity()
 
 bool CCharacter::Protected()
 {
-	if(m_GameZone || m_Protected || m_SpawnProtection + 3 * Server()->TickSpeed() > Server()->Tick())
+	if(m_GameZone
+	|| m_Protected
+	|| m_SpawnProtection + 3 * Server()->TickSpeed() > Server()->Tick()
+	|| GameServer()->Collision()->IsTile(m_Pos, TILE_AFK))
 		return true;
 
 	return false;
