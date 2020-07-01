@@ -148,10 +148,8 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		m_aaSpawnPoints[1][m_aNumSpawnPoints[1]++] = Pos;
 	else if(Index == ENTITY_INSTA_SPAWN)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
-	else if (Index == ENTITY_AFK) {
+	else if (Index == ENTITY_AFK)
 		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;
-		dbg_msg("debug", "hello");
-	}
 	else if(Index == ENTITY_ARMOR_1)
 		Type = POWERUP_ARMOR;
 	else if(Index == ENTITY_HEALTH_1)
@@ -608,8 +606,9 @@ void IGameController::Tick()
 						{
 							// move player to spectator
 							// GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
-
-							GameServer()->m_apPlayers[i]->GetCharacter()->SendAfk();
+							dbg_msg("dbg", "some inactive");
+							if (!GameServer()->m_apPlayers[i]->m_Afk)
+								GameServer()->m_apPlayers[i]->SendAfk();
 						}
 						break;
 					case 1:
@@ -631,7 +630,8 @@ void IGameController::Tick()
 							Server()->Kick(i, "Kicked for inactivity");
 						}
 					}
-				}
+				} else if (!GameServer()->m_apPlayers[i]->m_LastActionTick)
+					GameServer()->m_apPlayers[i]->m_Afk = false;
 			}
 		}
 	}

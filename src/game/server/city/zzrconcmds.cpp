@@ -468,3 +468,25 @@ void CGameContext::ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserDa
 
 	pSelf->Filesystem()->BackupAccounts();
 }
+
+void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CPlayer* pP = pSelf->m_apPlayers[ID];
+
+	if (pP) {
+		pP->SendAfk();
+
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Player is afk now");
+	} else 
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}

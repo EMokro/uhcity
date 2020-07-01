@@ -89,7 +89,6 @@ public:
 	void SetPosition(vec2 Pos);
 	void Freeze(int Seconds);
 	void Unfreeze();
-	void SendAfk();
 	void Transfer(int Value);
 	bool Protected();
 	unsigned long long calcExp(int level);

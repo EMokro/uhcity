@@ -118,7 +118,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Home = 0;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
-	dbg_msg("debug", "hello");
 	return true;
 }
 
@@ -1585,7 +1584,7 @@ void CCharacter::HandleCity()
 		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());
 	} else {
 		m_Core.m_Afk = false;
-		GetPlayer()->m_Afk = true;
+		GetPlayer()->m_Afk = false;
 	}
 
 	if(Server()->Tick()%50 == 0)
@@ -1666,10 +1665,6 @@ bool CCharacter::Protected()
 		return true;
 
 	return false;
-}
-
-void CCharacter::SendAfk() {
-	
 }
 
 void CCharacter::Tick()

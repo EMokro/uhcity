@@ -330,6 +330,20 @@ void CPlayer::KillCharacter(int Weapon)
 	}
 }
 
+void CPlayer::SendAfk() {
+
+	CCharacter *pChar = GetCharacter();
+
+	if (!pChar)
+		return;
+
+	dbg_msg("debug", "hello");
+	m_Afk = true;
+	pChar->m_Core.m_Afk = true;
+
+	KillCharacter(-3);
+}
+
 void CPlayer::Respawn()
 {
 	if(m_Team != TEAM_SPECTATORS)

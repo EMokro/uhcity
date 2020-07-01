@@ -188,6 +188,7 @@ public:
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConSameIP(IConsole::IResult* pResult, void* pUserData);
 		static void ConLookUp(IConsole::IResult* pResult, void* pUserData);
+		static void ConSendAfk(IConsole::IResult* pResult, void* pUserData);
 
 		static void ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
