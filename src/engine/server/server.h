@@ -108,6 +108,10 @@ public:
 		const IConsole::CCommandInfo *m_pRconCmdToSend;
 
 		void Reset();
+
+		int m_LastMapSent;
+		int m_LastMapAsk;
+		int m_LastMapAskTick;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
