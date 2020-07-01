@@ -492,8 +492,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		}
 
 		GameServer()->EnableDmg(m_pPlayer->GetCID(), TargetID);
-
-		str_format(aBuf, sizeof aBuf, "You can hurt %s now", GameServer()->Server()->ClientName(TargetID));
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
 	}
@@ -529,7 +527,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/enabledmg -- enables damage on someone");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Drops money at your cursors position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/upgrcmds -- Get a list of all Upgrade commands");
@@ -542,7 +539,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- INFO ----------");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is made by UrinStone and Nohack.");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is still in early access, but we are updating almoast daily.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is still in early access, but we are updating almost daily.");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "--");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Always remember your password. Admins or police won't ask for it!");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you have any problems you can contact us on discord https://discord.gg/Rstb8ge");
