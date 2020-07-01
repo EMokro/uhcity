@@ -337,7 +337,6 @@ void CPlayer::SendAfk() {
 	if (!pChar)
 		return;
 
-	dbg_msg("debug", "hello");
 	m_Afk = true;
 	pChar->m_Core.m_Afk = true;
 

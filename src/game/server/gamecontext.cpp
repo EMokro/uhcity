@@ -1657,7 +1657,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 		}
 	}
-
 	// init subgamelayer entities
 	for (int i = 0; i < 4; i++) {
 		if (!pSubTileMap[i])
@@ -1673,12 +1672,10 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 				{
 					vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
 					m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
-					
 				}
 			}
 		}
 	}
-
 	//game.world.insert_entity(game.Controller);
 
 #ifdef CONF_DEBUG
