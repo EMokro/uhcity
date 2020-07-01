@@ -168,6 +168,7 @@ void CServer::CClient::Reset()
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_Score = 0;
 	m_AccID = -1;
+	m_NextMapChunk = 0;
 }
 
 CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
@@ -687,6 +688,40 @@ void CServer::SendMap(int ClientID)
 	Msg.AddInt(m_CurrentMapCrc);
 	Msg.AddInt(m_CurrentMapSize);
 	SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
+
+	m_aClients[ClientID].m_NextMapChunk = 0;
+}
+
+void CServer::SendMapData(int ClientID, int Chunk)
+{
+	unsigned int ChunkSize = 1024 - 128;
+	unsigned int Offset = Chunk * ChunkSize;
+	int Last = 0;
+
+	// drop faulty map data requests
+	if (Chunk < 0 || Offset > m_CurrentMapSize)
+		return;
+
+	if (Offset + ChunkSize >= m_CurrentMapSize)
+	{
+		ChunkSize = m_CurrentMapSize - Offset;
+		Last = 1;
+	}
+
+	CMsgPacker Msg(NETMSG_MAP_DATA);
+	Msg.AddInt(Last);
+	Msg.AddInt(m_CurrentMapCrc);
+	Msg.AddInt(Chunk);
+	Msg.AddInt(ChunkSize);
+	Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
+	SendMsgEx(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID, true);
+
+	if (g_Config.m_Debug)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "sending chunk %d with size %d", Chunk, ChunkSize);
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+	}
 }
 
 void CServer::SendConnectionReady(int ClientID)
@@ -798,44 +833,20 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		else if(Msg == NETMSG_REQUEST_MAP_DATA)
 		{
 			int Chunk = Unpacker.GetInt();
-			unsigned int ChunkSize = 1024-128;
-			unsigned int Offset = Chunk * ChunkSize;
-			int Last = 0;
+			if (Chunk != m_aClients[ClientID].m_NextMapChunk || !g_Config.m_SvFastDownload)
+			{
+				SendMapData(ClientID, Chunk);
+				return;
+			}
 
-			m_aClients[ClientID].m_LastMapAsk = Chunk;
-			m_aClients[ClientID].m_LastMapAskTick = Tick();
 			if (Chunk == 0)
-				m_aClients[ClientID].m_LastMapSent = 0;
-
-			// drop faulty map data requests
-			if(Chunk < 0 || Offset > m_CurrentMapSize)
-				return;
-
-			if(Offset+ChunkSize >= m_CurrentMapSize)
 			{
-				ChunkSize = m_CurrentMapSize-Offset;
-				if(ChunkSize < 0)
-					ChunkSize = 0;
-				Last = 1;
+				for (int i = 0; i < g_Config.m_SvMapWindow; i++)
+					SendMapData(ClientID, i);
 			}
 
-			if (m_aClients[ClientID].m_LastMapSent < Chunk + g_Config.m_SvMapWindow && g_Config.m_SvFastDownload)
-				return;
-
-			CMsgPacker Msg(NETMSG_MAP_DATA);
-			Msg.AddInt(Last);
-			Msg.AddInt(m_CurrentMapCrc);
-			Msg.AddInt(Chunk);
-			Msg.AddInt(ChunkSize);
-			Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
-			SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
-
-			if(g_Config.m_Debug)
-			{
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "sending chunk %d with size %d", Chunk, ChunkSize);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
-			}
+			SendMapData(ClientID, g_Config.m_SvMapWindow + m_aClients[ClientID].m_NextMapChunk);
+			m_aClients[ClientID].m_NextMapChunk++;
 		}
 		else if(Msg == NETMSG_READY)
 		{
@@ -1166,49 +1177,6 @@ void CServer::PumpNetwork()
 		}
 		else
 			ProcessClientPacket(&Packet);
-	}
-
-	if (g_Config.m_SvFastDownload)
-	{
-		for (int i = 0; i < MAX_CLIENTS; i++)
-		{
-			if (m_aClients[i].m_State != CClient::STATE_CONNECTING)
-				continue;
-
-			if (m_aClients[i].m_LastMapAskTick < Tick() - TickSpeed())
-			{
-				m_aClients[i].m_LastMapSent = m_aClients[i].m_LastMapAsk;
-				m_aClients[i].m_LastMapAskTick = Tick();
-			}
-
-			if (m_aClients[i].m_LastMapAsk < m_aClients[i].m_LastMapSent - g_Config.m_SvMapWindow)
-				continue;
-
-			int Chunk = m_aClients[i].m_LastMapSent++;
-			unsigned int ChunkSize = 1024 - 128;
-			unsigned int Offset = Chunk * ChunkSize;
-			int Last = 0;
-
-			// drop faulty map data requests
-			if (Chunk < 0 || Offset > m_CurrentMapSize)
-				continue;
-
-			if (Offset + ChunkSize >= m_CurrentMapSize)
-			{
-				ChunkSize = m_CurrentMapSize - Offset;
-				if (ChunkSize < 0)
-					ChunkSize = 0;
-				Last = 1;
-			}
-
-			CMsgPacker Msg(NETMSG_MAP_DATA);
-			Msg.AddInt(Last);
-			Msg.AddInt(m_CurrentMapCrc);
-			Msg.AddInt(Chunk);
-			Msg.AddInt(ChunkSize);
-			Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
-			SendMsgEx(&Msg, MSGFLAG_FLUSH, i, true);
-		}
 	}
 
 	m_Econ.Update();
