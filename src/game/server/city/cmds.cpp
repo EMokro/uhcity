@@ -633,7 +633,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/walls -- Laser walls");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/hammerkill -- Your target can't escape!");
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/plasma -- Beat them with your Pasma");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/plasma -- Beat them with your Plasma");
 
 
 			return;
