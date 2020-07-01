@@ -102,7 +102,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_HammerPos1 = vec2(0, 0);
 	m_HammerPos2 = vec2(0, 0);
 	m_SpawnProtection = Server()->Tick();
-	m_Afk = false;
 
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
@@ -119,7 +118,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Home = 0;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
-
+	dbg_msg("debug", "hello");
 	return true;
 }
 
@@ -1577,14 +1576,17 @@ void CCharacter::HandleCity()
 		m_Invisible = 0;
 	}
 
-	if (GameServer()->Collision()->IsTile(m_Pos, TILE_AFK)) {
+	if (GameServer()->Collision()->IsTile(m_Pos, ENTITY_AFK + ENTITY_OFFSET)) {
 		if (!m_Core.m_Afk)
 			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 
 		m_Core.m_Afk = true;
+		GetPlayer()->m_Afk = true;
 		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());
-	} else 
+	} else {
 		m_Core.m_Afk = false;
+		GetPlayer()->m_Afk = true;
+	}
 
 	if(Server()->Tick()%50 == 0)
 	{
@@ -1660,7 +1662,7 @@ bool CCharacter::Protected()
 	if(m_GameZone
 	|| m_Protected
 	|| m_SpawnProtection + 3 * Server()->TickSpeed() > Server()->Tick()
-	|| GameServer()->Collision()->IsTile(m_Pos, TILE_AFK))
+	|| GameServer()->Collision()->IsTile(m_Pos, ENTITY_AFK + ENTITY_OFFSET))
 		return true;
 
 	return false;

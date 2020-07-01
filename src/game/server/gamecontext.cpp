@@ -1644,6 +1644,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			pSubTiles[i] = (CTile *)Kernel()->RequestInterface<IMap>()->GetData(pSubTileMap[i]->m_Data);
 	}
 
+	char aBuf[128];
+
 	for(int y = 0; y < pTileMap->m_Height; y++)
 	{
 		for(int x = 0; x < pTileMap->m_Width; x++)
@@ -1653,11 +1655,15 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			if(Index >= ENTITY_OFFSET)
 			{
 				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
+				str_format(aBuf, sizeof aBuf, "i %d", Index);
+				dbg_msg("debug", aBuf);
 				m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+				
 			}
 		}
 	}
 
+	// init subgamelayer entities
 	for (int i = 0; i < 4; i++) {
 		if (!pSubTileMap[i])
 			break;
@@ -1672,6 +1678,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 				{
 					vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
 					m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+					
 				}
 			}
 		}

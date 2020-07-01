@@ -12,8 +12,8 @@
 */
 class IGameController
 {
-	vec2 m_aaSpawnPoints[3][64];
-	int m_aNumSpawnPoints[3];
+	vec2 m_aaSpawnPoints[4][64];
+	int m_aNumSpawnPoints[4];
 
 	class CGameContext *m_pGameServer;
 	class IServer *m_pServer;
@@ -102,6 +102,8 @@ public:
 			bool?
 	*/
 	virtual bool OnEntity(int Index, vec2 Pos);
+
+	virtual void InitTiles(int Idex, vec2 Pos);
 
 	/*
 		Function: on_CCharacter_spawn

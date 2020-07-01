@@ -373,19 +373,20 @@ void CPlayer::TryRespawn()
 {
 	vec2 SpawnPos;
 
-	if(m_Insta)
-	{
-	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
-		return;
-	}
-	else
-	{
+	if (m_Afk) {
+		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Afk?3:0))
+			return;
+	} else if(m_Insta) {
+		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
+			return;
+	} else {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_AccData.m_Arrested?1:0))
-		return;
+			return;
 	}
 
 	m_Spawning = false;
 	m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World);
 	m_pCharacter->Spawn(this, SpawnPos);
+
 	GameServer()->CreatePlayerSpawn(SpawnPos);
 }
