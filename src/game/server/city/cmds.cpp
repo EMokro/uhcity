@@ -356,12 +356,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
-	else if(!str_comp_nocase(Msg->m_pMessage, "/del") || !str_comp_nocase(Msg->m_pMessage, "/delete"))
-	{
-		LastChat();
-		m_pPlayer->m_pAccount->Delete();
-		return;
-	}
 	else if(!strncmp(Msg->m_pMessage, "/password", 9))
 	{
 		LastChat();
@@ -374,37 +368,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		m_pPlayer->m_pAccount->NewPassword(NewPassword);
 		return;
 	}
-	if(!strncmp(Msg->m_pMessage, "/newname", 8) || !strncmp(Msg->m_pMessage, "/changename", 11))
-	{
-		LastChat();
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use /rename <newname>");
-		return;
-	}
-	else if(!strncmp(Msg->m_pMessage, "/rename", 7))
-	{
-		LastChat();
-		char NewUsername[512];
-		if(sscanf(Msg->m_pMessage, "/rename %s", NewUsername) != 1)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please use '/rename <newname>'");
-			return;
-		}
-		m_pPlayer->m_pAccount->NewUsername(NewUsername);
-		return;
-	}
-	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
-    {
-		LastChat();
-
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- INFO ----------");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is made by UrinStone and Nohack.");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "It's still in early access, but we are updating almoast daily.");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "--");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Always remember your password. Admins or police won't ask for it!");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you have any problems you can contact us on discord https://discord.gg/Rstb8ge");
-
-		return;
-    }
 	else if(!str_comp_nocase(Msg->m_pMessage, "/instagib") || !str_comp_nocase(Msg->m_pMessage, "/insta"))
     {
 		LastChat();
@@ -529,8 +492,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		}
 
 		GameServer()->EnableDmg(m_pPlayer->GetCID(), TargetID);
-
-		str_format(aBuf, sizeof aBuf, "You can hurt %s now", GameServer()->Server()->ClientName(TargetID));
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
 	}
@@ -564,14 +525,27 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/disabledmg -- disables damage on someone");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/enabledmg -- enables damage on someone");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Sends money");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Drops money at your cursors position");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/upgrcmds -- Get a list of all Upgrade commands");
 
 		return;
 	}
+		else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
+    {
+		LastChat();
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- INFO ----------");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is made by UrinStone and Nohack.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "UH | City is still in early access, but we are updating almost daily.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "--");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Always remember your password. Admins or police won't ask for it!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "If you have any problems you can contact us on discord https://discord.gg/Rstb8ge");
+
+		return;
+    }
 	else if(!str_comp_nocase(Msg->m_pMessage, "/help"))
 	{
 		LastChat();
@@ -656,7 +630,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/walls -- Laser walls");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/hammerkill -- Your target can't escape!");
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/plasma -- Beat them with your Pasma");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/plasma -- Beat them with your Plasma");
 
 
 			return;
@@ -670,7 +644,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		if (!strcmp(aBuf, "rifle") || !strcmp(aBuf, "Rifle") || !strcmp(aBuf, "laser") || !strcmp(aBuf, "Laser")) {
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- UPGRADE CMDS ----------");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/swap -- Swaps the position with your target");
-
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rplasma -- Rifle plasma");
 			return;
 		}
 		if (!strcmp(aBuf, "jump") || !strcmp(aBuf, "Jump")) {
@@ -802,7 +776,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		return;
 	}
-
 	if(!strncmp(Msg->m_pMessage, "/", 1))
 	{
 		LastChat();

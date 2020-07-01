@@ -1657,7 +1657,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 		}
 	}
-
+	// init subgamelayer entities
 	for (int i = 0; i < 4; i++) {
 		if (!pSubTileMap[i])
 			break;
@@ -1676,7 +1676,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 		}
 	}
-
 	//game.world.insert_entity(game.Controller);
 
 #ifdef CONF_DEBUG

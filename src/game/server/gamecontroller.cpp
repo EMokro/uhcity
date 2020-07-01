@@ -40,6 +40,7 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aNumSpawnPoints[0] = 0;
 	m_aNumSpawnPoints[1] = 0;
 	m_aNumSpawnPoints[2] = 0;
+	m_aNumSpawnPoints[3] = 0;
 }
 
 IGameController::~IGameController()
@@ -99,7 +100,7 @@ void IGameController::EvaluateSpawnType(CSpawnEval *pEval, int Type)
 	}
 }
 
-bool IGameController::CanSpawn(int Team, vec2 *pOutPos, int Jailed)
+bool IGameController::CanSpawn(int Team, vec2 *pOutPos, int Type)
 {
 	CSpawnEval Eval;
 
@@ -121,17 +122,14 @@ bool IGameController::CanSpawn(int Team, vec2 *pOutPos, int Jailed)
 	}
 	else
 	{
-		if(Jailed == 1)
+		if(Type == 1)
 			EvaluateSpawnType(&Eval, 1);
-		else if(Jailed == 2)
-		EvaluateSpawnType(&Eval, 2);
+		else if(Type == 2)
+			EvaluateSpawnType(&Eval, 2);
+		else if (Type == 3)
+			EvaluateSpawnType(&Eval, 3);
 		else
-		EvaluateSpawnType(&Eval, 0);
-		
-
-
-		// City
-		//EvaluateSpawnType(&Eval, 3);
+			EvaluateSpawnType(&Eval, 0);
 	}
 
 	*pOutPos = Eval.m_Pos;
@@ -150,6 +148,8 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		m_aaSpawnPoints[1][m_aNumSpawnPoints[1]++] = Pos;
 	else if(Index == ENTITY_INSTA_SPAWN)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
+	else if (Index == ENTITY_AFK)
+		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;
 	else if(Index == ENTITY_ARMOR_1)
 		Type = POWERUP_ARMOR;
 	else if(Index == ENTITY_HEALTH_1)
@@ -201,14 +201,10 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	}
 	else if(Index == ENTITY_CAROUSEL)
 		new CCarousel(&GameServer()->m_World, Pos);
-			else if(Index == ENTITY_FLAGSTAND_BLUE)
+	else if(Index == ENTITY_FLAGSTAND_BLUE)
 		new CVip(&GameServer()->m_World, Pos);
-			else if(Index == ENTITY_FLAGSTAND_RED)
+	else if(Index == ENTITY_FLAGSTAND_RED)
 		new CBuyHealth(&GameServer()->m_World, Pos);
-	/*else if(Index == ENTITY_JAIL)
-		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;*/
-
-
 	else
 		return false;
 
@@ -220,6 +216,10 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	}
 
 	return true;
+}
+
+void IGameController::InitTiles(int Index, vec2 Pos) {
+	
 }
 
 void IGameController::EndRound()
@@ -605,7 +605,10 @@ void IGameController::Tick()
 					case 0:
 						{
 							// move player to spectator
-							GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+							// GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+							dbg_msg("dbg", "some inactive");
+							if (!GameServer()->m_apPlayers[i]->m_Afk)
+								GameServer()->m_apPlayers[i]->SendAfk();
 						}
 						break;
 					case 1:
@@ -627,7 +630,8 @@ void IGameController::Tick()
 							Server()->Kick(i, "Kicked for inactivity");
 						}
 					}
-				}
+				} else if (!GameServer()->m_apPlayers[i]->m_LastActionTick)
+					GameServer()->m_apPlayers[i]->m_Afk = false;
 			}
 		}
 	}
