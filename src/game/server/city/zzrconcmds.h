@@ -34,8 +34,8 @@ CONSOLE_COMMAND("sendafk", "v", CFGFLAG_SERVER, ConSendAfk, this, "sendafk id")
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")
 CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 
-// Sytem stuff
-CONSOLE_COMMAND("sv_backup_accounts", "", CFGFLAG_SERVER, ConSvBackupAccounts, this, "Makes a backup")
+// filesystem
+CONSOLE_COMMAND("fs_backup_accounts", "", CFGFLAG_SERVER, ConFsBackupAccounts, this, "Makes a backup")
 
 
 #undef CONSOLE_COMMAND

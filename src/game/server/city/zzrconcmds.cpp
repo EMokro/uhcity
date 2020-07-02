@@ -462,13 +462,6 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
 
-void CGameContext::ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData)
-{
-	CGameContext* pSelf = (CGameContext*)pUserData;
-
-	pSelf->Filesystem()->BackupAccounts();
-}
-
 void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
@@ -489,4 +482,13 @@ void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Player is afk now");
 	} else 
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+}
+
+// Filesystem
+
+void CGameContext::ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+
+	pSelf->Filesystem()->BackupAccounts();
 }

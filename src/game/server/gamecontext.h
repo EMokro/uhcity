@@ -190,7 +190,7 @@ public:
 		static void ConLookUp(IConsole::IResult* pResult, void* pUserData);
 		static void ConSendAfk(IConsole::IResult* pResult, void* pUserData);
 
-		static void ConSvBackupAccounts(IConsole::IResult* pResult, void* pUserData);
+		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
 		public: //Ende :D
 
