@@ -26,6 +26,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	// City
 	m_Rainbow = false;
 	m_Insta = false;
+	m_Afk = false;
 	m_pAccount = new CAccount(this, m_pGameServer);
 	m_pChatCmd = new CCmd(this, m_pGameServer);
 

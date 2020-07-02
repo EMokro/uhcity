@@ -163,7 +163,7 @@ public:
 	int m_RainbowColor;
 	bool m_Rainbow;
 	bool m_Insta;
-	bool m_Afk = false;
+	bool m_Afk;
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;
 	char m_aRank[64];
