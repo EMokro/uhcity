@@ -23,3 +23,15 @@ src/game/generated/nethash.cpp
 teeworlds_srv
 logs/**
 backups/**
+
+COM4
+COM1
+AUX
+COM2
+COM3
+COM5
+COM6
+COM7
+CON
+NUL
+PRN

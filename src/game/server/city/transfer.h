@@ -17,6 +17,7 @@ private:
 	//int m_Value;
 	int m_IDs[2];
 	CCharacter *m_pOwner;
+	char m_OwnerName[128];
 };
 
 #endif

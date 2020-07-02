@@ -14,6 +14,8 @@ CTransfer::CTransfer(CGameWorld *pGameWorld, int Value, vec2 Pos, CCharacter *pO
 	m_pOwner = pOwner;
 	m_pOwner->m_Transfers++;
 
+	str_copy(m_OwnerName, Server()->ClientName(m_pOwner->GetPlayer()->GetCID()), sizeof m_OwnerName);
+
 	for(int i = 0; i < 2; i++)
 		m_IDs[i] = Server()->SnapNewID();
 
@@ -55,7 +57,8 @@ void CTransfer::Tick()
 	{
 		apEnts[i]->GetPlayer()->m_AccData.m_Money += m_Value;
 
-		str_format(aBuf, sizeof(aBuf), "You received money from %s", Server()->ClientName(m_pOwner->GetPlayer()->GetCID()));
+		str_format(aBuf, sizeof(aBuf), "You received money from %s", m_OwnerName);
+		
 		GameServer()->SendChatTarget(apEnts[i]->GetPlayer()->GetCID(), aBuf);
 		GameServer()->FormatInt(apEnts[i]->GetPlayer()->m_AccData.m_Money, numBuf[0]);
 		GameServer()->FormatInt(m_Value, numBuf[1]);
