@@ -1,12 +1,14 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <math.h>
+
 #include <base/system.h>
 #include <base/math.h>
 #include <base/vmath.h>
 
-#include <math.h>
 #include <engine/map.h>
 #include <engine/kernel.h>
+#include <engine/shared/config.h>
 
 #include <game/mapitems.h>
 #include <game/layers.h>
@@ -48,6 +50,10 @@ void CCollision::Init(class CLayers *pLayers)
 
 	m_pCityTiles[0] = new CTile[m_Width*m_Height];
 	mem_copy(m_pCityTiles[0], m_pTiles, sizeof(CTile)*m_Width*m_Height);
+
+	m_pDoorTiles = new CDoorTile[m_Width * m_Height];
+	for (int i = 0; i < 1024; i++)
+		m_DoorOpen[i] = false;
 	
 	for (int i = 0; i < 4; i++) {
 		if (m_pLayers->SubGameLayer(i)) {
@@ -68,6 +74,9 @@ void CCollision::Init(class CLayers *pLayers)
 	{
 		int Index = m_pTiles[i].m_Index;
 
+		m_pDoorTiles[i].m_Index = 0;
+		m_pDoorTiles[i].m_DoorID = 0;
+
 		if(Index > 128)
 			continue;
 
@@ -83,7 +92,7 @@ void CCollision::Init(class CLayers *pLayers)
 			m_pTiles[i].m_Index = COLFLAG_SOLID|COLFLAG_NOHOOK;
 			break;
 		default:
-				m_pTiles[i].m_Index = 0;
+			m_pTiles[i].m_Index = 0;
 		}
 	}
 }
@@ -157,6 +166,16 @@ int CCollision::GetTile(int x, int y)
 {
 	int Nx = clamp(x/32, 0, m_Width-1);
 	int Ny = clamp(y/32, 0, m_Height-1);
+
+	if (GetDoorAt(x, y))
+	{
+		if (g_Config.m_SvDoorType == 1)
+			return COLFLAG_SOLID | COLFLAG_NOHOOK;
+		else if (g_Config.m_SvDoorType == 2)
+			return COLFLAG_DEATH;
+		else
+			return COLFLAG_SOLID;
+	}
 
 	return m_pTiles[Ny*m_Width+Nx].m_Index > 128 ? 0 : m_pTiles[Ny*m_Width+Nx].m_Index;
 }
@@ -315,4 +334,54 @@ void CCollision::Dest() {
 
 	for (int i = 0; i < 4; i++)
 		m_pSubGameLayer[i] = 0;
+}
+
+bool CCollision::DoorOpen(int DoorNumber, bool Open)
+{
+	m_DoorOpen[DoorNumber] = Open;
+	return m_DoorOpen[DoorNumber];
+}
+
+bool CCollision::GetDoorAt(int x, int y)
+{
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
+
+	if (m_pDoorTiles[Ny * m_Width + Nx].m_Index == 7)
+	{
+		if (m_DoorOpen[m_pDoorTiles[Ny * m_Width + Nx].m_DoorID])
+			return false;
+		else
+			return true;
+	}
+
+	return false;
+}
+
+int CCollision::SetDoorAt(vec2 From, vec2 To, int Number)
+{
+	float Distance = distance(From, To);
+	int End(Distance + 1);
+
+	for (int i = 0; i < End; i++)
+	{
+		float a = i / Distance;
+		vec2 Pos = mix(From, To, a);
+
+		int Nx = clamp((int)Pos.x / 32, 0, m_Width - 1);
+		int Ny = clamp((int)Pos.y / 32, 0, m_Height - 1);
+
+		if (Number)
+		{
+			m_pDoorTiles[Ny * m_Width + Nx].m_DoorID = Number;
+			m_pDoorTiles[Ny * m_Width + Nx].m_Index = 7;
+		}
+		else
+		{
+			m_pDoorTiles[Ny * m_Width + Nx].m_DoorID = 0;
+			m_pDoorTiles[Ny * m_Width + Nx].m_Index = 0;
+		}
+	}
+
+	return 1;
 }

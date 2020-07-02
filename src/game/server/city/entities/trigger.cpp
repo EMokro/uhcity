@@ -28,11 +28,8 @@ void CTrigger::TriggerNR()
 	int Num = GameServer()->m_World.FindEntities(m_Pos, 1.0f, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 	for(int i = 0; i < Num; i++)
 	{
-		for(int j = 0; j < 4; j++)
-		{
-			if(m_ItemID[j] > 0)
-				apEnts[i]->m_TriggerNR[j] = m_ItemID[j];
-		}
+		if (GetNumber() > 0)
+			apEnts[i]->m_TriggerNR = GetNumber();
 	}
 
 	if(Num)
@@ -47,13 +44,10 @@ void CTrigger::TriggerID()
 	int Num = GameServer()->m_World.FindEntities(m_Pos, 1.0f, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 	for(int i = 0; i < Num; i++)
 	{
-		for(int j = 0; j < 4; j++)
+		if (GetNumber() > 0 && apEnts[i]->GetPlayer()->m_AccData.m_UserID == GetNumber())
 		{
-			if(m_ItemID[j] > 0 && apEnts[i]->GetPlayer()->m_AccData.m_UserID == m_ItemID[j])
-			{
-				apEnts[i]->m_TriggerID[j] = m_ItemID[j];
-				m_Switched = true;
-			}
+			apEnts[i]->m_TriggerID = GetNumber();
+			m_Switched = true;
 		}
 	}
 
@@ -132,32 +126,42 @@ void CTrigger::Tick()
 		TriggerID();
 	else
 		TriggerNR();
-	
-		
-
 }
 
+int CTrigger::GetNumber()
+{
+	char aNumber[32];
+	mem_zero(&aNumber, sizeof(aNumber));
+	for (int i = 0; i < 4; i++)
+	{
+		if (m_ItemID[i] <= 0)
+			continue;
+
+		char aBuf[32];
+		str_format(aBuf, sizeof(aBuf), "%d", m_ItemID[i]);
+		str_append(aNumber, aBuf, sizeof(aNumber));
+	}
+
+	if (!aNumber[0])
+		return -1;
+	int Number = str_toint(aNumber);
+	if (Number <= 0)
+		return -1;
+	return Number;
+}
 
 void CTrigger::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient, m_Pos))
 		return;
-
 	
-	CNetObj_Laser *pObj[1];
+	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
+	if(!pObj)
+		return;
 
-	for(int i = 0; i < 1; i++)
-	{
-		pObj[i] = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-
-		if(!pObj[i])
-			return;
-
-		pObj[i]->m_X = (int)m_Pos.x;
-		pObj[i]->m_Y = (int)m_Pos.y;
-		pObj[i]->m_FromX = (int)m_Pos.x;
-		pObj[i]->m_FromY = (int)m_Pos.y - (m_Switched?48:0);
-		pObj[i]->m_StartTick = Server()->Tick();
-
-	}
+	pObj->m_X = (int)m_Pos.x;
+	pObj->m_Y = (int)m_Pos.y;
+	pObj->m_FromX = (int)m_Pos.x;
+	pObj->m_FromY = (int)m_Pos.y - (m_Switched ? 48 : 0);
+	pObj->m_StartTick = Server()->Tick();
 }

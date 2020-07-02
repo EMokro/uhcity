@@ -185,6 +185,15 @@ public:
 	unsigned char m_Reserved;
 };
 
+class CDoorTile
+{
+public:
+	unsigned char m_Index;
+	unsigned char m_Flags;
+	unsigned char m_Skip;
+	int m_DoorID; // account/door id
+};
+
 struct CMapItemImage
 {
 	int m_Version;
