@@ -606,7 +606,6 @@ void IGameController::Tick()
 						{
 							// move player to spectator
 							// GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
-							dbg_msg("dbg", "some inactive");
 							if (!GameServer()->m_apPlayers[i]->m_Afk)
 								GameServer()->m_apPlayers[i]->SendAfk();
 						}
