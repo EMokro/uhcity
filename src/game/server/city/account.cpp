@@ -5,6 +5,9 @@
 #include <fstream>
 #include <engine/config.h>
 #include "account.h"
+#include "base/rapidjson/document.h"
+#include "base/rapidjson/reader.h"
+#include "base/rapidjson/writer.h"
 //#include "game/server/gamecontext.h"
 
 #if defined(CONF_FAMILY_WINDOWS)

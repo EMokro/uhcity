@@ -27,32 +27,46 @@ void CFileSys::BackupAccounts() {
 
 	// system(aBuf);
 
-    CreateNote("this is a test", "Urin");
+    CreateAccount("test");
 }
 
-void CFileSys::CreateNote(char *Msg, char *Owner) {
-    StringBuffer aBuf;
-    Writer<StringBuffer> writer(aBuf);
+void CFileSys::CreateAccount(char *Username) {
+    Document doc;
+
+    StringBuffer strBuf;
+    char aBuf[256];
+    Writer<StringBuffer> writer(strBuf);
     FILE *File;
 
-    dbg_msg("filesys", "Adding logs");
-    File = fopen("logs/notes.json", "a+");
-
-    if (!File) {
-        system("mkdir logs && touch logs/notes.json");
-        File = fopen("logs/notes.json", "a+");
-    }
+    str_format(aBuf, sizeof aBuf, "Creating account %s.json", Username);
+    dbg_msg("filesys", aBuf);
 
     writer.StartObject();
-    writer.Key(Owner);
+    writer.Key(Username);
     writer.StartObject();
-    writer.Key("Message");
-    writer.String(Msg);
+    writer.Key("info");
+    writer.StartObject();
+    writer.Key("accid");
+    writer.Int(1);
+    writer.Key("Money");
+    writer.Int64(10000000000);
+    writer.EndObject();
+    writer.Key("items");
+    writer.StartObject();
+    writer.Key("gun");
+    writer.StartObject();
+    writer.Key("freezegun");
+    writer.Int(0);
+    writer.EndObject();
+    writer.EndObject();
     writer.EndObject();
     writer.EndObject();
 
-    fputs(aBuf.GetString(), File);
+    str_format(aBuf, sizeof aBuf, "logs/accounts/%s.json", Username);
+    File = fopen(aBuf, "a+");
+    fputs(strBuf.GetString(), File);
     fclose(File);
+
 }
 
 void CFileSys::CreateRconLog() {
