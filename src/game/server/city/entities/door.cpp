@@ -299,16 +299,16 @@ void CDoor::Snap(int SnappingClient)
 		pObj[i]->m_FromY = (int)m_Pos.y;
 		pObj[i]->m_StartTick = Server()->Tick();
 
-		if (!(i % 2))
+		if (!(i % 2) && i < 4)
 			pObj[i]->m_X = (int)m_Pos.x + m_aLength[i] * (i == 0 ? -1 : 1);
-		else if (i < 5)
+		else
 			pObj[i]->m_Y = (int)m_Pos.y + m_aLength[i] * (i == 3 ? 1 : -1);
 
 		if (GameServer()->Collision()->IsDoorOpen(GetNumber()))
 		{
-			if (!(i % 2))
+			if (!(i % 2) && i < 4)
 				pObj[i]->m_FromX = (int)m_Pos.x + m_aLength[i] * (i == 0 ? -1 : 1);
-			else if (i < 5)
+			else
 				pObj[i]->m_FromY = (int)m_Pos.y + m_aLength[i] * (i == 3 ? 1 : -1);
 		}
 	}
