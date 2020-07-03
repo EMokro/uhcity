@@ -20,8 +20,21 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 	// if(!strncmp(Msg->m_pMessage, "/login", 6))
 	// if(sscanf(Msg->m_pMessage, "/login %s %s", name, pass) != 2)
 	setlocale(LC_NUMERIC, "");
+	if(!strncmp(Msg->m_pMessage, "/loginj", 7))
+	{
+		LastChat();
 
-	if(!strncmp(Msg->m_pMessage, "/login", 6))
+		char Username[512];
+		char Password[512];
+		if(sscanf(Msg->m_pMessage, "/loginj %s %s", Username, Password) != 2)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use '/loginj<username> <password>'");
+			return;
+		}
+		m_pPlayer->m_pAccount->LoginJ(Username, Password);
+		return;
+	}
+	else if(!strncmp(Msg->m_pMessage, "/login", 6))
 	{
 		LastChat();
 
@@ -287,6 +300,20 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		str_format(aBuf, sizeof(aBuf), "JailRifle %s", m_pPlayer->GetCharacter()->m_JailRifle?"enabled":"disabled");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
+		return;
+	}
+	else if(!strncmp(Msg->m_pMessage, "/registerj", 10))
+	{
+		LastChat();
+
+		char Username[512];
+		char Password[512];
+		if(sscanf(Msg->m_pMessage, "/registerj %s %s", Username, Password) != 2)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use '/registerj <username> <password>'");
+			return;
+		}
+		m_pPlayer->m_pAccount->RegisterJ(Username, Password);
 		return;
 	}
 	else if(!strncmp(Msg->m_pMessage, "/register", 9))

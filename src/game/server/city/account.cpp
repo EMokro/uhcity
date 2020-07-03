@@ -20,6 +20,8 @@
 	#include <unistd.h>
 #endif
 
+using namespace rapidjson;
+
 CAccount::CAccount(CPlayer *pPlayer, CGameContext *pGameServer)
 {
    m_pPlayer = pPlayer;
@@ -198,6 +200,146 @@ void CAccount::Login(char *Username, char *Password)
 
 }
 
+void CAccount::LoginJ(char *Username, char *Password)
+{
+	char aBuf[128];
+	if(m_pPlayer->m_AccData.m_UserID)
+	{
+		dbg_msg("account", "Account login failed ('%s' - Already logged in)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Already logged in");
+		return;
+	}
+	else if(strlen(Username) > 15 || !strlen(Username))
+	{
+		str_format(aBuf, sizeof(aBuf), "Username too %s", strlen(Username)?"long":"short");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+    }
+	else if(strlen(Password) > 15 || !strlen(Password))
+	{
+		str_format(aBuf, sizeof(aBuf), "Password too %s!", strlen(Password)?"long":"short");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+    }
+	else if(!Exists(Username))
+	{
+		dbg_msg("account", "Account login failed ('%s' - Missing)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This account does not exist.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please register first. (/register <user> <pass>)");
+		return;
+	}
+
+	str_format(aBuf, sizeof(aBuf), "accounts/%s.acc", Username);
+	FILE *Accfile;
+	char AccText[5012];
+	Accfile = fopen(aBuf, "r");
+	dbg_msg("debug", "hello");
+
+	Document AccD;
+	dbg_msg("debug", "hello");
+	ParseResult res = AccD.Parse();
+	AccD.Parse(aBuf);
+	
+	if (res.IsError()) {
+		dbg_msg("account", "parse error");
+	}
+	dbg_msg("debug", "hello");
+	assert(AccD.IsObject());
+	dbg_msg("debug", "hello");
+	Value::ConstMemberIterator itr;
+	dbg_msg("debug", "hello");
+	if (AccD.HasMember("accdata")) {
+		dbg_msg("debug", "has member");
+		itr = AccD.FindMember("accdata");
+	}
+	else 
+		return;
+
+	dbg_msg("debug", "hello");
+
+	for (itr; itr != AccD.MemberEnd(); itr++) {
+		str_format(aBuf, sizeof aBuf, "%s has %s", itr->name.GetString(), itr->value.GetString());
+		dbg_msg("debug", aBuf);
+		
+
+	}
+	dbg_msg("debug", "hello");
+	char AccUsername[32];
+	char AccPassword[32];
+	char AccRcon[32];
+	int AccID;
+
+	fscanf(Accfile, "%s\n%s\n%s\n%d", AccUsername, AccPassword, AccRcon, &AccID);
+	fclose(Accfile);
+
+	for(int i = 0; i < MAX_SERVER; i++)
+	{
+		for(int j = 0; j < MAX_CLIENTS; j++)
+		{
+			if(GameServer()->m_apPlayers[j] && GameServer()->m_apPlayers[j]->m_AccData.m_UserID == AccID)
+			{
+				dbg_msg("account", "Account login failed ('%s' - already in use (local))", Username);
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				return;
+			}
+
+			if(!GameServer()->m_aaExtIDs[i][j])
+				continue;
+
+			if(AccID == GameServer()->m_aaExtIDs[i][j])
+			{
+				dbg_msg("account", "Account login failed ('%s' - already in use (extern))", Username);
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				return;
+			}
+		}
+	}
+
+	if(strcmp(Username, AccUsername))
+	{
+		dbg_msg("account", "Account login failed ('%s' - Wrong username)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		return;
+	}
+
+	if(strcmp(Password, AccPassword))
+	{
+		dbg_msg("account", "Account login failed ('%s' - Wrong password)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		return;
+	}
+
+
+	Accfile = fopen(aBuf, "r"); 
+
+
+	fclose(Accfile);
+
+	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+	if(pOwner)
+	{
+		if(pOwner->IsAlive())
+			pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
+	}
+	 
+	if(m_pPlayer->GetTeam() == TEAM_SPECTATORS)
+		m_pPlayer->SetTeam(TEAM_RED);
+  	
+	dbg_msg("account", "Account login sucessful ('%s')", Username);
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
+ 
+	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
+		m_pPlayer->m_AccData.m_GunFreeze = 3;
+
+	if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconModPassword) == 0)
+		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
+
+	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconPassword) == 0)
+		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),2);
+
+}
+
 void CAccount::Register(char *Username, char *Password)
 {
 	char aBuf[125];
@@ -317,6 +459,196 @@ void CAccount::Register(char *Username, char *Password)
 	str_format(aBuf, sizeof(aBuf), "Registration succesful - ('/login %s %s'): ", Username, Password);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 	Login(Username, Password);
+}
+
+void CAccount::RegisterJ(char *Username, char *Password)
+{
+	char aBuf[125];
+	if(m_pPlayer->m_AccData.m_UserID)
+	{
+		dbg_msg("account", "Account registration failed ('%s' - Logged in)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Already logged in");
+		return;
+	}
+	if(strlen(Username) > 15 || !strlen(Username))
+	{
+		str_format(aBuf, sizeof(aBuf), "Username too %s", strlen(Username)?"long":"short");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+    }
+	else if(strlen(Password) > 15 || !strlen(Password))
+	{
+		str_format(aBuf, sizeof(aBuf), "Password too %s!", strlen(Password)?"long":"short");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+    }
+
+	#if defined(CONF_FAMILY_UNIX)
+	char Filter[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.-_";
+	// "äöü<>|!§$%&/()=?`´*'#+~«»¢“”æßðđŋħjĸł˝;,·^°@ł€¶ŧ←↓→øþ\\";
+	char *p = strpbrk(Username, Filter);
+	if(!p)
+	{
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Don't use invalid chars for username!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "A - Z, a - z, 0 - 9, . - _");
+		return;
+	}
+	
+	if(fs_makedir("accounts")) // that was some useless stuff
+		dbg_msg("account", "Account folder created!");
+	#endif
+
+	#if defined(CONF_FAMILY_WINDOWS)
+	static TCHAR * ValidChars = _T("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.-_");
+	if (_tcsspnp(Username, ValidChars))
+	{
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Don't use invalid chars for username!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "A - Z, a - z, 0 - 9, . - _");
+		return;
+	}
+
+	if(mkdir("accounts"))
+		dbg_msg("account", "Account folder created!");
+	#endif
+
+	str_format(aBuf, sizeof(aBuf), "accounts/%s.acc", Username);
+
+	Document doc;
+	StringBuffer strBuf;
+    Writer<StringBuffer> writer(strBuf);
+	FILE *Accfile;
+
+	writer.StartObject();
+
+    writer.Key("User");
+    writer.StartObject();
+
+    writer.Key("accdata");
+    writer.StartObject();
+    writer.Key("accid");
+    writer.Int(NextID());
+	writer.Key("username");
+	writer.String(Username);
+	writer.Key("password");
+	writer.String(Password);
+	writer.EndObject();
+
+	writer.Key("general");
+	writer.StartObject();
+	writer.Key("level");
+    writer.Int(m_pPlayer->m_AccData.m_Level);
+	writer.Key("exp");
+    writer.Int64(m_pPlayer->m_AccData.m_ExpPoints);
+    writer.Key("money");
+    writer.Int64(m_pPlayer->m_AccData.m_Money);
+	writer.Key("health");
+    writer.Int(m_pPlayer->m_AccData.m_Health<10?10:m_pPlayer->m_AccData.m_Health);
+	writer.Key("armor");
+    writer.Int(m_pPlayer->m_AccData.m_Armor<10?10:m_pPlayer->m_AccData.m_Armor);
+	writer.Key("houseid");
+    writer.Int(m_pPlayer->m_AccData.m_HouseID);
+    writer.EndObject();
+
+	writer.Key("Ranks");
+	writer.StartObject();
+	writer.Key("donor");
+	writer.Int(m_pPlayer->m_AccData.m_Donor);
+	writer.Key("vip");
+	writer.Int(m_pPlayer->m_AccData.m_VIP);
+	writer.EndObject();
+
+    writer.Key("items");
+    writer.StartObject();
+
+	writer.Key("basic");
+	writer.StartObject();
+	writer.Key("allweapons");
+	writer.Int(m_pPlayer->m_AccData.m_AllWeapons);
+	writer.Key("healthregen");
+	writer.Int(m_pPlayer->m_AccData.m_HealthRegen);
+	writer.Key("infinityammo");
+	writer.Int(m_pPlayer->m_AccData.m_InfinityAmmo);
+	writer.Key("infinityjumps");
+	writer.Int(m_pPlayer->m_AccData.m_InfinityJumps);
+	writer.Key("fastreload");
+	writer.Int(m_pPlayer->m_AccData.m_FastReload);
+	writer.Key("noselfdmg");
+	writer.Int(m_pPlayer->m_AccData.m_NoSelfDMG);
+	writer.EndObject();
+
+    writer.Key("gun");
+    writer.StartObject();
+	writer.Key("gunspread");
+    writer.Int(m_pPlayer->m_AccData.m_GunSpread);
+	writer.Key("gunexplode");
+    writer.Int(m_pPlayer->m_AccData.m_GunExplode);
+    writer.Key("freezegun");
+    writer.Int(m_pPlayer->m_AccData.m_GunFreeze);
+    writer.EndObject();
+
+	writer.Key("shotgun");
+    writer.StartObject();
+	writer.Key("shotgunspread");
+    writer.Int(m_pPlayer->m_AccData.m_ShotgunSpread);
+	writer.Key("shotgunexplode");
+    writer.Int(m_pPlayer->m_AccData.m_ShotgunExplode);
+    writer.Key("shotgunstars");
+    writer.Int(m_pPlayer->m_AccData.m_ShotgunStars);
+    writer.EndObject();
+
+	writer.Key("grenade");
+    writer.StartObject();
+	writer.Key("grenadespread");
+    writer.Int(m_pPlayer->m_AccData.m_GunSpread);
+	writer.Key("grenadebounce");
+    writer.Int(m_pPlayer->m_AccData.m_GrenadeBounce);
+    writer.Key("grenademine");
+    writer.Int(m_pPlayer->m_AccData.m_GrenadeMine);
+    writer.EndObject();
+
+	writer.Key("rifle");
+    writer.StartObject();
+	writer.Key("riflespread");
+    writer.Int(m_pPlayer->m_AccData.m_RifleSpread);
+	writer.Key("rifleswap");
+    writer.Int(m_pPlayer->m_AccData.m_RifleSwap);
+    writer.Key("rifleplasma");
+    writer.Int(m_pPlayer->m_AccData.m_RiflePlasma);
+    writer.EndObject();
+
+	writer.Key("hammer");
+    writer.StartObject();
+	writer.Key("hammerwalls");
+    writer.Int(m_pPlayer->m_AccData.m_HammerWalls);
+	writer.Key("hammershot");
+    writer.Int(m_pPlayer->m_AccData.m_HammerShot);
+    writer.Key("hammerkill");
+    writer.Int(m_pPlayer->m_AccData.m_HammerKill);
+    writer.EndObject();
+
+	writer.Key("ninja");
+    writer.StartObject();
+	writer.Key("ninjapermanent");
+    writer.Int(m_pPlayer->m_AccData.m_NinjaPermanent);
+	writer.Key("ninjastart");
+    writer.Int(m_pPlayer->m_AccData.m_NinjaStart);
+    writer.Key("ninjaswitch");
+    writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
+    writer.EndObject();
+
+    writer.EndObject();
+    writer.EndObject();
+    writer.EndObject();
+
+	Accfile = fopen(aBuf, "a+");
+
+	fputs(strBuf.GetString(), Accfile);
+	fclose(Accfile);
+
+	dbg_msg("account", "Registration succesful ('%s')", Username);
+	str_format(aBuf, sizeof(aBuf), "Registration succesful - ('/login %s %s'): ", Username, Password);
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	LoginJ(Username, Password);
 }
 
 bool CAccount::Exists(const char *Username)

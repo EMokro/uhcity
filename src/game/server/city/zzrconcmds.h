@@ -15,6 +15,7 @@ CONSOLE_COMMAND("vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable Polic
 CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable Police on v")
 
 //Admincmds
+CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 CONSOLE_COMMAND("jail", "vi", CFGFLAG_SERVER, ConJail, this, "jail v for i secounds")
 CONSOLE_COMMAND("add_money", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "add_money id money(1-5mio)")
 CONSOLE_COMMAND("set_money", "vi", CFGFLAG_SERVER, ConSetMoney, this, "set_money id money")
@@ -27,11 +28,6 @@ CONSOLE_COMMAND("freeze", "vi", CFGFLAG_SERVER, ConFreeze, this, "freeze id seco
 CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id")
 CONSOLE_COMMAND("sameip", "?", CFGFLAG_SERVER, ConSameIP, this, "sameip")
 CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
-
-
-//Sinnvolles
-//CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")
-CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 
 // Sytem stuff
 CONSOLE_COMMAND("sv_backup_accounts", "", CFGFLAG_SERVER, ConSvBackupAccounts, this, "Makes a backup")
