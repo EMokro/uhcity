@@ -12,10 +12,11 @@ public:
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
 	
-
 private:
 	void TriggerNR();
 	void TriggerID();
+
+	int GetNumber();
 
 	int m_ItemID[4];
 	int m_Type;
