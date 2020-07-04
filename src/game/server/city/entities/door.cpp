@@ -288,7 +288,7 @@ void CDoor::Snap(int SnappingClient)
 		pObj[i] = static_cast<CNetObj_Laser*>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
 
 		if (!pObj[i])
-			return;
+			continue;
 
 		if (i < 5 && !m_aLength[i])
 			continue;
