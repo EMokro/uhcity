@@ -765,6 +765,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
+		if (!pOwner)
+			return;
+
 		if(m_pPlayer->m_AccData.m_InfinityJumps == 2)
 		{
 			pOwner->ChangeUpgrade(ITEM_JUMP, UPGRADE_FLY);
