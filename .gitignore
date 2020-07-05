@@ -6,9 +6,11 @@ bam.exe
 *.bat
 *.res
 *.acc
+*.pdb
 
 config.lua
 bam
+.bam/
 autoexec.cfg
 
 objs/

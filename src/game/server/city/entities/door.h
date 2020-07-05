@@ -15,11 +15,14 @@ public:
 private:
 	void DoorID();
 	void DoorNR();
-	void ResetCollision();
-	bool m_Open;
+	void Stop();
+	void ItemID();
+	int GetNumber();
+
+	int m_Type;
+
 	int m_aLength[4];
 	int m_ItemID[4];
-	int m_Type;
 	int m_IDs[5];
 };
 

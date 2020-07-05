@@ -138,8 +138,8 @@ public:
 	vec2 m_HammerPos2;
 	vec2 m_DesiredPos;
 	// Doors
-	int m_TriggerID[4];
-	int m_TriggerNR[4];
+	int m_TriggerID;
+	int m_TriggerNR;
 	int64 m_LastSwitch;
 
 

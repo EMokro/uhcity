@@ -8,6 +8,7 @@
 class CCollision
 {
 	class CTile *m_pTiles;
+	class CDoorTile* m_pDoorTiles;
 	class CTile *m_pCityTiles[5];
 	int m_Width;
 	int m_Height;
@@ -15,6 +16,8 @@ class CCollision
 
 	bool IsTileSolid(int x, int y);
 	int GetTile(int x, int y);
+
+	bool m_DoorOpen[1024];
 
 public:
 	enum
@@ -50,6 +53,11 @@ public:
 
 	int TileMoney(int x, int y);
 	int TileMoney(vec2 Pos) { return TileMoney(Pos.x, Pos.y); }
+
+	int SetDoorAt(vec2 From, vec2 To, int Number);
+	bool GetDoorAt(int x, int y);
+	bool DoorOpen(int DoorNumber, bool Open);
+	bool IsDoorOpen(int DoorNumber) { return m_DoorOpen[DoorNumber]; }
 
 private:
 	class CTile *m_pSubGameLayer[4];
