@@ -12,9 +12,8 @@ public:
 	CAccount(CPlayer *pPlayer, CGameContext *pGameServer);
 
 	void Login(char *Username, char *Password);
-	void LoginJ(char *Username, char *Password);
+	bool OldLogin(char *Username, char *Password);
 	void Register(char *Username, char *Password);
-	void RegisterJ(char *Username, char *Password);
 	void Apply();
 	void Reset();
 	void Delete();

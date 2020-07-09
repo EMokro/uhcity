@@ -62,9 +62,12 @@ void CAccount::Login(char *Username, char *Password)
     }
 	else if(!Exists(Username))
 	{
-		dbg_msg("account", "Account login failed ('%s' - Missing)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This account does not exist.");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please register first. (/register <user> <pass>)");
+		if (!OldLogin(Username, Password)) {
+			dbg_msg("account", "Account login failed ('%s' - Missing)", Username);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This account does not exist.");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please register first. (/register <user> <pass>)");
+		}
+
 		return;
 	}
 
@@ -701,4 +704,143 @@ int CAccount::NextID()
 	}
 
 	return 1;
+}
+bool CAccount::OldLogin(char *Username, char *Password)
+{
+	char aBuf[128];
+
+	str_format(aBuf, sizeof aBuf, "+%s", Username);
+
+	if(!Exists(aBuf))
+	{
+		return false;
+	}
+
+	str_format(aBuf, sizeof(aBuf), "accounts/+%s.acc", Username);
+
+	char AccUsername[32];
+	char AccPassword[32];
+	char AccRcon[32];
+	int AccID;
+ 
+	FILE *Accfile;
+	Accfile = fopen(aBuf, "r");
+	fscanf(Accfile, "%s\n%s\n%s\n%d", AccUsername, AccPassword, AccRcon, &AccID);
+	fclose(Accfile);
+
+	for(int i = 0; i < MAX_SERVER; i++)
+	{
+		for(int j = 0; j < MAX_CLIENTS; j++)
+		{
+			if(GameServer()->m_apPlayers[j] && GameServer()->m_apPlayers[j]->m_AccData.m_UserID == AccID)
+			{
+				dbg_msg("account", "Account login failed ('%s' - already in use (local))", Username);
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				return true;
+			}
+
+			if(!GameServer()->m_aaExtIDs[i][j])
+				continue;
+
+			if(AccID == GameServer()->m_aaExtIDs[i][j])
+			{
+				dbg_msg("account", "Account login failed ('%s' - already in use (extern))", Username);
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				return true;
+			}
+		}
+	}
+
+	if(strcmp(Username, AccUsername))
+	{
+		dbg_msg("account", "Account login failed ('%s' - Wrong username)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		return true;
+	}
+
+	if(strcmp(Password, AccPassword))
+	{
+		dbg_msg("account", "Account login failed ('%s' - Wrong password)", Username);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		return true;
+	}
+
+	Accfile = fopen(aBuf, "r"); 		//
+
+	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
+		m_pPlayer->m_AccData.m_Username, // Done
+		m_pPlayer->m_AccData.m_Password, // Done
+		m_pPlayer->m_AccData.m_RconPassword, 
+		&m_pPlayer->m_AccData.m_UserID, // Done
+
+		&m_pPlayer->m_AccData.m_HouseID,
+ 		&m_pPlayer->m_AccData.m_Money, // Done
+		&m_pPlayer->m_AccData.m_Health, // Done
+		&m_pPlayer->m_AccData.m_Armor, // Done
+		&m_pPlayer->m_Score, // Done
+
+		&m_pPlayer->m_AccData.m_Donor, 
+		&m_pPlayer->m_AccData.m_VIP, // Done
+		&m_pPlayer->m_AccData.m_Arrested, // Done
+
+		&m_pPlayer->m_AccData.m_AllWeapons, // Done
+		&m_pPlayer->m_AccData.m_HealthRegen, // Done
+		&m_pPlayer->m_AccData.m_InfinityAmmo, // Done
+		&m_pPlayer->m_AccData.m_InfinityJumps, // Done
+		&m_pPlayer->m_AccData.m_FastReload, // Done
+		&m_pPlayer->m_AccData.m_NoSelfDMG, // Done
+
+		&m_pPlayer->m_AccData.m_GrenadeSpread, // Done 
+		&m_pPlayer->m_AccData.m_GrenadeBounce, // Done
+		&m_pPlayer->m_AccData.m_GrenadeMine,
+
+		&m_pPlayer->m_AccData.m_ShotgunSpread, // Done
+		&m_pPlayer->m_AccData.m_ShotgunExplode, // Done
+		&m_pPlayer->m_AccData.m_ShotgunStars,
+
+		&m_pPlayer->m_AccData.m_RifleSpread, // Done
+		&m_pPlayer->m_AccData.m_RifleSwap, // Done
+		&m_pPlayer->m_AccData.m_RiflePlasma, // Done
+
+		&m_pPlayer->m_AccData.m_GunSpread, // Done
+		&m_pPlayer->m_AccData.m_GunExplode, // Done
+		&m_pPlayer->m_AccData.m_GunFreeze, // Done
+
+		&m_pPlayer->m_AccData.m_HammerWalls, // Done
+		&m_pPlayer->m_AccData.m_HammerShot, // Done
+		&m_pPlayer->m_AccData.m_HammerKill, // Done
+
+		&m_pPlayer->m_AccData.m_NinjaPermanent, // Done
+		&m_pPlayer->m_AccData.m_NinjaStart, // Done
+		&m_pPlayer->m_AccData.m_NinjaSwitch, // Done
+
+		&m_pPlayer->m_AccData.m_Level,
+		&m_pPlayer->m_AccData.m_ExpPoints); 
+
+	fclose(Accfile);
+
+	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+
+	if(pOwner)
+	{
+		if(pOwner->IsAlive())
+			pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
+	}
+	 
+	if(m_pPlayer->GetTeam() == TEAM_SPECTATORS)
+		m_pPlayer->SetTeam(TEAM_RED);
+  	
+	dbg_msg("account", "Account login sucessful ('%s')", Username);
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
+ 
+	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
+		m_pPlayer->m_AccData.m_GunFreeze = 3;
+
+	if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconModPassword) == 0)
+		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
+
+	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconPassword) == 0)
+		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),2);
+
+	return true;
 }
