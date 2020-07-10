@@ -14,7 +14,7 @@ public:
     void BackupAccounts();
     void CreateRconLog();
     void CreateLoginLog(CPlayer *Player);
-    void CreateAccount(char *Username);
+    int GetAuth(char *Username);
 
 private:
 	CGameContext *m_pGameServer;

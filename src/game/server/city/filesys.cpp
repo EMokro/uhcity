@@ -12,61 +12,37 @@ using namespace rapidjson;
 
 CFileSys::CFileSys(CGameContext *pGameServer) {
     m_pGameServer = pGameServer;
-
-    
 }
 
 void CFileSys::BackupAccounts() {
-	// dbg_msg("filesys", "Creating a backup");
+    dbg_msg("filesys", "Creating a backup");
 
-	// char aBuf[256];
-	// time_t now = time(NULL);
-	// tm tm = *localtime(&now);
+    char aBuf[256];
+    time_t now = time(NULL);
+    tm tm = *localtime(&now);
 
-	// str_format(aBuf, sizeof aBuf, "mkdir -p ./backups/account && cp -r ./accounts ./backups/account/%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    str_format(aBuf, sizeof aBuf, "mkdir -p ./backups/account && cp -r ./accounts ./backups/account/%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 
-	// system(aBuf);
-
-    CreateAccount("test");
+    system(aBuf);
 }
 
-void CFileSys::CreateAccount(char *Username) {
-    Document doc;
 
-    StringBuffer strBuf;
-    char aBuf[256];
-    Writer<StringBuffer> writer(strBuf);
-    FILE *File;
+int CFileSys::GetAuth(char *Username) {
+    char aBuf[512];
 
-    str_format(aBuf, sizeof aBuf, "Creating account %s.json", Username);
-    dbg_msg("filesys", aBuf);
+    FILE *Accfile;
+	Accfile = fopen("storage/auth.json", "r");
+	fscanf(Accfile, "%s\n", aBuf);
+	fclose(Accfile);
 
-    writer.StartObject();
-    writer.Key(Username);
-    writer.StartObject();
-    writer.Key("info");
-    writer.StartObject();
-    writer.Key("accid");
-    writer.Int(1);
-    writer.Key("Money");
-    writer.Int64(10000000000);
-    writer.EndObject();
-    writer.Key("items");
-    writer.StartObject();
-    writer.Key("gun");
-    writer.StartObject();
-    writer.Key("freezegun");
-    writer.Int(0);
-    writer.EndObject();
-    writer.EndObject();
-    writer.EndObject();
-    writer.EndObject();
+	Document AccD;
+	ParseResult res = AccD.Parse(aBuf);
+	AccD.Parse(aBuf);
 
-    str_format(aBuf, sizeof aBuf, "logs/accounts/%s.json", Username);
-    File = fopen(aBuf, "a+");
-    fputs(strBuf.GetString(), File);
-    fclose(File);
-
+	if (res.IsError()) {
+		dbg_msg("filesys", "getauth() parse error");
+		return;
+	}
 }
 
 void CFileSys::CreateRconLog() {
