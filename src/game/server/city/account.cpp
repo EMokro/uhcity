@@ -607,6 +607,7 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_Level = 1;
 	m_pPlayer->m_AccData.m_ExpPoints = 0;
 
+	GameServer()->Server()->Logout(m_pPlayer->GetCID());
 }
 
 void CAccount::Delete()
