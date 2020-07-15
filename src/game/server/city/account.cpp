@@ -684,6 +684,7 @@ int CAccount::NextID()
 
 	return 1;
 }
+
 bool CAccount::OldLogin(char *Username, char *Password)
 {
 	char aBuf[128];
@@ -816,6 +817,9 @@ bool CAccount::OldLogin(char *Username, char *Password)
  
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
+
+	std::remove(aBuf);
+	Apply();
 
 	return true;
 }
