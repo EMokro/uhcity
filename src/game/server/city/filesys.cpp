@@ -27,24 +27,6 @@ void CFileSys::BackupAccounts() {
 }
 
 
-int CFileSys::GetAuth(char *Username) {
-    char aBuf[512];
-
-    FILE *Accfile;
-	Accfile = fopen("storage/auth.json", "r");
-	fscanf(Accfile, "%s\n", aBuf);
-	fclose(Accfile);
-
-	Document AccD;
-	ParseResult res = AccD.Parse(aBuf);
-	AccD.Parse(aBuf);
-
-	if (res.IsError()) {
-		dbg_msg("filesys", "getauth() parse error");
-		return;
-	}
-}
-
 void CFileSys::CreateRconLog() {
 
 }

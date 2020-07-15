@@ -8,6 +8,9 @@
 #include "base/rapidjson/document.h"
 #include "base/rapidjson/reader.h"
 #include "base/rapidjson/writer.h"
+#include "base/rapidjson/filereadstream.h"
+#include "base/rapidjson/filewritestream.h"
+#include "base/rapidjson/error/en.h"
 //#include "game/server/gamecontext.h"
 
 #if defined(CONF_FAMILY_WINDOWS)
@@ -145,7 +148,6 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_UserID = user["accdata"]["accid"].GetInt();
 	str_copy(m_pPlayer->m_AccData.m_Username, user["accdata"]["username"].GetString(), sizeof(m_pPlayer->m_AccData.m_Username));
 	str_copy(m_pPlayer->m_AccData.m_Password, user["accdata"]["password"].GetString(), sizeof(m_pPlayer->m_AccData.m_Password));
-	str_copy(m_pPlayer->m_AccData.m_RconPassword, "0", sizeof(m_pPlayer->m_AccData.m_RconPassword));
 
 	m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
 	m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
@@ -154,6 +156,8 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_Armor = user["general"]["armor"].GetInt();
 	m_pPlayer->m_AccData.m_HouseID = user["general"]["houseid"].GetInt();
 
+	if(user["ranks"]["admin"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), 2);
+	if(user["ranks"]["police"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), 1);
 	m_pPlayer->m_AccData.m_Donor = user["ranks"]["donor"].GetInt();
 	m_pPlayer->m_AccData.m_VIP = user["ranks"]["vip"].GetInt();
 
@@ -205,13 +209,6 @@ void CAccount::Login(char *Username, char *Password)
  
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
-
-	if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconModPassword) == 0)
-		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
-
-	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconPassword) == 0)
-		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),2);
-
 }
 
 void CAccount::Register(char *Username, char *Password)
@@ -304,6 +301,10 @@ void CAccount::Register(char *Username, char *Password)
 
 	writer.Key("ranks");
 	writer.StartObject();
+	writer.Key("admin");
+	writer.Int(0);
+	writer.Key("police");
+	writer.Int(0);
 	writer.Key("donor");
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
@@ -458,6 +459,10 @@ void CAccount::Apply()
 
 	writer.Key("ranks");
 	writer.StartObject();
+	writer.Key("admin");
+	writer.Int(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()) ? 1 : 0);
+	writer.Key("police");
+	writer.Int(GameServer()->Server()->IsMod(m_pPlayer->GetCID()) ? 1 : 0);
 	writer.Key("donor");
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
@@ -556,7 +561,6 @@ void CAccount::Reset()
 {
 	str_copy(m_pPlayer->m_AccData.m_Username, "", 32);
 	str_copy(m_pPlayer->m_AccData.m_Password, "", 32);
-	str_copy(m_pPlayer->m_AccData.m_RconPassword, "", 32);
 	m_pPlayer->m_AccData.m_UserID = 0;
 	
 	m_pPlayer->m_AccData.m_HouseID = 0;
@@ -642,32 +646,6 @@ void CAccount::NewPassword(char *NewPassword)
 	
 	dbg_msg("account", "Password changed - ('%s')", m_pPlayer->m_AccData.m_Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Password successfully changed!");
-}
-
-void CAccount::NewUsername(char *NewUsername)
-{
-	char aBuf[128];
-	if(!m_pPlayer->m_AccData.m_UserID)
-	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, login to change the username");
-		return;
-	}
-	if(strlen(NewUsername) > 15 || !strlen(NewUsername))
-	{
-		str_format(aBuf, sizeof(aBuf), "Username too %s!", strlen(NewUsername)?"long":"short");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		return;
-    }
-
-	str_format(aBuf, sizeof(aBuf), "accounts/+%s.acc", m_pPlayer->m_AccData.m_Username);
-	std::rename(aBuf, NewUsername);
-
-	str_copy(m_pPlayer->m_AccData.m_Username, NewUsername, 32);
-	Apply();
-
-	
-	dbg_msg("account", "Username changed - ('%s')", m_pPlayer->m_AccData.m_Username);
-	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Username successfully changed!");
 }
 
 int CAccount::NextID()
@@ -765,12 +743,14 @@ bool CAccount::OldLogin(char *Username, char *Password)
 		return true;
 	}
 
-	Accfile = fopen(aBuf, "r"); 		//
+	Accfile = fopen(aBuf, "r"); 
+	
+	char *tmpBuf;
 
 	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
 		m_pPlayer->m_AccData.m_Username, // Done
 		m_pPlayer->m_AccData.m_Password, // Done
-		m_pPlayer->m_AccData.m_RconPassword, 
+		tmpBuf,
 		&m_pPlayer->m_AccData.m_UserID, // Done
 
 		&m_pPlayer->m_AccData.m_HouseID,
@@ -836,11 +816,60 @@ bool CAccount::OldLogin(char *Username, char *Password)
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
 
-	if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconModPassword) == 0)
-		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),1);
-
-	else if(str_comp(m_pPlayer->m_AccData.m_RconPassword, g_Config.m_SvRconPassword) == 0)
-		GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(),2);
-
 	return true;
+}
+
+void CAccount::SetAuth(char *Username, int lvl) {
+	char aBuf[512];
+	char AccText[65536];
+	FILE *Accfile;
+
+	if (GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()) == lvl)
+		return;
+
+	if (!Exists(Username))
+		return;
+
+	str_format(aBuf, sizeof(aBuf), "accounts/%s.acc", Username);
+
+	Accfile = fopen(aBuf, "r");
+	fscanf(Accfile, "%s\n", AccText);
+	fclose(Accfile);
+	
+	Document AccD;
+	StringBuffer strBuf;
+	Writer<StringBuffer> writer(strBuf);
+	ParseResult res = AccD.Parse(AccText);
+	dbg_msg("account", AccText);
+
+	if (res.IsError()) {
+		dbg_msg("account", "parse error");
+		return;
+	}
+
+	assert(AccD.IsObject());
+	dbg_msg("account", "hi123");
+	switch (lvl)
+	{
+	case 0:
+		AccD["user"]["ranks"]["admin"].SetInt(0);
+		AccD["user"]["ranks"]["police"].SetInt(0);
+		break;
+	case 1:
+		AccD["user"]["ranks"]["police"].SetInt(1);
+		break;
+	case 2:
+		AccD["user"]["ranks"]["admin"].SetInt(1);
+		break;
+	default:
+		return;
+	}
+
+	AccD.Accept(writer);
+	dbg_msg("account", "hi123");
+	std::remove(aBuf);
+	Accfile = fopen(aBuf, "a+");
+	fscanf(Accfile, "%s\n", AccText);
+	fclose(Accfile);
+	dbg_msg("account", "hi123");
 }

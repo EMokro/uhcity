@@ -148,13 +148,11 @@ void CPlayer::Tick()
 		//Server()->SetClientClan(GetCID(), "[*Admin*]");
 		//str_format(m_aRank, sizeof(m_aRank), "%s", );
 		str_copy(m_aRank, "[*Admin*]", sizeof(m_aRank));
-		str_format(m_AccData.m_RconPassword, sizeof(m_AccData.m_RconPassword), g_Config.m_SvRconPassword);
 	}
 	else if(GameServer()->Server()->IsMod(GetCID()))
 	{
 		//Server()->SetClientClan(GetCID(), "[*Police*]");
 		str_copy(m_aRank, "[*Police*]", sizeof(m_aRank));
-		str_format(m_AccData.m_RconPassword, sizeof(m_AccData.m_RconPassword), g_Config.m_SvRconModPassword);
 	}
 	else if(m_AccData.m_Donor)
 		//Server()->SetClientClan(GetCID(), "[*Donor*]");

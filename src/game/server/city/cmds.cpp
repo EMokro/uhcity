@@ -380,18 +380,6 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, use /rename <newname>");
 		return;
 	}
-	else if(!strncmp(Msg->m_pMessage, "/rename", 7))
-	{
-		LastChat();
-		char NewUsername[512];
-		if(sscanf(Msg->m_pMessage, "/rename %s", NewUsername) != 1)
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please use '/rename <newname>'");
-			return;
-		}
-		m_pPlayer->m_pAccount->NewUsername(NewUsername);
-		return;
-	}
 	else if(!str_comp_nocase(Msg->m_pMessage, "/info"))
     {
 		LastChat();

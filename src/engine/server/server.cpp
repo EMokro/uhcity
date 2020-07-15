@@ -952,12 +952,6 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 				else if(g_Config.m_SvRconPassword[0] && str_comp(pPw, g_Config.m_SvRconPassword) == 0)
 				{
-					// City
-					/*if(GameServer()->m_apPlayers[ClientID])
-					{
-						str_copy(GameServer()->m_apPlayers[ClientID]->m_AccData.m_RconPassword, pPw, sizeof(GameServer()->m_apPlayers[ClientID]->m_AccData.m_RconPassword));
-					}*/
-
 					CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
 					Msg.AddInt(1);	//authed
 					Msg.AddInt(1);	//cmdlist

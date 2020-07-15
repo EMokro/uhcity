@@ -14,11 +14,17 @@ public:
     void BackupAccounts();
     void CreateRconLog();
     void CreateLoginLog(CPlayer *Player);
-    int GetAuth(char *Username);
 
 private:
 	CGameContext *m_pGameServer;
 	CGameContext *GameServer() const { return m_pGameServer; }
+
+    enum {
+        PLAYER,
+        ADMIN,
+        MOD,
+        POLICE,
+    };
 };
 
 #endif
