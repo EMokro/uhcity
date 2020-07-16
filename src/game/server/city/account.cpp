@@ -747,7 +747,7 @@ bool CAccount::OldLogin(char *Username, char *Password)
 
 	Accfile = fopen(aBuf, "r"); 
 	
-	char *tmpBuf;
+	char tmpBuf[128];
 
 	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n%d\n%d\n%d", 
 		m_pPlayer->m_AccData.m_Username, // Done
@@ -818,9 +818,9 @@ bool CAccount::OldLogin(char *Username, char *Password)
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
 
-	std::remove(aBuf);
 	Apply();
-
+	std::remove(aBuf);
+	
 	return true;
 }
 
@@ -845,7 +845,6 @@ void CAccount::SetAuth(char *Username, int lvl) {
 	StringBuffer strBuf;
 	Writer<StringBuffer> writer(strBuf);
 	ParseResult res = AccD.Parse(AccText);
-	dbg_msg("account", AccText);
 
 	if (res.IsError()) {
 		dbg_msg("account", "parse error");
@@ -854,6 +853,7 @@ void CAccount::SetAuth(char *Username, int lvl) {
 
 	assert(AccD.IsObject());
 	dbg_msg("account", "hi123");
+
 	switch (lvl)
 	{
 	case 0:
@@ -871,10 +871,8 @@ void CAccount::SetAuth(char *Username, int lvl) {
 	}
 
 	AccD.Accept(writer);
-	dbg_msg("account", "hi123");
 	std::remove(aBuf);
 	Accfile = fopen(aBuf, "a+");
 	fscanf(Accfile, "%s\n", AccText);
 	fclose(Accfile);
-	dbg_msg("account", "hi123");
 }
