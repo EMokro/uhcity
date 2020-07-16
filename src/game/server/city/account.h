@@ -12,12 +12,13 @@ public:
 	CAccount(CPlayer *pPlayer, CGameContext *pGameServer);
 
 	void Login(char *Username, char *Password);
+	bool OldLogin(char *Username, char *Password);
 	void Register(char *Username, char *Password);
 	void Apply();
 	void Reset();
 	void Delete();
 	void NewPassword(char *NewPassword);
-	void NewUsername(char *NewUsername);
+	void SetAuth(char *Username, int lvl);
 	bool Exists(const char * Username);
 
 	static const int MAX_SERVER = 2;

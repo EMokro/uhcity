@@ -3,12 +3,14 @@
 
 #include <engine/server.h>
 #include "game/server/gamecontext.h"
+#include "base/rapidjson/document.h"
 
 class CFileSys 
 {
 public:
     CFileSys(CGameContext *pGameServer);
 
+    void Init();
     void BackupAccounts();
     void CreateRconLog();
     void CreateLoginLog(CPlayer *Player);
@@ -16,6 +18,13 @@ public:
 private:
 	CGameContext *m_pGameServer;
 	CGameContext *GameServer() const { return m_pGameServer; }
+
+    enum {
+        PLAYER,
+        ADMIN,
+        MOD,
+        POLICE,
+    };
 };
 
 #endif

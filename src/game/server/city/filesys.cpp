@@ -4,23 +4,28 @@
 #include <sys/stat.h>
 #include <engine/config.h>
 #include "filesys.h"
-#include "account.h"
+#include "base/rapidjson/document.h"
+#include "base/rapidjson/reader.h"
+#include "base/rapidjson/writer.h"
+
+using namespace rapidjson;
 
 CFileSys::CFileSys(CGameContext *pGameServer) {
     m_pGameServer = pGameServer;
 }
 
 void CFileSys::BackupAccounts() {
-	dbg_msg("filesys", "Creating a backup");
+    dbg_msg("filesys", "Creating a backup");
 
-	char aBuf[256];
-	time_t now = time(NULL);
-	tm tm = *localtime(&now);
+    char aBuf[256];
+    time_t now = time(NULL);
+    tm tm = *localtime(&now);
 
-	str_format(aBuf, sizeof aBuf, "mkdir -p ./backups/account && cp -r ./accounts ./backups/account/%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    str_format(aBuf, sizeof aBuf, "mkdir -p ./backups/account && cp -r ./accounts ./backups/account/%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 
-	system(aBuf);
+    system(aBuf);
 }
+
 
 void CFileSys::CreateRconLog() {
 
