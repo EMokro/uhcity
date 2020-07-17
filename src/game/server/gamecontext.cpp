@@ -672,10 +672,10 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 // int someNum = 1000000;
 // FormatInt(someNum, numBuf);
 // numBuf should output "1.000.000"
-void CGameContext::FormatInt(int n, char* out) {
-	int i;
-	int digit;
-	int out_index = 0;
+void CGameContext::FormatInt(long long n, char* out) {
+	long long i;
+	long long digit;
+	long long out_index = 0;
 
 	for (i = n; i != 0; i /= 10) {
 		digit = i % 10;

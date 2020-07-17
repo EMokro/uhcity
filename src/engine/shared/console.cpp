@@ -23,7 +23,16 @@ int CConsole::CResult::GetInteger(unsigned Index)
 {
 	if (Index < 0 || Index >= m_NumArgs)
 		return 0;
+
 	return str_toint(m_apArgs[Index]);
+}
+
+long long CConsole::CResult::GetLongLong(unsigned Index)
+{
+	if (Index < 0 || Index >= m_NumArgs)
+		return 0;
+
+	return str_toll(m_apArgs[Index]);
 }
 
 float CConsole::CResult::GetFloat(unsigned Index)

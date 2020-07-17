@@ -91,14 +91,11 @@ void CAccount::Login(char *Username, char *Password)
 		return;
 	}
 
-	dbg_msg("debug", AccText);
-
 	assert(AccD.IsObject());
 	Value::ConstMemberIterator itr;
 
 	if (AccD["user"].HasMember("accdata")) {
 		itr = AccD["user"].FindMember("accdata");
-		dbg_msg("debug", "accdata found");
 	}
 	else 
 		return;
@@ -106,7 +103,6 @@ void CAccount::Login(char *Username, char *Password)
 	Value& user = AccD["user"];
 
 	str_format(aBuf, sizeof(aBuf), "is %s", user["accdata"]["username"].GetString());
-	dbg_msg("debug", aBuf);
 	
 	for(int i = 0; i < MAX_SERVER; i++)
 	{
@@ -205,7 +201,6 @@ void CAccount::Login(char *Username, char *Password)
   	
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
-	dbg_msg("debug", "hello");
  
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
@@ -408,7 +403,7 @@ bool CAccount::Exists(const char *Username)
 {
 	char aBuf[128];
 	str_format(aBuf, sizeof(aBuf), "accounts/%s.acc", Username);
-	dbg_msg("debug", aBuf);
+
     if(FILE *Accfile = fopen(aBuf, "r"))
     {
         fclose(Accfile);
@@ -675,7 +670,6 @@ int CAccount::NextID()
 	}
 	else
 	{
-		dbg_msg("debug", "userid not found");
 		Accfile = fopen(AccUserID, "a+");
 		str_format(aBuf, sizeof(aBuf), "%d", UserID);
 		fputs(aBuf, Accfile);

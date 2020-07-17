@@ -1770,6 +1770,7 @@ char str_uppercase(char c)
 }
 
 int str_toint(const char *str) { return atoi(str); }
+long long str_toll(const char *str) { return atoll(str); }
 float str_tofloat(const char *str) { return atof(str); }
 
 

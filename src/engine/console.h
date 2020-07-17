@@ -37,6 +37,7 @@ public:
 		virtual ~IResult() {}
 
 		virtual int GetInteger(unsigned Index) = 0;
+		virtual long long GetLongLong(unsigned Index) = 0;
 		virtual float GetFloat(unsigned Index) = 0;
 		virtual const char *GetString(unsigned Index) = 0;
 

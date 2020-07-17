@@ -200,7 +200,7 @@ public:
 	void DisableDmg(int Owner, int target);
 	void EnableDmg(int Owner, int target);
 	bool HasDmgDisabled(int Owner, int target);
-	void FormatInt(int n, char* out);
+	void FormatInt(long long n, char* out);
 	void strrev(char* str);
 	int string_length(char* pointer);
 

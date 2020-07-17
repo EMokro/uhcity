@@ -112,7 +112,7 @@ public:
 		// basic
 		unsigned int m_Level;
 		unsigned int m_ExpPoints;
-		unsigned int m_Money;
+		unsigned long long m_Money;
 		unsigned long long m_exp;
 		int m_Health;
 		int m_Armor;	

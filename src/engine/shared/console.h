@@ -113,6 +113,7 @@ class CConsole : public IConsole
 
 		virtual const char *GetString(unsigned Index);
 		virtual int GetInteger(unsigned Index);
+		virtual long long GetLongLong(unsigned Index);
 		virtual float GetFloat(unsigned Index);
 
 		enum

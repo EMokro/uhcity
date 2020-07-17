@@ -120,7 +120,7 @@ void CGameContext::ConJail(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Amount = pResult->GetInteger(0);
+	long long Amount = pResult->GetLongLong(0);
 	int ID = pResult->GetVictim();
 	char aBuf[200];
 
@@ -139,12 +139,12 @@ void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 	
 			if(Amount)
 			{
-				str_format(aBuf, sizeof aBuf, "'%s' got %d$", pSelf->Server()->ClientName(ID), Amount);
+				str_format(aBuf, sizeof aBuf, "'%s' got %lld$", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
 
 				CPlayer* pP = pSelf->m_apPlayers[ID];
 
-				str_format(aBuf, sizeof aBuf, "An Admin gave you %d$", Amount);
+				str_format(aBuf, sizeof aBuf, "An Admin gave you %lld$", Amount);
 				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
@@ -154,7 +154,7 @@ void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
-	int Amount = pResult->GetInteger(0);
+	long long Amount = pResult->GetLongLong(0);
 	int ID = pResult->GetVictim();
 	char aBuf[200];
 
@@ -174,7 +174,7 @@ void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 				char numBuf[16];
 				pChr->GetPlayer()->m_AccData.m_Money = Amount;
 
-				str_format(aBuf, sizeof aBuf, "'%s' got %d$", pSelf->Server()->ClientName(ID), Amount);
+				str_format(aBuf, sizeof aBuf, "'%s' got %lld$", pSelf->Server()->ClientName(ID), Amount);
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Money", aBuf);
 
 				CPlayer* pP = pSelf->m_apPlayers[ID];
@@ -191,8 +191,6 @@ void CGameContext::ConUnjail(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	int UnJailID = pResult->GetVictim();
-	char aBuf[200];
-
 
 	CCharacter* pChr = pSelf->GetPlayerChar(UnJailID);
 	if(pChr)
@@ -391,7 +389,6 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 
 void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 {
-	NETADDR Addr;
 	char aBuf[256];
 	char checkAddr[NETADDR_MAXSTRSIZE];
 	char resAddr[NETADDR_MAXSTRSIZE];
