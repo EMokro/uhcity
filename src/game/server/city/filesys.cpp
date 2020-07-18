@@ -32,23 +32,38 @@ void CFileSys::CreateRconLog() {
 }
 
 void CFileSys::CreateLoginLog(CPlayer *Player) {
-    // char aBuf[256];
-    // char aAddr[NETADDR_MAXSTRSIZE];
-    // FILE *Logfile;
-    // Logfile = fopen("logs/login.txt", "r");
+    char nameBuf[256];
+    char aBuf[256];
+    time_t now = time(NULL);
+    tm tm = *localtime(&now);
+    char aAddr[NETADDR_MAXSTRSIZE];
+    FILE *File;
+    str_format(nameBuf, sizeof nameBuf, "logs/login/%d-%02d-%02d.txt", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    File = fopen(nameBuf, "a+");
 
-    // if(!Logfile)
-    // {
-    //     system("mkdir logs & touch logs/login.txt");
-    //     Logfile = fopen("logs/login.txt", "r");
-    // }
+    if(!File)
+        system("mkdir logs/login");
 
-    // GameServer()->Server()->GetClientAddr(Player->GetCID(), aAddr, NETADDR_MAXSTRSIZE);
-    // str_format(aBuf, sizeof aBuf, "[ %s ]: [ %s ] logged in as %d",
-    //     aAddr,
-    //     Player->m_AccData.m_Username,
-    //     GameServer()->Server()->AuthLvl(Player->GetCID()));
-    
-    // fputs(aBuf, Logfile);
-    // fclose(Logfile);
+    GameServer()->Server()->GetClientAddr(Player->GetCID(), aAddr, NETADDR_MAXSTRSIZE);
+    str_format(aBuf, sizeof aBuf, "%02d:%02d [ %s ]: logged in as [ %s ]\n",
+        tm.tm_hour,
+        tm.tm_min,
+        aAddr,
+        Player->m_AccData.m_Username);
+    fputs(aBuf, File);
+    fclose(File);
+}
+
+void CFileSys::CreateDebugLog(int Level, const char *pFrom, const char *pStr) {
+    char nameBuf[256];
+    char aBuf[256];
+    time_t now = time(NULL);
+    tm tm = *localtime(&now);
+    FILE *File;
+
+    str_format(nameBuf, sizeof nameBuf, "logs/debug/%d-%02d-%02d.txt", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    File = fopen(nameBuf, "a+");
+
+    if(!File)
+        system("mkdir logs/debug");
 }

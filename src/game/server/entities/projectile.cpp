@@ -108,7 +108,7 @@ void CProjectile::Tick()
 	{
 		if(OwnerChar->GetPlayer()->m_AccData.m_GunFreeze
 		&& m_Type == WEAPON_GUN 
-		&& !TargetChr->m_God
+		&& !TargetChr->GetPlayer()->m_God
 		&& !TargetChr->Protected()
 		&& !TargetChr->m_Frozen
 		&& !TargetChr->m_GunFreezeCooldown

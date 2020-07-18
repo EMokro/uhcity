@@ -14,6 +14,7 @@ public:
     void BackupAccounts();
     void CreateRconLog();
     void CreateLoginLog(CPlayer *Player);
+    void CreateDebugLog(int Level, const char *pFrom, const char *pStr);
 
 private:
 	CGameContext *m_pGameServer;

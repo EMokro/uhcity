@@ -499,10 +499,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
     {
 		char aBuf[128];
 		if(!GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
-		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You are not admin! Access denied");
 			return;
-		}
 
 		m_pPlayer->m_God ^= true;
 		str_format(aBuf, sizeof(aBuf), "%s Godmode", m_pPlayer->m_God ? "Enabled" : "Disabled");

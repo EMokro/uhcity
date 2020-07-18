@@ -49,7 +49,7 @@ void CWall::Tick()
 			return;
 		}
 
-		if(pTargetChr != pOwner && !pTargetChr->Protected() && !pTargetChr->m_God)
+		if(pTargetChr != pOwner && !pTargetChr->Protected() && !pTargetChr->GetPlayer()->m_God)
 		{
 			int Dmg = (pTargetChr->m_Health + pTargetChr->m_Armor) / 5;
 
