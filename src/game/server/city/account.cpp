@@ -562,7 +562,6 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_Money = 0;
 	m_pPlayer->m_AccData.m_Health = 10;
 	m_pPlayer->m_AccData.m_Armor = 10;
-	m_pPlayer->m_Score = 0;
 
 	m_pPlayer->m_AccData.m_Donor = 0;
 	m_pPlayer->m_AccData.m_VIP = 0;

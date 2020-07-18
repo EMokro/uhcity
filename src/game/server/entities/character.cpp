@@ -96,6 +96,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_InstaKills = 0;
 	m_God = false;
+	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
 	m_FreezeEnd = false;
