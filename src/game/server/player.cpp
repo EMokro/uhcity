@@ -112,14 +112,17 @@ void CPlayer::Tick()
 	{
 		if(m_AccData.m_Arrested > 1)
 		{
-			char aBuf[40];
-			str_format(aBuf, sizeof(aBuf), "You are arrested for %i second%s", m_AccData.m_Arrested - 2, m_AccData.m_Arrested == 3 ? " " : "s");
-			GameServer()->SendBroadcast(aBuf, GetCID());
-
-			if(m_Insta)
+			if (m_Insta)
 				m_Insta = false;
-			if(m_AccData.m_Arrested && Server()->Tick()%50 == 0)
+
+			if (m_AccData.m_Arrested && Server()->Tick() % Server()->TickSpeed() == 0)
+			{
+				char aBuf[48];
+				str_format(aBuf, sizeof(aBuf), "You are arrested for %i second%s", m_AccData.m_Arrested - 2, m_AccData.m_Arrested == 3 ? " " : "s");
+				GameServer()->SendBroadcast(aBuf, GetCID());
+
 				m_AccData.m_Arrested--;
+			}
 		}
 		else if(m_AccData.m_Arrested == 1)
 		{
