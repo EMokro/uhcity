@@ -95,7 +95,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	}
 
 	m_InstaKills = 0;
-	m_God = false;
 	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
@@ -156,7 +155,7 @@ void CCharacter::Tele()
 {
 	vec2 TelePos = m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY);
 
-	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) || m_God)
+	if (!GameServer()->Collision()->IsTile(TelePos, TILE_SOLID) || m_pPlayer->m_God)
 	{
 		float Dist = distance(TelePos, m_Pos);
 
@@ -168,7 +167,7 @@ void CCharacter::Tele()
 		for (int i = 1; i < Dist; i += 32)
 		{
 			vec2 TestPos = m_Pos + normalize(TelePos - m_Pos) * i;
-			if (!m_God)
+			if (!m_pPlayer->m_God)
 			{
 				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
@@ -922,7 +921,7 @@ int CCharacter::NewPlasma()
 	{
 		CCharacter *VictimChr = GameServer()->GetPlayerChar(i);
 
-		if(!VictimChr || VictimChr == this || VictimChr->Protected() || VictimChr->m_God)
+		if(!VictimChr || VictimChr == this || VictimChr->Protected() || VictimChr->GetPlayer()->m_God)
 			continue;
 		
 		if(!GameServer()->Collision()->IntersectLine(m_Pos, VictimChr->m_Pos, 0x0, 0x0))
@@ -1861,7 +1860,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
-	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_God && !pKiller->m_JailRifle))
+	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_pPlayer->m_God && !pKiller->m_JailRifle))
 		return;
 
 	// we got to wait 0.5 secs before respawning
@@ -1896,7 +1895,7 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
-	if((Protected() && !m_GameZone) || m_God || m_pPlayer->m_Insta || GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()))
+	if((Protected() && !m_GameZone) || m_pPlayer->m_God || m_pPlayer->m_Insta || GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()))
 		return false;
 
 	m_Core.m_Vel += Force;

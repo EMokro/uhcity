@@ -113,7 +113,6 @@ public:
 	//Save/Load
 	vec2 m_SavePos;
 	
-	bool m_God;
 	bool m_Protected;
 	bool m_GameZone;
 	bool m_IsHammerKilled;

@@ -504,14 +504,9 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			return;
 		}
 
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-		if(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()))
-		{
-			pOwner->m_God^=true;
-			str_format(aBuf, sizeof(aBuf), "%s Godmode", pOwner->m_God?"Enabled":"Disabled");
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		}
+		m_pPlayer->m_God ^= true;
+		str_format(aBuf, sizeof(aBuf), "%s Godmode", m_pPlayer->m_God ? "Enabled" : "Disabled");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
 		return;
     } // info
