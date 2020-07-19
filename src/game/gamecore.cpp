@@ -81,20 +81,25 @@ void CCharacterCore::Tick(bool UseInput)
 	m_TriggeredEvents = 0;
 
 	// get ground state
-	bool Grounded = false;
-	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
-		Grounded = true;
-	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
-		Grounded = true;
+	if (m_IgnoreGround)
+		m_IsGrounded = false;
+	else {
+		if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
+			m_IsGrounded = true;
+		else if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
+			m_IsGrounded = true;
+		else 
+			m_IsGrounded = false;
+	}
+	
 
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	// City
-		m_Vel.y += m_pWorld->m_Tuning.m_Gravity;
 
-	float MaxSpeed = Grounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
-	float Accel = Grounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
-	float Friction = Grounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
+	float MaxSpeed = m_IsGrounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
+	float Accel = m_IsGrounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
+	float Friction = m_IsGrounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
 
 	// handle input
 	if(UseInput)
@@ -118,7 +123,7 @@ void CCharacterCore::Tick(bool UseInput)
 		{
 			if(!(m_Jumped&1))
 			{
-				if(Grounded)
+				if(m_IsGrounded)
 				{
 					m_TriggeredEvents |= COREEVENT_GROUND_JUMP;
 					m_Vel.y = -m_pWorld->m_Tuning.m_GroundJumpImpulse;
@@ -170,7 +175,7 @@ void CCharacterCore::Tick(bool UseInput)
 	// handle jumping
 	// 1 bit = to keep track if a jump has been made on this input
 	// 2 bit = to keep track if a air-jump has been made
-	if(Grounded)
+	if(m_IsGrounded)
 		m_Jumped &= ~2;
 
 	// do hook

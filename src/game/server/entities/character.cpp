@@ -95,6 +95,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	}
 
 	m_InstaKills = 0;
+	m_Gravity = .5;
 	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
@@ -143,9 +144,11 @@ void CCharacter::SetWeapon(int W)
 
 bool CCharacter::IsGrounded()
 {
-	if(GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
+	if (m_Core.m_IgnoreGround)
+		return false;
+	if (GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
 		return true;
-	if(GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
+	if (GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
 		return true;
 	return false;
 }
@@ -1078,119 +1081,148 @@ void CCharacter::Booster()
 {
 	const float NORMAL = IsGrounded()?10:5;
 	const float FAST = IsGrounded()?30:20;
-
 	
 	// Booster
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_DOWN))
-		m_Core.m_Vel.y = NORMAL;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_UP))
-		m_Core.m_Vel.y = -NORMAL;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_RIGHT))
-		m_Core.m_Vel.x = NORMAL;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_LEFT))
-		m_Core.m_Vel.x = -NORMAL;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_HORI) && m_Core.m_Vel.x)
-		m_Core.m_Vel.x = m_Core.m_Vel.x>0?NORMAL:-NORMAL;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_VERT) && m_Core.m_Vel.y)
-		m_Core.m_Vel.y = m_Core.m_Vel.y>0?NORMAL:-NORMAL;
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_DOWN)) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += 1;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_UP)) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += -1;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_RIGHT)) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += 1;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_LEFT)) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += -1;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_HORI) && m_Core.m_Vel.x) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += m_Core.m_Vel.x > 0 ? 1.5 : -1.5;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_VERT) && m_Core.m_Vel.y) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += m_Core.m_Vel.y > 0 ? 1.5 : -1.5;
+	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_ALL))
 	{
 		if(m_Core.m_Vel.x > 0.0001f)
-			m_Core.m_Vel.x = m_Core.m_Vel.x>0?NORMAL:-NORMAL;
+			m_Core.m_Vel.x += m_Core.m_Vel.x > 0 ? 1 : -1;
 
 		if(m_Core.m_Vel.y)
-			m_Core.m_Vel.y = m_Core.m_Vel.y>0?NORMAL:-NORMAL;
-	} 
+			m_Core.m_Vel.y += m_Core.m_Vel.y > 0 ? 1 : -1;
+	}
 
 	// Booster Wall
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_DOWN))
 	{
-		m_Core.m_Vel.y = NORMAL;
+		m_Core.m_Vel.y += 1;
 		m_Core.m_Vel.x = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_UP))
 	{
-		m_Core.m_Vel.y = -NORMAL;
+		m_Core.m_Vel.y += -1;
 		m_Core.m_Vel.x = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_RIGHT))
 	{
-		m_Core.m_Vel.x = NORMAL;
-		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
+		m_Core.m_Vel.x += 1;
+		m_Core.m_Vel.y = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_LEFT))
 	{
-		m_Core.m_Vel.x = -NORMAL;
-		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
+		m_Core.m_Vel.x += -1;
+		m_Core.m_Vel.y = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_HORI) && m_Core.m_Vel.x)
 	{
-		m_Core.m_Vel.x = m_Core.m_Vel.x>0?NORMAL:-NORMAL;
-		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
+		m_Core.m_Vel.x = m_Core.m_Vel.x > 0 ? 1 : -1;
+		m_Core.m_Vel.y = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTW_VERT) && m_Core.m_Vel.y)
 	{
-		m_Core.m_Vel.y = m_Core.m_Vel.y>0?NORMAL:-NORMAL;
+		m_Core.m_Vel.y = m_Core.m_Vel.y > 0 ? 1 : -1;
 		m_Core.m_Vel.x = 0;
 	}
 
 	// Fast Booster
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_DOWN))
-		m_Core.m_Vel.y = FAST;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_UP))
-		m_Core.m_Vel.y = -FAST;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_RIGHT))
-		m_Core.m_Vel.x = FAST;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_LEFT))
-		m_Core.m_Vel.x = -FAST;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_HORI) && m_Core.m_Vel.x)
-		m_Core.m_Vel.x = m_Core.m_Vel.x>0?FAST:-FAST;
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_VERT) && m_Core.m_Vel.y)
-		m_Core.m_Vel.y = m_Core.m_Vel.y>0?FAST:-FAST;
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_DOWN)) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += 2;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_UP)) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += -2;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_RIGHT)) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += 2;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_LEFT)) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += -2;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_HORI) && m_Core.m_Vel.x) {
+		m_OnGavityZone = true;
+		m_Core.m_Vel.x = m_Core.m_Vel.x > 0 ? 2 : -2;
+	}
+	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_VERT) && m_Core.m_Vel.y) {
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.y = m_Core.m_Vel.y > 0 ? 2 : -2;
+	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTF_ALL))
 	{
 		if(m_Core.m_Vel.x > 0.0001f)
-			m_Core.m_Vel.x = m_Core.m_Vel.x>0?FAST:-FAST;
+			m_Core.m_Vel.x = m_Core.m_Vel.x > 0 ? 2 : -2;
 
 		if(m_Core.m_Vel.y)
-			m_Core.m_Vel.y = m_Core.m_Vel.y>0?FAST:-FAST;
+			m_Core.m_Vel.y = m_Core.m_Vel.y > 0 ? 2 : -2;
 	}
 
 	// Fast Booster Wall
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_DOWN))
 	{
-		m_Core.m_Vel.y = FAST;
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += 2;
 		m_Core.m_Vel.x = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_UP))
 	{
-		m_Core.m_Vel.y = -FAST;
+		m_OnGavityZone = true;
+		m_Core.m_Vel.y += -2;
 		m_Core.m_Vel.x = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_RIGHT))
 	{
-		m_Core.m_Vel.x = FAST;
-		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += 2;
+		m_Core.m_Vel.y = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_LEFT))
 	{
-		m_Core.m_Vel.x = -FAST;
-		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
+		m_Core.m_IgnoreGround = true;
+		m_Core.m_Vel.x += -2;
+		m_Core.m_Vel.y = 0;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_HORI) && m_Core.m_Vel.x)
 	{
-		m_Core.m_Vel.x = m_Core.m_Vel.x>0?FAST:-FAST;
+		m_Core.m_Vel.x = m_Core.m_Vel.x > 0 ? 2 : -2;
 		m_Core.m_Vel.y = -GameServer()->Tuning()->m_Gravity;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOSTFW_VERT) && m_Core.m_Vel.y)
 	{
-		m_Core.m_Vel.y = m_Core.m_Vel.y>0?FAST:-FAST;
+		m_Core.m_Vel.y = m_Core.m_Vel.y > 0 ? 2 : -2;
 		m_Core.m_Vel.x = 0;
+	} else {
+		m_OnGavityZone = false;
+		m_Core.m_IgnoreGround = false;
 	}
-
-	
+		
 	// Rankzones
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_POLICE) && Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_POLICE) && Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 	{
 		GameServer()->SendBroadcast("Policezone - Acces denied", m_pPlayer->GetCID());
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
@@ -1562,6 +1594,12 @@ void CCharacter::HandleCity()
 
 	Booster();
 
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
+		m_Gravity = 0.2;
+
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY))
+		m_Gravity = 0.5;
+
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_FREEZE))
 	{
 		Freeze(3*50);
@@ -1678,6 +1716,13 @@ void CCharacter::Tick()
 		m_pPlayer->m_ForceBalanced = false;
 	}
 
+	if (!m_OnGavityZone) {
+		if (m_Gravity == 0.5)
+		m_Core.m_Vel.y += GameServer()->Tuning()->m_Gravity;
+	else
+		m_Core.m_Vel.y += m_Gravity;
+	}
+	
 	// City
 	HandleCity();
 

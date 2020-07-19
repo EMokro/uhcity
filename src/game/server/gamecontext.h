@@ -183,6 +183,7 @@ public:
 		static void ConSetLife(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetArmor(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetClientName(IConsole::IResult* pResult, void* pUserData);
+		static void ConSetCharGravity(IConsole::IResult* pResult, void* pUserData);
 		static void ConKill(IConsole::IResult* pResult, void* pUserData);
 		static void ConFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);

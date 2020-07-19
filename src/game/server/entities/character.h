@@ -116,6 +116,9 @@ public:
 	bool m_Protected;
 	bool m_GameZone;
 	bool m_IsHammerKilled;
+	bool m_OnGavityZone;
+	bool m_IgnoreGround;
+	float m_Gravity;
 	int m_Home;
 	int m_Invisible;
 	int m_Walls;

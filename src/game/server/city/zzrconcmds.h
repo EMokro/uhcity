@@ -29,6 +29,7 @@ CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id
 CONSOLE_COMMAND("sameip", "?", CFGFLAG_SERVER, ConSameIP, this, "sameip")
 CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 CONSOLE_COMMAND("sendafk", "v", CFGFLAG_SERVER, ConSendAfk, this, "sendafk id")
+CONSOLE_COMMAND("set_char_gravity", "vi", CFGFLAG_SERVER, ConSetCharGravity, this, "sendafk id")
 
 
 //Sinnvolles
