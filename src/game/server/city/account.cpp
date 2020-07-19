@@ -202,8 +202,6 @@ void CAccount::Login(char *Username, char *Password)
   	
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
-
-	GameServer()->Filesystem()->CreateLoginLog(m_pPlayer);
  
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
@@ -810,8 +808,6 @@ bool CAccount::OldLogin(char *Username, char *Password)
   	
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
-
-	GameServer()->Filesystem()->CreateLoginLog(m_pPlayer);
  
 	if (m_pPlayer->m_AccData.m_GunFreeze > 3) // Remove on acc reset
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
