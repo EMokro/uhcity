@@ -430,7 +430,7 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 
 					if (!str_comp_nocase(checkAddr, resAddr)) {
 						dbg_msg("debug", "%s, %s", checkAddr, resAddr);
-						str_format(aBuf, sizeof aBuf, "ID %d, %d: IP %s", i, j, checkAddr);
+						str_format(aBuf, sizeof aBuf, "IP [%s]: ID [%d] [%d]", checkAddr, i, j);
 						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 						counter++;
 					}
