@@ -1776,11 +1776,12 @@ int CGameContext::ProcessSpamProtection(int ClientID)
 {
 	if(!m_apPlayers[ClientID])
 		return 0;
+
 	// if(g_Config.m_SvSpamprotection && m_apPlayers[ClientID]->m_LastChat
 	// 	&& m_apPlayers[ClientID]->m_LastChat + Server()->TickSpeed() * g_Config.m_SvChatDelay > Server()->Tick())
 	// 	return 1;
-	else
-		m_apPlayers[ClientID]->m_LastChat = Server()->Tick();
+	// else
+	// 	m_apPlayers[ClientID]->m_LastChat = Server()->Tick();
 	NETADDR Addr;
 	Server()->GetClientAddr(ClientID, &Addr);
 	int Muted = 0;
@@ -1800,12 +1801,12 @@ int CGameContext::ProcessSpamProtection(int ClientID)
 		return 1;
 	}
 
-	// if ((m_apPlayers[ClientID]->m_ChatScore += g_Config.m_SvChatPenalty) > g_Config.m_SvChatThreshold)
-	// {
-	// 	Mute(0, &Addr, g_Config.m_SvSpamMuteDuration, Server()->ClientName(ClientID));
-	// 	m_apPlayers[ClientID]->m_ChatScore = 0;
-	// 	return 1;
-	// }
+	if ((m_apPlayers[ClientID]->m_ChatScore += g_Config.m_SvChatPenalty) > g_Config.m_SvChatThreshold)
+	{
+		Mute(&Addr, g_Config.m_SvSpamMuteDuration, Server()->ClientName(ClientID), "Spam");
+		m_apPlayers[ClientID]->m_ChatScore = 0;
+		return 1;
+	}
 
 	return 0;
 }

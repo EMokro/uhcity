@@ -175,6 +175,7 @@ public:
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;
 	char m_aRank[64];
+	int m_ChatScore;
 			
 	//Klickfoots schei�
 	int m_ReleaseCarousel;

@@ -61,10 +61,12 @@ void CPlayer::Tick()
 
 	if(Server()->Tick()%50 == 0)
 	{
-	if(m_ReleaseCarousel)
-		m_ReleaseCarousel -= 1;
+		if(m_ReleaseCarousel)
+			m_ReleaseCarousel -= 1;
 	}
 
+	if (m_ChatScore > 0)
+		m_ChatScore--;
 
 	// do latency stuff
 	{
