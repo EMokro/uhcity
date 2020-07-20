@@ -87,6 +87,10 @@ public:
 	{
 		int m_TargetX;
 		int m_TargetY;
+		int m_Direction;
+		int m_Jump;
+		int m_Fire;
+		int m_Hook;
 	} m_LatestActivity;
 
 	// network latency calculations
