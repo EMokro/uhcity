@@ -74,6 +74,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Pos = Pos;
 	m_DesiredPos = Pos;
 	m_GunFreezeCooldown = 0;
+	m_LastWeapon = WEAPON_HAMMER;
 
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
@@ -1482,6 +1483,7 @@ void CCharacter::Freeze(int Seconds)
 		m_FreezeWeapon = m_ActiveWeapon;
 
 	m_Frozen = Seconds;
+	m_LastWeapon = ActiveWeapon();
 	m_aWeapons[WEAPON_NINJA].m_Ammo = 0;
 	SetWeapon(WEAPON_NINJA);
 }
@@ -1491,6 +1493,7 @@ void CCharacter::Unfreeze()
 	//m_EmoteType = EMOTE_NORMAL;
 	m_EmoteStop = Server()->Tick();
 	m_Frozen = m_Frozen ? 1 : 0;
+	SetWeapon(m_LastWeapon);
 }
 
 void CCharacter::Transfer(int Value)

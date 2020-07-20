@@ -671,6 +671,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/setbounty -- Put a bounty on someone");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/checkbounty -- Check if a player has a bounty");
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/bountylist -- Get a list of all bounties");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/instagib -- Play insta");
 		} else {
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "We don't have so many commands :(");
 		}

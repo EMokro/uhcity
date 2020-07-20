@@ -32,7 +32,8 @@ CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 CONSOLE_COMMAND("sendafk", "v", CFGFLAG_SERVER, ConSendAfk, this, "sendafk id")
 CONSOLE_COMMAND("event_start", "vi", CFGFLAG_SERVER, ConStartEvent, this, "event_start <id> <time> | 0 - Bounty")
 CONSOLE_COMMAND("event_abort", "", CFGFLAG_SERVER, ConAbortEvent, this, "aborts the current event")
-CONSOLE_COMMAND("event_timer", "", CFGFLAG_SERVER, ConEventTimer, this, "aborts the current event")
+CONSOLE_COMMAND("event_timer", "", CFGFLAG_SERVER, ConEventTimer, this, "time till next event or till event end in seconds")
+CONSOLE_COMMAND("set_bounty", "vi", CFGFLAG_SERVER, ConSetBounty, this, "set_bounty <id> <amount>")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")

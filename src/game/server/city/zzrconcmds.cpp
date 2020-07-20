@@ -428,7 +428,7 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 				if (pSelf->Server()->ClientIngame(j)) {
 					pSelf->Server()->GetClientAddr(i, resAddr, NETADDR_MAXSTRSIZE);
 
-					if (str_comp(checkAddr, resAddr) == 0) {
+					if (!str_comp_nocase(checkAddr, resAddr)) {
 
 						str_format(aBuf, sizeof aBuf, "ID %d, %d: IP %s", i, j, checkAddr);
 						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
@@ -447,7 +447,7 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
 	int ID = pResult->GetVictim();
-	char aBuf[128];
+	char aBuf[128], numBuf[32];
 	char addrBuf[NETADDR_MAXSTRSIZE];
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
@@ -474,7 +474,8 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 		str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 
-		str_format(aBuf, sizeof aBuf, "Money: %d$", pP->m_AccData.m_Money);
+		pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
+		str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 	}
 	else
@@ -502,6 +503,32 @@ void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 	} else 
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
+
+void CGameContext::ConSetBounty(IConsole::IResult* pResult, void* pUserData) {
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	int Amount = pResult->GetLongLong(0);
+	char aBuf[128], numBuf[32];
+
+	CPlayer *pP = pSelf->m_apPlayers[ID];
+
+	if (!pP) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player does not exist");
+		return;
+	}
+
+	if (Amount < 0) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "The bounty must be higher than 0");
+		return;
+	}
+
+	pSelf->FormatInt(Amount, numBuf);
+	str_format(aBuf, sizeof aBuf, "An admin put a bounty of %s$ on you.", numBuf);
+	pSelf->SendChatTarget(ID, aBuf);
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+}
+
 
 void CGameContext::ConStartEvent(IConsole::IResult* pResult, void* pUserData) {
 	CGameContext* pSelf = (CGameContext*)pUserData;

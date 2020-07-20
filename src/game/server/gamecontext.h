@@ -198,7 +198,7 @@ public:
 		static void ConStartEvent(IConsole::IResult* pResult, void* pUserData);
 		static void ConAbortEvent(IConsole::IResult* pResult, void* pUserData);
 		static void ConEventTimer(IConsole::IResult* pResult, void* pUserData);
-
+		static void ConSetBounty(IConsole::IResult* pResult, void* pUserData);
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 

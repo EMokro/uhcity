@@ -1186,6 +1186,8 @@ void CGameContext::DisableDmg(int Owner, int Target) {
 
 		str_format(aBuf, sizeof aBuf, "You won't hurt %s anymore", Server()->ClientName(Target));
 		SendChatTarget(Owner, aBuf);
+		str_format(aBuf, sizeof aBuf, "'%s' disabled dmg on you", Server()->ClientName(Target));
+		SendChatTarget(Target, aBuf);
 	}
 	else 
 		SendChatTarget(Owner, "You already disabled dmg on this player");
@@ -1199,6 +1201,8 @@ void CGameContext::EnableDmg(int Owner, int Target) {
 
 		str_format(aBuf, sizeof aBuf, "You will hurt %s now", Server()->ClientName(Target));
 		SendChatTarget(Owner, aBuf);
+		str_format(aBuf, sizeof aBuf, "'%s' enabled dmg on you", Server()->ClientName(Target));
+		SendChatTarget(Target, aBuf);
 	}
 	else 
 		SendChatTarget(Owner, "You already enabled dmg on this player");
