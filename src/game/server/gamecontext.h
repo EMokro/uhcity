@@ -15,6 +15,7 @@
 #include "gameworld.h"
 #include "player.h"
 #include "game/server/city/filesys.h"
+#include "game/server/city/gameevent.h"
 
 /*
 	Tick
@@ -42,6 +43,7 @@ class CGameContext : public IGameServer
 	IServer *m_pServer;
 	class IConsole *m_pConsole;
 	class CFileSys *m_pFilesys;
+	class CGameEvent *m_pGameEvent;
 	CLayers m_Layers;
 	CCollision m_Collision;
 	CNetObjHandler m_NetObjHandler;
@@ -71,6 +73,7 @@ public:
 	IServer *Server() const { return m_pServer; }
 	class IConsole *Console() { return m_pConsole; }
 	CFileSys *Filesystem() { return m_pFilesys; }
+	CGameEvent *GameEvent() { return m_pGameEvent; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
 
@@ -104,6 +107,8 @@ public:
 	char m_aVoteReason[VOTE_REASON_LENGTH];
 	int m_NumVoteOptions;
 	int m_VoteEnforce;
+	
+
 	enum
 	{
 		VOTE_ENFORCE_UNKNOWN=0,
@@ -190,18 +195,28 @@ public:
 		static void ConSameIP(IConsole::IResult* pResult, void* pUserData);
 		static void ConLookUp(IConsole::IResult* pResult, void* pUserData);
 		static void ConSendAfk(IConsole::IResult* pResult, void* pUserData);
+		static void ConStartEvent(IConsole::IResult* pResult, void* pUserData);
+		static void ConAbortEvent(IConsole::IResult* pResult, void* pUserData);
+		static void ConEventTimer(IConsole::IResult* pResult, void* pUserData);
+
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
-		public: //Ende :D
+	public: //Ende :D
 
 	// City
 	void RefreshIDs();
 	void SendMotd(int ClientID, const char *pText);
 	void DisableDmg(int Owner, int target);
 	void EnableDmg(int Owner, int target);
-	bool HasDmgDisabled(int Owner, int target);
 	void FormatInt(long long n, char* out);
+	bool HasDmgDisabled(int Owner, int target);
+
+	void AddToBountyList(int ID);
+	void RemoveFromBountyList(int ID);
+	const int* BountyList() { return m_BountyList; }
+	const int BountyList(int i) { return m_BountyList[i]; }
+
 	void strrev(char* str);
 	int string_length(char* pointer);
 
@@ -214,6 +229,8 @@ public:
 	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];
 	//int m_TeleID[MAX_CLIENTS];
 private:
+	int m_BountyList[MAX_CLIENTS];
+
 	void ResetDisabledDmg(int ID);
 };
 

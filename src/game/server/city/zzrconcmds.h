@@ -23,14 +23,16 @@ CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "set_lvl id le
 CONSOLE_COMMAND("set_life", "vi", CFGFLAG_SERVER, ConSetLife, this, "set_life id amount")
 CONSOLE_COMMAND("set_armor", "vi", CFGFLAG_SERVER, ConSetArmor, this, "set_armor id amount")
 CONSOLE_COMMAND("set_client_name", "vi", CFGFLAG_SERVER, ConSetClientName, this, "set_client_name id value")
+CONSOLE_COMMAND("set_client_gravity", "vi", CFGFLAG_SERVER, ConSetCharGravity, this, "sendafk id")
 CONSOLE_COMMAND("kill", "i", CFGFLAG_SERVER, ConKill, this, "kill id")
 CONSOLE_COMMAND("freeze", "vi", CFGFLAG_SERVER, ConFreeze, this, "freeze id seconds")
 CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id")
 CONSOLE_COMMAND("sameip", "?", CFGFLAG_SERVER, ConSameIP, this, "sameip")
 CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 CONSOLE_COMMAND("sendafk", "v", CFGFLAG_SERVER, ConSendAfk, this, "sendafk id")
-CONSOLE_COMMAND("set_char_gravity", "vi", CFGFLAG_SERVER, ConSetCharGravity, this, "sendafk id")
-
+CONSOLE_COMMAND("event_start", "vi", CFGFLAG_SERVER, ConStartEvent, this, "event_start <id> <time> | 0 - Bounty")
+CONSOLE_COMMAND("event_abort", "", CFGFLAG_SERVER, ConAbortEvent, this, "aborts the current event")
+CONSOLE_COMMAND("event_timer", "", CFGFLAG_SERVER, ConEventTimer, this, "aborts the current event")
 
 //Sinnvolles
 //CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")

@@ -406,27 +406,55 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 		{
 			if(!pKiller->m_Insta)
 			{
-				char aKillmsg[50];
-			pKiller->m_Score; // normal kill
-			pKiller->m_AccData.m_Money += 500;
-			str_format(aKillmsg, sizeof(aKillmsg), "+500$ || current %i$",pKiller->m_AccData.m_Money);
-				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aKillmsg);
+				char aBuf[128];
+				char numBuf[2][32];
+				long long KillReward = 500 + pVictim->GetPlayer()->m_AccData.m_Bounty;
+				pKiller->m_AccData.m_Money += KillReward;
+
+				GameServer()->FormatInt(pKiller->m_AccData.m_Money, numBuf[0]);
+				GameServer()->FormatInt(KillReward, numBuf[1]);
+
+				if (pVictim->GetPlayer()->m_AccData.m_Bounty) {
+					str_format(aBuf, sizeof(aBuf), "%s collected a bounty of %s$", Server()->ClientName(pKiller->GetCID()), numBuf[1]);
+					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+				}
+
+				pVictim->GetPlayer()->m_AccData.m_Bounty = 0;
+				pVictim->GetPlayer()->m_pAccount->Apply();
+				GameServer()->RemoveFromBountyList(pVictim->GetPlayer()->GetCID());
+
+				str_format(aBuf, sizeof(aBuf), "+%s$ || current %s$", numBuf[1], numBuf[0]);
+				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aBuf);
 			}
 			else
 			{
-				char aKillmsg[200];
-				char aBuf[50];
-				pKiller->m_Score;
+				char aBuf[128];
+				char numBuf[2][32];
+				long long KillReward = 1000 + (pKiller->GetCharacter()->m_InstaKills*100) + pVictim->GetPlayer()->m_AccData.m_Bounty;
+
 				pKiller->GetCharacter()->m_InstaKills++;
-				pKiller->m_AccData.m_Money += 1000+(pKiller->GetCharacter()->m_InstaKills*100);
-				str_format(aKillmsg, sizeof(aKillmsg), "+%i$ || Current: %i$ || %i Insta-Kills",pKiller->GetCharacter()->m_InstaKills*100+1000,pKiller->m_AccData.m_Money,pKiller->GetCharacter()->m_InstaKills);
-				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aKillmsg);
+				pKiller->m_AccData.m_Money += KillReward;
+
+				GameServer()->FormatInt(pKiller->m_AccData.m_Money, numBuf[0]);
+				GameServer()->FormatInt(KillReward, numBuf[1]);
+
+				if (pVictim->GetPlayer()->m_AccData.m_Bounty) {
+					str_format(aBuf, sizeof(aBuf), "%s collected a bounty of %s$", Server()->ClientName(pKiller->GetCID()), numBuf[1]);
+					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+				}
+
+				str_format(aBuf, sizeof(aBuf), "+%s$ || Current: %s$ || %i Insta-Kills", numBuf[1], numBuf[0], pKiller->GetCharacter()->m_InstaKills);
+				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aBuf);
 
 				if(pVictim->m_InstaKills >= 5)
 				{
 					str_format(aBuf, sizeof(aBuf), "%s killed %s with %i kills", Server()->ClientName(pKiller->GetCID()), Server()->ClientName(pVictim->GetPlayer()->GetCID()),pVictim->m_InstaKills);
 					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 				}
+
+				pVictim->GetPlayer()->m_AccData.m_Bounty = 0;
+				pVictim->GetPlayer()->m_pAccount->Apply();
+				GameServer()->RemoveFromBountyList(pVictim->GetPlayer()->GetCID());
 
 				//Kill msg 4 all <3
 				if(!(pKiller->GetCharacter()->m_InstaKills%5) && pKiller->GetCharacter()->m_InstaKills <= 50)
@@ -442,12 +470,10 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 
 					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 				}
-				
 			}
-
-
 		}
 	}
+
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
 	return 0;

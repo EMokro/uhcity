@@ -4,6 +4,8 @@
 #include <engine/server.h>
 #include <game/version.h>
 #include <locale.h>
+#include <algorithm>
+#include <iterator>
 #include "cmds.h"
 #include "account.h"
 
@@ -129,6 +131,10 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 
 		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
 		str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Bounty, numBuf[0]);
+		str_format(aBuf, sizeof aBuf, "Bounty: %s$", numBuf[0]);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
 		return;
@@ -506,22 +512,168 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
 		return;
+    }
+	else if(!strncmp(Msg->m_pMessage, "/bountylist", 11)) {
+		LastChat();
+		char aBuf[128];
+		char numBuf[32];
+		int ListID;
+		int BountyAmount = 0;
+
+		if (sscanf(Msg->m_pMessage, "/bountylist %d", &ListID) != 1)
+			ListID = 0;
+
+		for (int i = 0; i < MAX_CLIENTS; i++) {
+			if (GameServer()->BountyList(i) == -1)
+				continue;
+
+			BountyAmount++;
+		}
+
+		if (!BountyAmount) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "There are no bounties to hunt");
+			return;
+		}
+
+		if (ListID * 6 > BountyAmount) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "There are no bounties here");
+			return;
+		}
+
+		if (ListID * 6 < 0) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Don't fool arround");
+			return;
+		}
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "~~~~~~ BOUNTY LIST ~~~~~~");
+		for (int i = ListID * 6; (i < ListID * 6 + 6 && i < BountyAmount); i++) {
+			GameServer()->FormatInt(GameServer()->m_apPlayers[GameServer()->BountyList(i)]->m_AccData.m_Bounty, numBuf);
+			str_format(aBuf, sizeof aBuf, "'%s': %s$", GameServer()->Server()->ClientName(GameServer()->BountyList(i)), numBuf);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+		
+		return;
+	}
+	else if(!strncmp(Msg->m_pMessage, "/checkbounty", 12)) {
+		LastChat();
+		char aBuf[128];
+		char numBuf[32];
+		int TargetID = -1;
+
+		if (sscanf(Msg->m_pMessage, "/checkbounty %d", &TargetID) != 1) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use /checkbounty <id>");
+			return;
+		}
+
+		if (TargetID > MAX_CLIENTS || TargetID < 0) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Incorrect ID");
+			return;
+		}
+
+		CPlayer *pTarget = GameServer()->m_apPlayers[TargetID];
+
+		if (!pTarget) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "That player does not exist");
+			return;
+		}
+
+		if (!pTarget->m_AccData.m_Bounty) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This player has no bounty");
+			return;
+		}
+
+		GameServer()->FormatInt(pTarget->m_AccData.m_Bounty, numBuf);
+		str_format(aBuf, sizeof aBuf, "%s has a bounty of %s$", GameServer()->Server()->ClientName(TargetID), numBuf);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		return;
+	}
+	else if(!strncmp(Msg->m_pMessage, "/setbounty", 10))
+    {
+		LastChat();
+		char aBuf[128];
+		char numBuf[32];
+		int TargetID = -1;
+		long long Amount = -1;
+
+		if (!m_pPlayer->GetCharacter())
+			return;
+
+		if (sscanf(Msg->m_pMessage, "/setbounty %d %lld", &TargetID, &Amount) != 2) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Use /setbounty <id> <amount>");
+			return;
+		}
+
+		if (Amount < 0) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Stop fooling around");
+			return;
+		}
+
+		if (TargetID > MAX_CLIENTS || TargetID < 0) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Incorrect ID");
+			return;
+		}
+
+		CPlayer *pTarget = GameServer()->m_apPlayers[TargetID];
+
+		if (!pTarget) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "That player does not exist");
+			return;
+		}
+
+		if (Amount > m_pPlayer->m_AccData.m_Money) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not enough money");
+			return;
+		}
+
+		m_pPlayer->m_AccData.m_Money -= Amount;
+		pTarget->m_AccData.m_Bounty += Amount;
+		GameServer()->AddToBountyList(TargetID);
+
+		GameServer()->FormatInt(Amount, numBuf);
+		str_format(aBuf, sizeof aBuf, "%s has put a bounty of %s$ on %s",
+			GameServer()->Server()->ClientName(m_pPlayer->GetCID()),
+			numBuf,
+			GameServer()->Server()->ClientName(TargetID));
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+
+		if (Amount != pTarget->m_AccData.m_Bounty) {
+			GameServer()->FormatInt(pTarget->m_AccData.m_Bounty, numBuf);
+			str_format(aBuf, sizeof aBuf, "%ss bounty raised to %s$",
+				GameServer()->Server()->ClientName(TargetID),
+				numBuf);
+			GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+		}
+
+		return;
     } // info
-	else if(!str_comp_nocase(Msg->m_pMessage, "/cmdlist"))
+	else if(!strncmp(Msg->m_pMessage, "/cmdlist", 8))
 	{
 		LastChat();
+		int ID = 0;
 
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- COMMAND LIST ----------");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/info -- Infos about the server");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/help -- Help if you are new");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/disabledmg -- disables damage on someone");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/enabledmg -- enables damage on someone");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Drops money at your cursors position");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/upgrcmds -- Get a list of all Upgrade commands");
+		sscanf(Msg->m_pMessage, "/cmdlist %d", &ID);
+
+		if (ID == 0) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- COMMAND LIST ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/info -- Infos about the server");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/help -- Help if you are new");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/me -- Account stats");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/disabledmg -- Disables damage on someone");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/enabledmg -- Enables damage on someone");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/transfer -- Drops money at your cursors position");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/rainbow -- Rainbow skin");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/donor -- Infos about Donor");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/vip -- Infos about VIP");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/upgrcmds -- Get a list of all Upgrade commands");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/cmdlist 1 -- see more commands");
+		} else if (ID == 1) {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "---------- COMMAND LIST ----------");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/setbounty -- Put a bounty on someone");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/checkbounty -- Check if a player has a bounty");
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "/bountylist -- Get a list of all bounties");
+		} else {
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "We don't have so many commands :(");
+		}
 
 		return;
 	}

@@ -503,6 +503,35 @@ void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
 
+void CGameContext::ConStartEvent(IConsole::IResult* pResult, void* pUserData) {
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	int Duration = pResult->GetInteger(0);
+
+	if (Duration > g_Config.m_SvEventDurationMax || Duration < 0) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Incorrect duration. Check the config");
+		return;
+	}
+
+	pSelf->GameEvent()->Create(ID, Duration);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "event started");
+}
+
+void CGameContext::ConAbortEvent(IConsole::IResult* pResult, void* pUserData) {
+	CGameContext* pSelf = (CGameContext*)pUserData;
+
+	pSelf->GameEvent()->Abort();
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "event aborted");
+}
+
+void CGameContext::ConEventTimer(IConsole::IResult* pResult, void* pUserData) {
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	char aBuf[16];
+
+	str_format(aBuf, sizeof aBuf, "%d", pSelf->GameEvent()->m_Timer);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+}
+
 // Filesystem
 
 void CGameContext::ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData)

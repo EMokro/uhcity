@@ -15,6 +15,7 @@
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
 #include "gamemodes/mod.h"
+#include <algorithm>
 
 enum
 {
@@ -40,7 +41,11 @@ void CGameContext::Construct(int Resetting)
 		m_pVoteOptionHeap = new CHeap();
 
 	m_TeleNum = 0;
+	for (int i = 0; i < MAX_CLIENTS; i++)
+		m_BountyList[i] = -1;
+
 	m_pFilesys = new CFileSys(this);
+	m_pGameEvent = new CGameEvent(this);
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -443,10 +448,9 @@ void CGameContext::OnTick()
 	m_World.m_Core.m_Tuning = m_Tuning;
 	m_World.Tick();
 
-
-
 	//if(world.paused) // make sure that the game object always updates
 	m_pController->Tick();
+	m_pGameEvent->Tick();
 
 	// City
 	if(!addr.ip[0])
@@ -656,6 +660,7 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 	m_apPlayers[ClientID] = 0;
 
 	ResetDisabledDmg(ClientID);
+	RemoveFromBountyList(ClientID);
 
 	(void)m_pController->CheckTeamBalance();
 	m_VoteUpdate = true;
@@ -1217,6 +1222,31 @@ void CGameContext::ResetDisabledDmg(int ID) {
 				m_NoDmgIDs[j][i] = 0;
 		}
 	}
+}
+
+bool wayToSort(int i, int j) { return i > j; }
+
+void CGameContext::AddToBountyList(int ID) {
+	
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (m_BountyList[i] == -1 || m_BountyList[i] == ID) {
+			m_BountyList[i] = ID;
+			break;
+		}
+	}
+	
+	std::sort(m_BountyList, m_BountyList + MAX_CLIENTS, wayToSort);
+}
+
+void CGameContext::RemoveFromBountyList(int ID) {
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (m_BountyList[i] == ID) {
+			m_BountyList[i] = -1;
+			break;
+		}
+	}
+
+	std::sort(m_BountyList, m_BountyList + MAX_CLIENTS, wayToSort);
 }
 
 void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)

@@ -158,6 +158,11 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_Donor = user["ranks"]["donor"].GetInt();
 	m_pPlayer->m_AccData.m_VIP = user["ranks"]["vip"].GetInt();
 
+	if (user.HasMember("event")) {
+		if (user["event"].HasMember("bounty"))
+			m_pPlayer->m_AccData.m_Bounty = user["event"]["bounty"].GetInt64();
+	}
+
 	m_pPlayer->m_AccData.m_AllWeapons = user["items"]["basic"]["allweapons"].GetInt();
 	m_pPlayer->m_AccData.m_HealthRegen = user["items"]["basic"]["healthregen"].GetInt();
 	m_pPlayer->m_AccData.m_InfinityAmmo = user["items"]["basic"]["infinityammo"].GetInt();
@@ -199,6 +204,14 @@ void CAccount::Login(char *Username, char *Password)
 	 
 	if(m_pPlayer->GetTeam() == TEAM_SPECTATORS)
 		m_pPlayer->SetTeam(TEAM_RED);
+
+	if (m_pPlayer->m_AccData.m_Bounty) {
+		char numBuf[32];
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Bounty, numBuf);
+		str_format(aBuf, sizeof aBuf, "'%s' joined with a bounty of %s$", GameServer()->Server()->ClientName(m_pPlayer->GetCID()), numBuf);
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "");
+		GameServer()->AddToBountyList(m_pPlayer->GetCID());
+	}
   	
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
@@ -305,6 +318,12 @@ void CAccount::Register(char *Username, char *Password)
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
 	writer.Int(m_pPlayer->m_AccData.m_VIP);
+	writer.EndObject();
+
+	writer.Key("event");
+	writer.StartObject();
+	writer.Key("bounty");
+	writer.Int64(m_pPlayer->m_AccData.m_Bounty);
 	writer.EndObject();
 
     writer.Key("items");
@@ -465,6 +484,12 @@ void CAccount::Apply()
 	writer.Int(m_pPlayer->m_AccData.m_VIP);
 	writer.EndObject();
 
+	writer.Key("event");
+	writer.StartObject();
+	writer.Key("bounty");
+	writer.Int64(m_pPlayer->m_AccData.m_Bounty);
+	writer.EndObject();
+
     writer.Key("items");
     writer.StartObject();
 
@@ -555,6 +580,9 @@ void CAccount::Apply()
 
 void CAccount::Reset()
 {
+	if (m_pPlayer->m_AccData.m_Bounty)
+		GameServer()->RemoveFromBountyList(m_pPlayer->GetCID());
+
 	str_copy(m_pPlayer->m_AccData.m_Username, "", 32);
 	str_copy(m_pPlayer->m_AccData.m_Password, "", 32);
 	m_pPlayer->m_AccData.m_UserID = 0;
@@ -566,6 +594,9 @@ void CAccount::Reset()
 
 	m_pPlayer->m_AccData.m_Donor = 0;
 	m_pPlayer->m_AccData.m_VIP = 0;
+
+	m_pPlayer->m_AccData.m_Bounty = 0;
+
 	m_pPlayer->m_AccData.m_Arrested = 0;
 
 	m_pPlayer->m_AccData.m_AllWeapons = 0;
@@ -794,6 +825,8 @@ bool CAccount::OldLogin(char *Username, char *Password)
 		&m_pPlayer->m_AccData.m_ExpPoints); 
 
 	fclose(Accfile);
+
+	m_pPlayer->m_AccData.m_Bounty = 0;
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 

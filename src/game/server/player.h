@@ -123,6 +123,9 @@ public:
 		int m_Donor;
 		int m_VIP;
 
+		// Event
+		long long m_Bounty;
+
 		// Punishments
 		int m_Arrested;
 
