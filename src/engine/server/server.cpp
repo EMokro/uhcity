@@ -383,7 +383,7 @@ int CServer::AuthLvl(int ClientID)
 	return m_aClients[ClientID].m_Authed;
 }
 //KlickFoots stuff
-bool CServer::IsMod(int ClientID)
+bool CServer::IsPolice(int ClientID)
 {
 	return m_aClients[ClientID].m_Authed == AUTHED_MOD;
 }
@@ -409,6 +409,14 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 		return 1;
 	}
 	return 0;
+}
+
+void CServer::GetClientAddr(int ClientID, NETADDR *pAddr)
+{
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CClient::STATE_INGAME)
+	{
+		*pAddr = m_NetServer.ClientAddr(ClientID);
+	}
 }
 
 void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size)

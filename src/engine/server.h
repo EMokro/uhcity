@@ -30,6 +30,7 @@ public:
 	virtual int ClientCountry(int ClientID) = 0;
 	virtual bool ClientIngame(int ClientID) = 0;
 	virtual int GetClientInfo(int ClientID, CClientInfo *pInfo) = 0;
+	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;
 	virtual void GetClientAddr(int ClientID, char *pAddrStr, int Size) = 0;
 
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID) = 0;
@@ -60,7 +61,7 @@ public:
 
 	//KlickFoots stuff
 	virtual bool IsAdmin(int ClientID) = 0;
-	virtual bool IsMod(int ClientID) = 0;
+	virtual bool IsPolice(int ClientID) = 0;
 	//Normales zeugs
 	virtual bool IsAuthed(int ClientID) = 0;
 	virtual int AuthLvl(int ClientID) = 0;

@@ -229,8 +229,14 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 }
 
 
-void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
+void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, int SpamProtectionClientID)
 {
+	if(SpamProtectionClientID >= 0 && SpamProtectionClientID < MAX_CLIENTS)
+	{
+		if(ProcessSpamProtection(SpamProtectionClientID))
+			return;
+	}
+
 	char aBuf[256];
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientID, Team, Server()->ClientName(ChatterClientID), pText);
@@ -773,7 +779,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		if (pMsg->m_pMessage[0] == '/') 
 				pPlayer->m_pChatCmd->ChatCmd(pMsg);
 		else
-			SendChat(ClientID, Team, pMsg->m_pMessage);
+			SendChat(ClientID, Team, pMsg->m_pMessage, ClientID);
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
@@ -1253,6 +1259,49 @@ void CGameContext::RemoveFromBountyList(int ID) {
 	std::sort(m_BountyList, m_BountyList + MAX_CLIENTS, wayToSort);
 }
 
+void CGameContext::Mute(const NETADDR *pAddr, int Secs, const char *pDisplayName, const char *pReason) {
+	if (!TryMute(pAddr, Secs, pReason))
+		return;
+
+	if(!pDisplayName)
+		return;
+
+	char aBuf[128];
+	if (pReason[0])
+		str_format(aBuf, sizeof aBuf, "'%s' has been muted for %d seconds (%s)", pDisplayName, Secs, pReason);
+	else
+		str_format(aBuf, sizeof aBuf, "'%s' has been muted for %d seconds", pDisplayName, Secs);
+	SendChat(-1, CHAT_ALL, aBuf);
+}
+
+bool CGameContext::TryMute(const NETADDR *pAddr, int Secs, const char *pReason)
+{
+	// find a matching mute for this ip, update expiration time if found
+	for(int i = 0; i < m_NumMutes; i++)
+	{
+		if(net_addr_comp_noport(&m_aMutes[i].m_Addr, pAddr) == 0)
+		{
+			m_aMutes[i].m_Expire = Server()->Tick() + Secs * Server()->TickSpeed();
+			str_copy(m_aMutes[i].m_aReason, pReason, sizeof(m_aMutes[i].m_aReason));
+			return true;
+		}
+	}
+
+	// nothing to update create new one
+	if(m_NumMutes < MAX_CLIENTS)
+	{
+		m_aMutes[m_NumMutes].m_Addr = *pAddr;
+		m_aMutes[m_NumMutes].m_Expire = Server()->Tick() + Secs * Server()->TickSpeed();
+		str_copy(m_aMutes[m_NumMutes].m_aReason, pReason, sizeof(m_aMutes[m_NumMutes].m_aReason));
+		m_NumMutes++;
+		return true;
+	}
+
+	// no free slot found
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", "mute array is full");
+	return false;
+}
+
 void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -1721,6 +1770,44 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 #endif
+}
+
+int CGameContext::ProcessSpamProtection(int ClientID)
+{
+	if(!m_apPlayers[ClientID])
+		return 0;
+	// if(g_Config.m_SvSpamprotection && m_apPlayers[ClientID]->m_LastChat
+	// 	&& m_apPlayers[ClientID]->m_LastChat + Server()->TickSpeed() * g_Config.m_SvChatDelay > Server()->Tick())
+	// 	return 1;
+	else
+		m_apPlayers[ClientID]->m_LastChat = Server()->Tick();
+	NETADDR Addr;
+	Server()->GetClientAddr(ClientID, &Addr);
+	int Muted = 0;
+
+	for(int i = 0; i < m_NumMutes && !Muted; i++)
+	{
+		if(!net_addr_comp(&Addr, &m_aMutes[i].m_Addr))
+			int Muted = 0;	
+		Muted = (m_aMutes[i].m_Expire - Server()->Tick()) / Server()->TickSpeed();
+	}
+
+	if (Muted > 0)
+	{
+		char aBuf[96];
+		str_format(aBuf, sizeof aBuf, "You are not permitted to talk for the next %d seconds.", Muted);
+		SendChatTarget(ClientID, aBuf);
+		return 1;
+	}
+
+	// if ((m_apPlayers[ClientID]->m_ChatScore += g_Config.m_SvChatPenalty) > g_Config.m_SvChatThreshold)
+	// {
+	// 	Mute(0, &Addr, g_Config.m_SvSpamMuteDuration, Server()->ClientName(ClientID));
+	// 	m_apPlayers[ClientID]->m_ChatScore = 0;
+	// 	return 1;
+	// }
+
+	return 0;
 }
 
 void CGameContext::OnShutdown()

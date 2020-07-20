@@ -443,6 +443,88 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 
+// mute through client id
+void CGameContext::ConMute(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	int Victim = pResult->GetVictim();
+	int Amount = clamp(pResult->GetInteger(0), 1, 86400);
+	const char *pReason = pResult->NumArguments() > 2 ? pResult->GetString(1) : "";
+	char aBuf[128];
+
+	if (Victim < 0 || Victim > MAX_CLIENTS || !pSelf->m_apPlayers[Victim])
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "muteid", "Client id not found.");
+		return;
+	}
+
+	NETADDR Addr;
+	pSelf->Server()->GetClientAddr(Victim, &Addr);
+
+	pSelf->Mute(&Addr, Amount, pSelf->Server()->ClientName(Victim), pReason);
+}
+
+// mute through ip, arguments reversed to workaround parsing
+void CGameContext::ConMuteIP(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	NETADDR Addr;
+	const char *pReason = pResult->NumArguments() > 2 ? pResult->GetString(1) : "";
+
+	if (net_addr_from_str(&Addr, pResult->GetString(0)))
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", "Invalid network address to mute");
+
+	
+	pSelf->Mute(&Addr, clamp(pResult->GetInteger(0), 1, 86400), NULL, pReason);
+}
+
+// unmute by mute list index
+void CGameContext::ConUnmute(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	char aIpBuf[64];
+	char aBuf[64];
+	int Victim = pResult->GetVictim();
+
+	if (Victim < 0 || Victim >= pSelf->m_NumMutes)
+		return;
+
+	pSelf->m_NumMutes--;
+	pSelf->m_aMutes[Victim] = pSelf->m_aMutes[pSelf->m_NumMutes];
+
+	net_addr_str(&pSelf->m_aMutes[Victim].m_Addr, aIpBuf, sizeof(aIpBuf));
+	str_format(aBuf, sizeof(aBuf), "Unmuted %s", aIpBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", aBuf);
+
+	pSelf->SendChatTarget(Victim, "You got unmuted by console");
+}
+
+// list mutes
+void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+
+	if (pSelf->m_NumMutes <= 0)
+	{
+		// Just to make sure.
+		pSelf->m_NumMutes = 0;
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes",
+			"There are no active mutes.");
+		return;
+	}
+
+	char aIpBuf[64];
+	char aBuf[128];
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", "Active mutes:");
+	for (int i = 0; i < pSelf->m_NumMutes; i++)
+	{
+		net_addr_str(&pSelf->m_aMutes[i].m_Addr, aIpBuf, sizeof(aIpBuf));
+		str_format(aBuf, sizeof aBuf, "%d: '%s', %d seconds left (%s)", i, aIpBuf,
+				(pSelf->m_aMutes[i].m_Expire - pSelf->Server()->Tick()) / pSelf->Server()->TickSpeed(), pSelf->m_aMutes[i].m_aReason);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", aBuf);
+	}
+}
+
 void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;

@@ -477,7 +477,7 @@ void CAccount::Apply()
 	writer.Key("admin");
 	writer.Int(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()) ? 1 : 0);
 	writer.Key("police");
-	writer.Int(GameServer()->Server()->IsMod(m_pPlayer->GetCID()) ? 1 : 0);
+	writer.Int(GameServer()->Server()->IsPolice(m_pPlayer->GetCID()) ? 1 : 0);
 	writer.Key("donor");
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");

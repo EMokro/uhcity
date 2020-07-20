@@ -45,6 +45,8 @@ MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 9000, 0, 1000000, CFGFLAG_SERVE
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")
 
 MACRO_CONFIG_INT(EnableInstagib, sv_enable_instagib, 0, 0, 1, CFGFLAG_SERVER, "Enable/Disable Instagib")
+MACRO_CONFIG_INT(SvChatDelay, sv_chat_delay, 1, 0, 9999, CFGFLAG_SERVER, "The time in seconds between chat messages")
+
 
 
 // client

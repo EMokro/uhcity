@@ -139,7 +139,7 @@ public:
 
 	// network
 	void SendChatTarget(int To, const char *pText);
-	void SendChat(int ClientID, int Team, const char *pText);
+	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
 	void SendBroadcast(const char *pText, int ClientID);
@@ -199,18 +199,32 @@ public:
 		static void ConAbortEvent(IConsole::IResult* pResult, void* pUserData);
 		static void ConEventTimer(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetBounty(IConsole::IResult* pResult, void* pUserData);
+		static void ConMute(IConsole::IResult *pResult, void *pUserData);
+		static void ConMuteIP(IConsole::IResult *pResult, void *pUserData);
+		static void ConUnmute(IConsole::IResult *pResult, void *pUserData);
+		static void ConMutes(IConsole::IResult *pResult, void *pUserData);
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
 	public: //Ende :D
 
 	// City
+	struct CMute
+	{
+		NETADDR m_Addr;
+		int m_Expire;
+		char m_aReason[128];
+	};
+
 	void RefreshIDs();
 	void SendMotd(int ClientID, const char *pText);
 	void DisableDmg(int Owner, int target);
 	void EnableDmg(int Owner, int target);
 	void FormatInt(long long n, char* out);
+	void Mute(const NETADDR *pAddr, int Secs, const char *pDisplayName, const char *pReason);
+	int ProcessSpamProtection(int ClientID);
 	bool HasDmgDisabled(int Owner, int target);
+	bool TryMute(const NETADDR *pAddr, int Secs, const char *pReason);
 
 	void AddToBountyList(int ID);
 	void RemoveFromBountyList(int ID);
@@ -227,6 +241,8 @@ public:
 	int m_TeleNR[MAX_CLIENTS];
 	int m_TeleNum;
 	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];
+	CMute m_aMutes[MAX_CLIENTS];
+	int m_NumMutes;
 	//int m_TeleID[MAX_CLIENTS];
 private:
 	int m_BountyList[MAX_CLIENTS];

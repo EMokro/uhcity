@@ -165,13 +165,14 @@ public:
 	int AuthLvl(int ClientID);
 	bool IsAuthed(int ClientID);
 	//KlickFoots stuff
-	bool IsMod(int ClientID);
+	bool IsPolice(int ClientID);
 	bool IsAdmin(int ClientID);
 	void Logout(int ClientID);
 	void Police(int ClientID,int Switch);
 	void SetRconlvl(int ClientID,int Level);
 	//Normales Zeugs
 	int GetClientInfo(int ClientID, CClientInfo *pInfo);
+	void GetClientAddr(int ClientID, NETADDR *pAddr);
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size);
 	const char *ClientName(int ClientID);
 	const char *ClientClan(int ClientID);

@@ -491,6 +491,9 @@ int net_host_lookup(const char *hostname, NETADDR *addr, int types);
 */
 int net_addr_comp(const NETADDR *a, const NETADDR *b);
 
+// Compairs net addresses without ports
+int net_addr_comp_noport(const NETADDR *a, const NETADDR *b);
+
 /*
 	Function: net_addr_str
 		Turns a network address into a representive string.

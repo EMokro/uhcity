@@ -153,7 +153,7 @@ void CPlayer::Tick()
 		//str_format(m_aRank, sizeof(m_aRank), "%s", );
 		str_copy(m_aRank, "[*Admin*]", sizeof(m_aRank));
 	}
-	else if(GameServer()->Server()->IsMod(GetCID()))
+	else if(GameServer()->Server()->IsPolice(GetCID()))
 	{
 		//Server()->SetClientClan(GetCID(), "[*Police*]");
 		str_copy(m_aRank, "[*Police*]", sizeof(m_aRank));
