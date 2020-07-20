@@ -426,10 +426,10 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 
 			for (int j = i + 1; j < MAX_CLIENTS; j++) {
 				if (pSelf->Server()->ClientIngame(j)) {
-					pSelf->Server()->GetClientAddr(i, resAddr, NETADDR_MAXSTRSIZE);
+					pSelf->Server()->GetClientAddr(j, resAddr, NETADDR_MAXSTRSIZE);
 
 					if (!str_comp_nocase(checkAddr, resAddr)) {
-
+						dbg_msg("debug", "%s, %s", checkAddr, resAddr);
 						str_format(aBuf, sizeof aBuf, "ID %d, %d: IP %s", i, j, checkAddr);
 						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 						counter++;
