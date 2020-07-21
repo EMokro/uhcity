@@ -177,7 +177,7 @@ public:
 	private: //KlickFoots Rconcmdsachen^^
 
 		static void ConTeleport(IConsole::IResult *pResult, void *pUserData);
-		static void ConPolice(IConsole::IResult *pResult, void *pUserData);
+		static void ConAuth(IConsole::IResult *pResult, void *pUserData);
 		static void ConVip(IConsole::IResult *pResult, void *pUserData);
 		static void ConDonor(IConsole::IResult *pResult, void *pUserData);
 		static void ConJail(IConsole::IResult *pResult, void *pUserData);

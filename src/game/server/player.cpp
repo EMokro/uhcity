@@ -150,16 +150,13 @@ void CPlayer::Tick()
 	str_copy(m_aRank, "", sizeof(m_aRank));
 	
 	if(GameServer()->Server()->IsAdmin(GetCID()))
-	{
-		//Server()->SetClientClan(GetCID(), "[*Admin*]");
-		//str_format(m_aRank, sizeof(m_aRank), "%s", );
 		str_copy(m_aRank, "[*Admin*]", sizeof(m_aRank));
-	}
+	else if(GameServer()->Server()->IsMod(GetCID()))
+		str_copy(m_aRank, "[*Mod*]", sizeof(m_aRank));
+	else if(GameServer()->Server()->IsMapper(GetCID()))
+		str_copy(m_aRank, "[*Mapper*]", sizeof(m_aRank));
 	else if(GameServer()->Server()->IsPolice(GetCID()))
-	{
-		//Server()->SetClientClan(GetCID(), "[*Police*]");
 		str_copy(m_aRank, "[*Police*]", sizeof(m_aRank));
-	}
 	else if(m_AccData.m_Donor)
 		//Server()->SetClientClan(GetCID(), "[*Donor*]");
 		str_copy(m_aRank, "[*Donor*]", sizeof(m_aRank));

@@ -365,9 +365,9 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr)
 						}
 						else
 							pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
+					}
 				}
-				}
-				}
+			}
 			else if(Stroke)
 			{
 				char aBuf[256];
@@ -475,7 +475,7 @@ void CConsole::Con_Exec(IResult *pResult, void *pUserData)
 	((CConsole*)pUserData)->ExecuteFile(pResult->GetString(0));
 }
 
-void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
+void CConsole::ConCommandAccess(IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[128];
@@ -485,10 +485,12 @@ void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 		if(pResult->NumArguments() == 2)
 		{
 			pCommand->SetAccessLevel(pResult->GetInteger(1));
-			str_format(aBuf, sizeof(aBuf), "Police access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
+			str_format(aBuf, sizeof(aBuf), "Police access for '%s' is now %s", 
+				pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
 		}
 		else
-			str_format(aBuf, sizeof(aBuf), "Police access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
+			str_format(aBuf, sizeof(aBuf), "Police access for '%s' is %s", 
+				pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
 	}
 	else
 		str_format(aBuf, sizeof(aBuf), "No such command: '%s'.", pResult->GetString(0));
@@ -496,7 +498,7 @@ void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 	pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 }
 
-void CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
+void CConsole::ConCommandStatus(IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[240];
@@ -505,7 +507,7 @@ void CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
 
 	for(CCommand *pCommand = pConsole->m_pFirstCommand; pCommand; pCommand = pCommand->m_pNext)
 	{
-		if(pCommand->m_Flags&pConsole->m_FlagMask && pCommand->GetAccessLevel() == ACCESS_LEVEL_MOD)
+		if(pCommand->m_Flags&pConsole->m_FlagMask && pCommand->GetAccessLevel() == ACCESS_LEVEL_POLICE)
 		{
 			int Length = str_length(pCommand->m_pName);
 			if(Used + Length + 2 < (int)(sizeof(aBuf)))
@@ -629,8 +631,8 @@ CConsole::CConsole(int FlagMask)
 	Register("echo", "r", CFGFLAG_SERVER|CFGFLAG_CLIENT, Con_Echo, this, "Echo the text");
 	Register("exec", "r", CFGFLAG_SERVER|CFGFLAG_CLIENT, Con_Exec, this, "Execute the specified file");
 
-	Register("police_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for police");
-	Register("police_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for police");
+	Register("command_access", "s?i", CFGFLAG_SERVER, ConCommandAccess, this, "Specify command accessibility");
+	Register("command_status", "", CFGFLAG_SERVER, ConCommandStatus, this, "List all commands which are accessible for police");
 
 	// TODO: this should disappear
 	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Flags,Desc) \

@@ -10,9 +10,9 @@
 CONSOLE_COMMAND("tele", "vi", CFGFLAG_SERVER, ConTeleport, this, "")
 
 //Ränge
-CONSOLE_COMMAND("police", "vi", CFGFLAG_SERVER, ConPolice, this, "Enable disable Police on v")
-CONSOLE_COMMAND("vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable Police on v")
-CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable Police on v")
+CONSOLE_COMMAND("auth", "vi", CFGFLAG_SERVER, ConAuth, this, "Set auth lvl | 4 - admin, 3 - mod, 2 - mapper, 1 - police, 0 - player")
+CONSOLE_COMMAND("vip", "vi", CFGFLAG_SERVER, ConVip, this, "Enable disable vip on v")
+CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable donor on v")
 
 //Admincmds
 CONSOLE_COMMAND("add_money", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "add_money id money(1-5mio)")

@@ -153,10 +153,15 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_Armor = user["general"]["armor"].GetInt();
 	m_pPlayer->m_AccData.m_HouseID = user["general"]["houseid"].GetInt();
 
-	if(user["ranks"]["admin"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), 2);
-	if(user["ranks"]["police"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), 1);
-	m_pPlayer->m_AccData.m_Donor = user["ranks"]["donor"].GetInt();
-	m_pPlayer->m_AccData.m_VIP = user["ranks"]["vip"].GetInt();
+	if (user.HasMember("auth")) {
+		if (user["auth"].HasMember("authlvl"))
+			if(user["auth"]["authlvl"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), user["auth"]["authlvl"].GetInt());
+		if (user["auth"].HasMember("donor"))
+			m_pPlayer->m_AccData.m_Donor = user["auth"]["donor"].GetInt();
+		if (user["auth"].HasMember("vip"))
+			m_pPlayer->m_AccData.m_VIP = user["auth"]["vip"].GetInt();
+	}
+	
 
 	if (user.HasMember("event")) {
 		if (user["event"].HasMember("bounty"))
@@ -308,11 +313,9 @@ void CAccount::Register(char *Username, char *Password)
     writer.Int(m_pPlayer->m_AccData.m_HouseID);
     writer.EndObject();
 
-	writer.Key("ranks");
+	writer.Key("auth");
 	writer.StartObject();
-	writer.Key("admin");
-	writer.Int(0);
-	writer.Key("police");
+	writer.Key("authlvl");
 	writer.Int(0);
 	writer.Key("donor");
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
@@ -472,12 +475,10 @@ void CAccount::Apply()
     writer.Int(m_pPlayer->m_AccData.m_HouseID);
     writer.EndObject();
 
-	writer.Key("ranks");
+	writer.Key("auth");
 	writer.StartObject();
-	writer.Key("admin");
-	writer.Int(GameServer()->Server()->IsAdmin(m_pPlayer->GetCID()) ? 1 : 0);
-	writer.Key("police");
-	writer.Int(GameServer()->Server()->IsPolice(m_pPlayer->GetCID()) ? 1 : 0);
+	writer.Key("authlvl");
+	writer.Int(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()));
 	writer.Key("donor");
 	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
@@ -879,23 +880,8 @@ void CAccount::SetAuth(char *Username, int lvl) {
 	}
 
 	assert(AccD.IsObject());
-	dbg_msg("account", "hi123");
 
-	switch (lvl)
-	{
-	case 0:
-		AccD["user"]["ranks"]["admin"].SetInt(0);
-		AccD["user"]["ranks"]["police"].SetInt(0);
-		break;
-	case 1:
-		AccD["user"]["ranks"]["police"].SetInt(1);
-		break;
-	case 2:
-		AccD["user"]["ranks"]["admin"].SetInt(1);
-		break;
-	default:
-		return;
-	}
+	AccD["user"]["auth"]["authlvl"].SetInt(lvl);
 
 	AccD.Accept(writer);
 	std::remove(aBuf);

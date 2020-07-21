@@ -19,7 +19,7 @@ class CConsole : public IConsole
 
 		virtual const CCommandInfo *NextCommandInfo(int AccessLevel, int FlagMask) const;
 
-		void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_MOD)); }
+		void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_POLICE)); }
 	};
 
 
@@ -54,8 +54,8 @@ class CConsole : public IConsole
 	static void Con_Chain(IResult *pResult, void *pUserData);
 	static void Con_Echo(IResult *pResult, void *pUserData);
 	static void Con_Exec(IResult *pResult, void *pUserData);
-	static void ConModCommandAccess(IResult *pResult, void *pUser);
-	static void ConModCommandStatus(IConsole::IResult *pResult, void *pUser);
+	static void ConCommandAccess(IResult *pResult, void *pUser);
+	static void ConCommandStatus(IConsole::IResult *pResult, void *pUser);
 
 	void ExecuteFileRecurse(const char *pFilename);
 	void ExecuteLineStroked(int Stroke, const char *pStr);
@@ -191,7 +191,7 @@ public:
 	virtual void SetPrintOutputLevel(int Index, int OutputLevel);
 	virtual void Print(int Level, const char *pFrom, const char *pStr);
 
-	void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_MOD)); }
+	void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_POLICE)); }
 };
 
 #endif

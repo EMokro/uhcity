@@ -209,7 +209,7 @@ void CServer::Police(int ClientID, int Switch)
 	SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
 
 	if(Switch)
-		m_aClients[ClientID].m_Authed = AUTHED_MOD;
+		m_aClients[ClientID].m_Authed = AUTHED_POLICE;
 	else
 		m_aClients[ClientID].m_Authed = AUTHED_NO;
 }
@@ -225,17 +225,15 @@ void CServer::SetRconlvl(int ClientID, int Level)
 	{
 		//int SendRconCmds = Unpacker.GetInt();
 		//if(Unpacker.Error() == 0 && SendRconCmds)
-		m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(Level == 1 ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_ADMIN, CFGFLAG_SERVER);
+		m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(AUTHED_ADMIN - Level, CFGFLAG_SERVER);
 	}
 
-	if(Level == 1)
-		m_aClients[ClientID].m_Authed = AUTHED_MOD;
-	else if(Level == 2)
-		m_aClients[ClientID].m_Authed = AUTHED_ADMIN;
-	else
+	if (Level >= AUTH_AMOUNT || Level < 0)
 		m_aClients[ClientID].m_Authed = AUTHED_NO;
-
+	else 
+		m_aClients[ClientID].m_Authed = Level;
 }
+
 int CServer::TrySetClientName(int ClientID, const char *pName)
 {
 	char aTrimmedName[64];
@@ -384,6 +382,14 @@ int CServer::AuthLvl(int ClientID)
 }
 //KlickFoots stuff
 bool CServer::IsPolice(int ClientID)
+{
+	return m_aClients[ClientID].m_Authed == AUTHED_POLICE;
+}
+bool CServer::IsMapper(int ClientID)
+{
+	return m_aClients[ClientID].m_Authed == AUTHED_MAPPER;
+}
+bool CServer::IsMod(int ClientID)
 {
 	return m_aClients[ClientID].m_Authed == AUTHED_MOD;
 }
@@ -785,7 +791,7 @@ void CServer::UpdateClientRconCommands()
 		
 	if(m_aClients[ClientID].m_State != CClient::STATE_EMPTY && m_aClients[ClientID].m_Authed)
 	{
-		int ConsoleAccessLevel = m_aClients[ClientID].m_Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : IConsole::ACCESS_LEVEL_MOD;
+		int ConsoleAccessLevel = AUTHED_ADMIN - m_aClients[ClientID].m_Authed;
 		for(int i = 0; i < MAX_RCONCMD_SEND && m_aClients[ClientID].m_pRconCmdToSend; ++i)
 		{
 			SendRconCmdAdd(m_aClients[ClientID].m_pRconCmdToSend, ClientID);
@@ -950,7 +956,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 				m_RconClientID = ClientID;
 				m_RconAuthLevel = m_aClients[ClientID].m_Authed;
-				Console()->SetAccessLevel(m_aClients[ClientID].m_Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : IConsole::ACCESS_LEVEL_MOD);
+				Console()->SetAccessLevel(AUTHED_ADMIN - m_aClients[ClientID].m_Authed);
 				Console()->ExecuteLine(pCmd);
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 				m_RconClientID = -1;
@@ -965,7 +971,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
 			if(Unpacker.Error() == 0)
 			{
-				if(g_Config.m_SvRconPassword[0] == 0 && g_Config.m_SvRconModPassword[0] == 0)
+				if(g_Config.m_SvRconPassword[0] == 0 && g_Config.m_SvRconPolicePassword[0] == 0)
 				{
 					SendRconLine(ClientID, "No rcon password set on server. Set sv_rcon_password and/or sv_rcon_mod_password to enable the remote console.");
 				}
@@ -985,20 +991,20 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (admin)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 				}
-				else if(g_Config.m_SvRconModPassword[0] && str_comp(pPw, g_Config.m_SvRconModPassword) == 0)
+				else if(g_Config.m_SvRconPolicePassword[0] && str_comp(pPw, g_Config.m_SvRconPolicePassword) == 0)
 				{
 					CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
 					Msg.AddInt(1);	//authed
 					Msg.AddInt(1);	//cmdlist
 					SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
 
-					m_aClients[ClientID].m_Authed = AUTHED_MOD;
+					m_aClients[ClientID].m_Authed = AUTHED_POLICE;
 					int SendRconCmds = Unpacker.GetInt();
 					if(Unpacker.Error() == 0 && SendRconCmds)
-						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_MOD, CFGFLAG_SERVER);
-					SendRconLine(ClientID, "Moderator authentication successful. Limited remote console access granted.");
+						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_POLICE, CFGFLAG_SERVER);
+					SendRconLine(ClientID, "Police authentication successful. Limited remote console access granted.");
 					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (moderator)", ClientID);
+					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (police)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 				}
 				else if(g_Config.m_SvRconMaxTries)
@@ -1675,7 +1681,7 @@ void CServer::ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pU
 		((CServer *)pUserData)->m_NetServer.SetMaxClientsPerIP(pResult->GetInteger(0));
 }
 
-void CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CServer::ConchainCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	if(pResult->NumArguments() == 2)
 	{
@@ -1689,11 +1695,11 @@ void CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserDa
 		{
 			for(int i = 0; i < MAX_CLIENTS; ++i)
 			{
-				if(pThis->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY || pThis->m_aClients[i].m_Authed != CServer::AUTHED_MOD ||
+				if(pThis->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY || pThis->m_aClients[i].m_Authed != CServer::AUTHED_POLICE ||
 					(pThis->m_aClients[i].m_pRconCmdToSend && str_comp(pResult->GetString(0), pThis->m_aClients[i].m_pRconCmdToSend->m_pName) >= 0))
 					continue;
 
-				if(OldAccessLevel == IConsole::ACCESS_LEVEL_ADMIN)
+				if(OldAccessLevel < CServer::AUTHED_POLICE)
 					pThis->SendRconCmdAdd(pInfo, i);
 				else
 					pThis->SendRconCmdRem(pInfo, i);
@@ -1734,7 +1740,7 @@ void CServer::RegisterCommands()
 	Console()->Chain("password", ConchainSpecialInfoupdate, this);
 
 	Console()->Chain("sv_max_clients_per_ip", ConchainMaxclientsperipUpdate, this);
-	Console()->Chain("police_command", ConchainModCommandUpdate, this);
+	Console()->Chain("command_access", ConchainCommandUpdate, this);
 	Console()->Chain("console_output_level", ConchainConsoleOutputLevelUpdate, this);
 }
 

@@ -52,10 +52,11 @@ public:
 	enum
 	{
 		AUTHED_NO=0,
-		/*AUTHED_DONOR,
-		AUTHED_POLICE,*/
+		AUTHED_POLICE,
+		AUTHED_MAPPER,
 		AUTHED_MOD,
 		AUTHED_ADMIN,
+		AUTH_AMOUNT,
 
 		MAX_RCONCMD_SEND=16,
 	};
@@ -166,6 +167,8 @@ public:
 	bool IsAuthed(int ClientID);
 	//KlickFoots stuff
 	bool IsPolice(int ClientID);
+	bool IsMapper(int ClientID);
+	bool IsMod(int ClientID);
 	bool IsAdmin(int ClientID);
 	void Logout(int ClientID);
 	void Police(int ClientID,int Switch);
@@ -224,7 +227,7 @@ public:
 	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
 	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static void ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	void RegisterCommands();

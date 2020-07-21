@@ -28,23 +28,16 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
-void CGameContext::ConPolice(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAuth(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Switch = pResult->GetInteger(0);
+	int Level = pResult->GetInteger(0);
 	int ID = pResult->GetVictim();
 	char aBuf[200];
 
 	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if (pChr)
-	{
-		pSelf->Server()->Police(ID, Switch ? 1 : 0);
-		if(Switch)
-			str_format(aBuf, sizeof aBuf, "'%s' is a Police now.", pSelf->Server()->ClientName(ID));
-		else
-			str_format(aBuf, sizeof aBuf, "'%s' is no longer a Police.", pSelf->Server()->ClientName(ID));
-		pSelf->SendChat(-1, CHAT_ALL, aBuf);
-	}
+		pSelf->Server()->SetRconlvl(ID, Level);
 }
 
 void CGameContext::ConVip(IConsole::IResult *pResult, void *pUserData)

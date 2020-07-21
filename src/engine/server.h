@@ -61,6 +61,8 @@ public:
 
 	//KlickFoots stuff
 	virtual bool IsAdmin(int ClientID) = 0;
+	virtual bool IsMod(int ClientID) = 0;
+	virtual bool IsMapper(int ClientID) = 0;
 	virtual bool IsPolice(int ClientID) = 0;
 	//Normales zeugs
 	virtual bool IsAuthed(int ClientID) = 0;
