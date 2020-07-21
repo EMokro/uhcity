@@ -58,7 +58,7 @@ class CConsole : public IConsole
 	static void ConCommandStatus(IConsole::IResult *pResult, void *pUser);
 
 	void ExecuteFileRecurse(const char *pFilename);
-	void ExecuteLineStroked(int Stroke, const char *pStr);
+	void ExecuteLineStroked(int Stroke, const char *pStr, int ClientID = -1);
 
 	struct
 	{
@@ -82,6 +82,8 @@ class CConsole : public IConsole
 
 		const char *m_pCommand;
 		const char *m_apArgs[MAX_PARTS];
+
+		int m_ClientID;
 
 		CResult() : IResult()
 		{
@@ -111,6 +113,7 @@ class CConsole : public IConsole
 			m_apArgs[m_NumArgs++] = pArg;
 		}
 
+		virtual int GetClientID();
 		virtual const char *GetString(unsigned Index);
 		virtual int GetInteger(unsigned Index);
 		virtual long long GetLongLong(unsigned Index);
@@ -184,7 +187,8 @@ public:
 	virtual void StoreCommands(bool Store);
 
 	virtual bool LineIsValid(const char *pStr);
-	virtual void ExecuteLine(const char *pStr);
+	virtual void ExecuteLine(const char *pStr, int ClientID = -1);
+	virtual void ExecuteLineFlag(const char* pStr, int FlagMask, int ClientID = -1);
 	virtual void ExecuteFile(const char *pFilename);
 
 	virtual int RegisterPrintCallback(int OutputLevel, FPrintCallback pfnPrintCallback, void *pUserData);
@@ -192,6 +196,8 @@ public:
 	virtual void Print(int Level, const char *pFrom, const char *pStr);
 
 	void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_POLICE)); }
+
+	bool IsCommand(const char* pStr, int FlagMask) { FindCommand(pStr, FlagMask) ? true : false; };
 };
 
 #endif
