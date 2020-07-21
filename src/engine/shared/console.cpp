@@ -288,11 +288,12 @@ bool CConsole::LineIsValid(const char *pStr)
 	return true;
 }
 
-void CConsole::ExecuteLineStroked(int Stroke, const char *pStr)
+void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 {
 	while(pStr && *pStr)
 	{
 		CResult Result;
+		Result.m_ClientID = ClientID;
 		const char *pEnd = pStr;
 		const char *pNextPart = 0;
 		int InString = 0;
@@ -412,12 +413,19 @@ CConsole::CCommand *CConsole::FindCommand(const char *pName, int FlagMask)
 	return 0x0;
 }
 
-void CConsole::ExecuteLine(const char *pStr)
+void CConsole::ExecuteLine(const char *pStr, int ClientID)
 {
-	CConsole::ExecuteLineStroked(1, pStr); // press it
-	CConsole::ExecuteLineStroked(0, pStr); // then release it
+	CConsole::ExecuteLineStroked(1, pStr, ClientID); // press it
+	CConsole::ExecuteLineStroked(0, pStr, ClientID); // then release it
 }
 
+void CConsole::ExecuteLineFlag(const char* pStr, int FlagMask, int ClientID)
+{
+	int Temp = m_FlagMask;
+	m_FlagMask = FlagMask;
+	ExecuteLine(pStr, ClientID);
+	m_FlagMask = Temp;
+}
 
 void CConsole::ExecuteFile(const char *pFilename)
 {
@@ -864,6 +872,7 @@ const IConsole::CCommandInfo *CConsole::GetCommandInfo(const char *pName, int Fl
 
 extern IConsole *CreateConsole(int FlagMask) { return new CConsole(FlagMask); }
 
+int CConsole::CResult::GetClientID() { return m_ClientID; }
 //KlickFoots f2 cmds <3
 int CConsole::CResult::GetVictim()
 {

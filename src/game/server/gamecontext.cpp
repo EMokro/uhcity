@@ -776,8 +776,34 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pMessage++;
 		}
 
-		if (pMsg->m_pMessage[0] == '/') 
-				pPlayer->m_pChatCmd->ChatCmd(pMsg);
+		if (pMsg->m_pMessage[0] == '/')
+		{
+			char aCommand[128][128] = { { 0 } };
+			int Command = 0;
+			int Char = 0;
+			for (int i = 1; i < str_length(pMsg->m_pMessage); i++)
+			{
+				if (pMsg->m_pMessage[i] == ' ')
+				{
+					Command++;
+					Char = 0;
+					continue;
+				}
+				aCommand[Command][Char] = pMsg->m_pMessage[i];
+				Char++;
+			}
+
+			if (Console()->IsCommand(aCommand[0], CFGFLAG_CHAT))
+				Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID);
+			else
+			{
+				char aBuf[256];
+				str_format(aBuf, sizeof(aBuf), "Unknown command: '%s'", aCommand[0]);
+				SendChatTarget(ClientID, aBuf);
+			}
+
+			// pPlayer->m_pChatCmd->ChatCmd(pMsg);
+		}
 		else
 			SendChat(ClientID, Team, pMsg->m_pMessage, ClientID);
 	}
@@ -1649,6 +1675,19 @@ void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 	}
 }
 
+void CGameContext::ConChatInfo(IConsole::IResult* pResult, void* pUser)
+{
+	CGameContext* pSelf = (CGameContext*)pUser;
+
+	int ClientID = pResult->GetClientID();
+	CPlayer* pPlayer = pSelf->m_apPlayers[ClientID];
+
+	if (!pPlayer)
+		return;
+
+	pSelf->SendChatTarget(ClientID, "Fruchti <3");
+}
+
 void CGameContext::OnConsoleInit()
 {
 	m_pServer = Kernel()->RequestInterface<IServer>();
@@ -1670,6 +1709,10 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("force_vote", "ss?r", CFGFLAG_SERVER, ConForceVote, this, "Force a voting option");
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
+
+	// chat
+	Console()->Register("info", "", CFGFLAG_CHAT, ConChatInfo, this, "Mod information");
+
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 //KlickFoot Rconcmds

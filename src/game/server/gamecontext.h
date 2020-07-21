@@ -206,6 +206,9 @@ public:
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
+		// chat
+		static void ConChatInfo(IConsole::IResult* pResult, void* pUserData);
+
 	public: //Ende :D
 
 	// City
