@@ -1788,9 +1788,10 @@ int CGameContext::ProcessSpamProtection(int ClientID)
 
 	for(int i = 0; i < m_NumMutes && !Muted; i++)
 	{
-		if(!net_addr_comp(&Addr, &m_aMutes[i].m_Addr))
-			int Muted = 0;	
-		Muted = (m_aMutes[i].m_Expire - Server()->Tick()) / Server()->TickSpeed();
+		if(!net_addr_comp(&Addr, &m_aMutes[i].m_Addr)) {
+			Muted = (m_aMutes[i].m_Expire - Server()->Tick()) / Server()->TickSpeed();
+			dbg_msg("debug", "found muted %d", i);
+		}
 	}
 
 	if (Muted > 0)

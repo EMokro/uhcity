@@ -1731,8 +1731,12 @@ void CCharacter::Tick()
 
 	if(!m_Frozen && !m_pPlayer->m_Insta && !m_GameZone && !m_Water && !m_SingleWater)
 	{
-		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY && m_Input.m_Jump)
-			m_Core.m_Vel.y = -GameServer()->Tuning()->m_GroundJumpImpulse;
+		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY) {
+			if (m_Input.m_Jump)
+				m_Gravity = -0.3;
+			else
+				m_Gravity = 0.5;
+		}
 		else if(m_pPlayer->m_AccData.m_InfinityJumps >= 1)
 			m_Core.m_Jumped &= ~2;
 	}
