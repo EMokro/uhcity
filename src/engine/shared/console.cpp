@@ -409,7 +409,6 @@ CConsole::CCommand *CConsole::FindCommand(const char *pName, int FlagMask)
 				return pCommand;
 		}
 	}
-
 	return 0x0;
 }
 

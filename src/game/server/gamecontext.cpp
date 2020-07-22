@@ -781,6 +781,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			char aCommand[128][128] = { { 0 } };
 			int Command = 0;
 			int Char = 0;
+
 			for (int i = 1; i < str_length(pMsg->m_pMessage); i++)
 			{
 				if (pMsg->m_pMessage[i] == ' ')
@@ -792,7 +793,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				aCommand[Command][Char] = pMsg->m_pMessage[i];
 				Char++;
 			}
-
 			if (Console()->IsCommand(aCommand[0], CFGFLAG_CHAT))
 				Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID);
 			else
@@ -801,8 +801,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				str_format(aBuf, sizeof(aBuf), "Unknown command: '%s'", aCommand[0]);
 				SendChatTarget(ClientID, aBuf);
 			}
-
-			// pPlayer->m_pChatCmd->ChatCmd(pMsg);
 		}
 		else
 			SendChat(ClientID, Team, pMsg->m_pMessage, ClientID);
@@ -1675,18 +1673,7 @@ void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 	}
 }
 
-void CGameContext::ConChatInfo(IConsole::IResult* pResult, void* pUser)
-{
-	CGameContext* pSelf = (CGameContext*)pUser;
 
-	int ClientID = pResult->GetClientID();
-	CPlayer* pPlayer = pSelf->m_apPlayers[ClientID];
-
-	if (!pPlayer)
-		return;
-
-	pSelf->SendChatTarget(ClientID, "Fruchti <3");
-}
 
 void CGameContext::OnConsoleInit()
 {
@@ -1698,7 +1685,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("tune_dump", "", CFGFLAG_SERVER, ConTuneDump, this, "Dump tuning");
 
 	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
-	Console()->Register("restart", "?i", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds");
+	Console()->Register("restart", "	?i", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds");
 	Console()->Register("broadcast", "r", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
 	Console()->Register("say", "r", CFGFLAG_SERVER, ConSay, this, "Say in chat");
 	Console()->Register("set_team", "ii?i", CFGFLAG_SERVER, ConSetTeam, this, "Set team of player to team");
@@ -1710,15 +1697,12 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 
-	// chat
-	Console()->Register("info", "", CFGFLAG_CHAT, ConChatInfo, this, "Mod information");
-
-
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 //KlickFoot Rconcmds
 	#define CONSOLE_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
-#include "game/server/city/zzrconcmds.h"
-
+	#include "game/server/city/chatcmds.h"
+	#define CONSOLE_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
+	#include "game/server/city/zzrconcmds.h"
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)
@@ -1783,6 +1767,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 		}
 	}
+
 	// init subgamelayer entities
 	for (int i = 0; i < 4; i++) {
 		if (!pSubTileMap[i])
@@ -1833,7 +1818,6 @@ int CGameContext::ProcessSpamProtection(int ClientID)
 	{
 		if(!net_addr_comp(&Addr, &m_aMutes[i].m_Addr)) {
 			Muted = (m_aMutes[i].m_Expire - Server()->Tick()) / Server()->TickSpeed();
-			dbg_msg("debug", "found muted %d", i);
 		}
 	}
 

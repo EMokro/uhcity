@@ -175,7 +175,6 @@ public:
 	virtual const char *NetVersion();
 
 	private: //KlickFoots Rconcmdsachen^^
-
 		static void ConTeleport(IConsole::IResult *pResult, void *pUserData);
 		static void ConAuth(IConsole::IResult *pResult, void *pUserData);
 		static void ConVip(IConsole::IResult *pResult, void *pUserData);
@@ -207,7 +206,48 @@ public:
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
 		// chat
-		static void ConChatInfo(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatLogin(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatRegister(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatLogout(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatChangePw(IConsole::IResult* pResult, void* pUserData);
+
+		static void ConChatSave(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatLoad(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatTele(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatHome(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatRainbow(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatCrown(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatUp(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatDown(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatLeft(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatRight(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatJailrifle(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatGod(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatInstagib(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatSetbounty(IConsole::IResult* pResult, void* pUserData);
+
+
+		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatDonor(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatVip(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
+
+
+		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPlasma(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatGunfreeze(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatRifleplasma(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatSwap(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatFly(IConsole::IResult* pResult, void* pUserData);
 
 	public: //Ende :D
 
@@ -233,6 +273,8 @@ public:
 	void RemoveFromBountyList(int ID);
 	const int* BountyList() { return m_BountyList; }
 	const int BountyList(int i) { return m_BountyList[i]; }
+
+	bool ValidID(int ID) { return ID >= 0 && ID < MAX_CLIENTS; }
 
 	void strrev(char* str);
 	int string_length(char* pointer);

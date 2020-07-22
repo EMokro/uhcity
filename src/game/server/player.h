@@ -6,7 +6,6 @@
 // this include should perhaps be removed
 #include "entities/character.h"
 #include "gamecontext.h"
-#include "city/cmds.h"
 #include "city/account.h"
 
 // player object
@@ -181,7 +180,6 @@ public:
 	int m_ReleaseCarousel;
 	int m_Crown;
 
-	class CCmd *m_pChatCmd;
 	class CAccount *m_pAccount;//(CPlayer *m_Player, CGameContext *gameserver);
 
 private:

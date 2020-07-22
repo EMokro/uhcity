@@ -40,15 +40,10 @@ CONSOLE_COMMAND("lookup", "v", CFGFLAG_SERVER, ConLookUp, this, "lookup id")
 CONSOLE_COMMAND("kill", "i", CFGFLAG_SERVER, ConKill, this, "kill id")
 CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id")
 CONSOLE_COMMAND("freeze", "vi", CFGFLAG_SERVER, ConFreeze, this, "freeze id seconds")
-
-//Sinnvolles
-//CONSOLE_COMMAND("logout", "v", CFGFLAG_SERVER, ConLogout, this, "")
 CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 
 // filesystem
 CONSOLE_COMMAND("fs_backup_accounts", "", CFGFLAG_SERVER, ConFsBackupAccounts, this, "Makes a backup")
 
-
 #undef CONSOLE_COMMAND
-
 #endif

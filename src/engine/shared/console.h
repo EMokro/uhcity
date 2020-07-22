@@ -197,7 +197,7 @@ public:
 
 	void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_POLICE)); }
 
-	bool IsCommand(const char* pStr, int FlagMask) { FindCommand(pStr, FlagMask) ? true : false; };
+	bool IsCommand(const char* pStr, int FlagMask) { return FindCommand(pStr, FlagMask) ? true : false; };
 };
 
 #endif

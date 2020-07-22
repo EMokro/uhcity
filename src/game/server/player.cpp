@@ -3,8 +3,6 @@
 #include <new>
 #include <engine/shared/config.h>
 #include "player.h"
-#include "city/cmds.h"
-
 
 MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
@@ -28,7 +26,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Insta = false;
 	m_Afk = false;
 	m_pAccount = new CAccount(this, m_pGameServer);
-	m_pChatCmd = new CCmd(this, m_pGameServer);
 
 	if(m_AccData.m_Health < 10)
 		m_AccData.m_Health = 10;
@@ -39,10 +36,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 
 CPlayer::~CPlayer()
 {
-	// City
-	delete m_pChatCmd;
-	m_pChatCmd = 0;
-
 	delete m_pCharacter;
 	m_pCharacter = 0;
 }
