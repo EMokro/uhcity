@@ -394,21 +394,20 @@ void CGameContext::ConChatTransfer(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConChatDisabledmg(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    int Victim = pResult->GetVictim();
 
-    if (pResult->NumArguments() != 1) {
+    if (Victim < 0) {
         pSelf->SendChatTarget(pResult->GetClientID(), "usage: /disabledmg <id>");
         return;
     }
-
-    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
-    int Victim = pResult->GetVictim();
 
     if (pP->GetCID() == Victim) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't disabledmg on yourself");
         return;
     }
 
-    if (pSelf->ValidID(Victim)) {
+    if (!pSelf->ValidID(Victim)) {
         pSelf->SendChatTarget(pP->GetCID(), "Out of range");
         return;
     }
@@ -424,21 +423,20 @@ void CGameContext::ConChatDisabledmg(IConsole::IResult *pResult, void *pUserData
 void CGameContext::ConChatEnabledmg(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    int Victim = pResult->GetVictim();
 
-    if (pResult->NumArguments() != 1) {
+    if (Victim < 0) {
         pSelf->SendChatTarget(pResult->GetClientID(), "usage: /enabledmg <id>");
         return;
     }
-
-    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
-    int Victim = pResult->GetVictim();
 
     if (pP->GetCID() == Victim) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't enabledmg on yourself");
         return;
     }
 
-    if (pSelf->ValidID(Victim)) {
+    if (!pSelf->ValidID(Victim)) {
         pSelf->SendChatTarget(pP->GetCID(), "Out of range");
         return;
     }
@@ -492,18 +490,16 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
 void CGameContext::ConChatCheckbounty(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-
-    if (pResult->NumArguments() != 1) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /checkbounty <id>");
-        return;
-    }
-
-
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     int Victim = pResult->GetVictim();
     char aBuf[128], numBuf[32];
 
-    if (pSelf->ValidID(Victim)) {
+    if (Victim < 0) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /checkbounty <id>");
+        return;
+    }
+
+    if (!pSelf->ValidID(Victim)) {
         pSelf->SendChatTarget(pP->GetCID(), "Out of range");
         return;
     }
@@ -529,7 +525,7 @@ void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 
-    if (pResult->NumArguments() != 2) {
+    if (pResult->NumArguments() != 1) {
         pSelf->SendChatTarget(pResult->GetClientID(), "usage: /setbounty <id> <amount>");
         return;
     }
@@ -539,7 +535,12 @@ void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
     long long Amount = pResult->GetLongLong(0);
     char aBuf[128], numBuf[32];
 
-    if (pSelf->ValidID(Victim)) {
+    if (Victim < 0) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /setbounty <id> <amount>");
+        return;
+    }
+
+    if (!pSelf->ValidID(Victim)) {
         pSelf->SendChatTarget(pP->GetCID(), "Out of range");
         return;
     }
