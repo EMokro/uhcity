@@ -231,7 +231,6 @@ public:
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSetbounty(IConsole::IResult* pResult, void* pUserData);
 
-
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
@@ -239,7 +238,7 @@ public:
 		static void ConChatVip(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
-
+		static void ConChatShop(IConsole::IResult* pResult, void* pUserData);
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);

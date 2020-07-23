@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+#include <math.h>
 
 #include <game/server/city/shopitems/shotgun.h>
 #include <game/server/city/shopitems/grenade.h>
@@ -38,8 +39,8 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 1));
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 3));
-	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 2));
-	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -52,6 +53,7 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.clear();
 
 	group.push_back(new CShotgun(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CShotgun(GameWorld(), m_Owner, m_Pos, 2));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -63,6 +65,12 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.clear();
 	
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 
@@ -82,6 +90,13 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+	
+	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CInfAmmo(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CAllWeapons(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CFastReload(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -134,7 +149,6 @@ void CGui::CheckClick(vec2 Pos)
 	dbg_msg("debug", "checkclick");
 }
 
-
 void CGui::Menu()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
@@ -162,7 +176,6 @@ void CGui::Menu()
 		m_ItrFlag = false;
 	
 
-	m_Page = pOwner->m_ShopPage;
 	m_Group = pOwner->m_ShopGroup;
 	
 	if (!m_ItrFlag) { // we only wanna do this, while on shop
@@ -176,22 +189,22 @@ void CGui::Menu()
 			}
 		}
 
-		if (m_Page < 0)
-			m_Page = next(m_aShop.begin(), m_Group)->size();
-		else
-			m_Page = 0;
-		
-		m_Page -= m_Page % 6; // make sure we always show the same items per page
+		int Size = next(m_aShop.begin(), m_Group)->size();
+		int ItemsLeft = Size - pOwner->m_ShopPage < 6 ? Size - pOwner->m_ShopPage : 6;
+		int i = 1;
 
-		dbg_msg("debug", "group %d has %d members", m_Group, next(m_aShop.begin(), m_Group)->size());
+
+		if (Size > 6) {
+			if (pOwner->m_ShopPage < 0)
+				pOwner->m_ShopPage = Size - Size % 6;
+			else if (pOwner->m_ShopPage > Size - 1)
+				pOwner->m_ShopPage = 0;
+		}
 		list<CEntity*> Ents = *next(m_aShop.begin(), m_Group);
 
-		int ItemsLeft = next(m_aShop.begin(), m_Group)->size() - m_Page < 6 ? next(m_aShop.begin(), m_Group)->size() - m_Page : 6;
-		int i = 1;
-		for(itE = next(Ents.begin(), m_Page); (itE != next(Ents.begin(), m_Page + ItemsLeft) && itE != Ents.end()); ++itE)
+		for(itE = next(Ents.begin(), pOwner->m_ShopPage); (itE != next(Ents.begin(), pOwner->m_ShopPage + ItemsLeft) && itE != Ents.end()); ++itE)
 		{
 			CEntity *Ent = *itE;
-			dbg_msg("debug", "%d. is %s", i, Ent->m_Visible ? "visible" : "invisible");
 
 			Ent->m_Visible = true;
 			if (!(ItemsLeft % 2))

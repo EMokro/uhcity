@@ -750,6 +750,50 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- jump");
 }
 
+void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
+
+    if (!pSelf->Collision()->TileShop(pChr->m_Core.m_Pos)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Enter a shop first");
+        return;
+    }
+
+    int Page = pChr->m_ShopPage;
+    pChr->m_ShopPage = 0;
+    if (!str_comp_nocase(Upgr, "hammer"))
+        pChr->m_ShopGroup = ITEM_HAMMER;
+    else if (!str_comp_nocase(Upgr, "gun"))
+        pChr->m_ShopGroup = ITEM_GUN;
+    else if (!str_comp_nocase(Upgr, "shotgun"))
+        pChr->m_ShopGroup = ITEM_SHOTGUN;
+    else if (!str_comp_nocase(Upgr, "grenade"))
+        pChr->m_ShopGroup = ITEM_GRENADE;
+    else if (!str_comp_nocase(Upgr, "rifle") || !str_comp_nocase(Upgr, "laser"))
+        pChr->m_ShopGroup = ITEM_RIFLE;
+    else if (!str_comp_nocase(Upgr, "ninja"))
+        pChr->m_ShopGroup = ITEM_NINJA;
+    else if (!str_comp_nocase(Upgr, "general"))
+        pChr->m_ShopGroup = ITEM_GENERAL;
+    else {
+        pChr->m_ShopPage = Page;
+        pSelf->SendChatTarget(pResult->GetClientID(), "Use /shop <item> to see the items you want.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Example: '/shop hammer' will show all hammer upgrades.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "To switch between pages use f3 or f4.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Available menus are:");
+        pSelf->SendChatTarget(pP->GetCID(), "- hammer");
+        pSelf->SendChatTarget(pP->GetCID(), "- gun");
+        pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
+        pSelf->SendChatTarget(pP->GetCID(), "- grenade");
+        pSelf->SendChatTarget(pP->GetCID(), "- rifle");
+        pSelf->SendChatTarget(pP->GetCID(), "- ninja");
+        pSelf->SendChatTarget(pP->GetCID(), "- general");
+    }
+}   
+
 // items
 void CGameContext::ConChatWalls(IConsole::IResult *pResult, void *pUserData)
 {

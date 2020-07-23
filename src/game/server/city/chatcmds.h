@@ -40,7 +40,7 @@ CONSOLE_COMMAND("donor", "", CFGFLAG_CHAT, ConChatDonor, this, "")
 CONSOLE_COMMAND("vip", "", CFGFLAG_CHAT, ConChatVip, this, "")
 CONSOLE_COMMAND("upgrcmds", "?s", CFGFLAG_CHAT, ConChatUpgrCmds, this, "")
 CONSOLE_COMMAND("rules", "?s", CFGFLAG_CHAT, ConChatRules, this, "")
-
+CONSOLE_COMMAND("shop", "?s", CFGFLAG_CHAT, ConChatShop, this, "")
 
 // items
 CONSOLE_COMMAND("walls", "", CFGFLAG_CHAT, ConChatWalls, this, "")

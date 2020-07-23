@@ -501,18 +501,10 @@ void CCharacter::HandleWeaponSwitch()
 void CCharacter::SwitchShop(int Value) {
 	if(GameServer()->Collision()->TileShop(m_Pos))
 	{
-		
-		m_ShopGroup += Value;
-		
-		if (m_ShopGroup < 0)
-			m_ShopGroup = 6; // ITEM_AMOUNT when added all groups to shop
-		else if (m_ShopGroup > 6)
-			m_ShopGroup = 0;
-
-		dbg_msg("debug", "%d", m_ShopGroup);
+		m_ShopPage += Value * 6;
+		dbg_msg("debug", "page: %d", m_ShopPage);
 		return;
 	}
-
 }
 
 void CCharacter::ChangeUpgrade(int Weapon, int Value)
