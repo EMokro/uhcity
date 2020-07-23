@@ -128,6 +128,8 @@ public:
 	int m_EmoteType;
 	int m_EmoteStop;
 	int m_Menu;
+	int m_ShopPage;
+	int m_ShopGroup;
 	int m_FreezeWeapon;
 	int m_Transfers;
 	int m_GunFreezeCooldown;

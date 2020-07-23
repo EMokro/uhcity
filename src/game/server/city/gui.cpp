@@ -19,6 +19,8 @@
 
 #include "gui.h"
 
+using namespace std;
+
 
 CGui::CGui(CGameWorld *pGameWorld, int Owner)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PROJECTILE)
@@ -27,73 +29,93 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	m_Visible = false;
 	m_Pos = vec2(0, 0);
 
-	// ITEMS
-	m_apShop[0] = new CHammer(GameWorld(), m_Owner, m_Pos, 1);
-	m_apShop[1] = new CHammer(GameWorld(), m_Owner, m_Pos, 2);
-	m_apShop[2] = new CHammer(GameWorld(), m_Owner, m_Pos, 3);
-		
-	m_apShop[3] = new CGun(GameWorld(), m_Owner, m_Pos, 1);
-	m_apShop[4] = new CGun(GameWorld(), m_Owner, m_Pos, 2);
-	m_apShop[5] = new CGun(GameWorld(), m_Owner, m_Pos, 3);
+	m_ItrFlag = true;
+	m_Group = 0;
+	m_Page = 0;
+	// sorted by itemgroups, starting with ITEM_HAMMMER
+	std::list<CEntity*> group;
 
-	m_apShop[6] = new CShotgun(pGameWorld, m_Owner, m_Pos, 1);
-	m_apShop[7] = new CShotgun(pGameWorld, m_Owner, m_Pos, 2);
-//  m_apShop[8] = new CShotgun(pGameWorld, m_Owner, m_Pos, 3);
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 3));
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 1));
 
-	m_apShop[9] = new CGrenade(pGameWorld, m_Owner, m_Pos, 1);
-	m_apShop[10] = new CGrenade(pGameWorld, m_Owner, m_Pos, 2);
-//	m_apShop[11] = new CGrenade(pGameWorld, m_Owner, m_Pos, 3);
+	m_aShop.push_back(group);
+	group.clear();
+
+	group.push_back(new CGun(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CGun(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CGun(GameWorld(), m_Owner, m_Pos, 3));
+
+	m_aShop.push_back(group);
+	group.clear();
+
+	group.push_back(new CShotgun(GameWorld(), m_Owner, m_Pos, 1));
+
+	m_aShop.push_back(group);
+	group.clear();
+
+	group.push_back(new CGrenade(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CGrenade(GameWorld(), m_Owner, m_Pos, 2));
+
+	m_aShop.push_back(group);
+	group.clear();
 	
-	m_apShop[12] = new CRifle(GameWorld(), m_Owner, m_Pos, 3);
-	m_apShop[13] = new CRifle(GameWorld(), m_Owner, m_Pos, 2);
-	m_apShop[14] = new CRifle(GameWorld(), m_Owner, m_Pos, 1);
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 
-	m_apShop[15] = new CNinja(GameWorld(), m_Owner, m_Pos, 1);
-	m_apShop[16] = new CNinja(GameWorld(), m_Owner, m_Pos, 2);
-	m_apShop[17] = new CNinja(GameWorld(), m_Owner, m_Pos, 3);
+	m_aShop.push_back(group);
+	group.clear();
 
-	m_apShop[18] = new CInfAmmo(pGameWorld, m_Owner, m_Pos);
-	m_apShop[19] = new CAllWeapons(pGameWorld, m_Owner, m_Pos);
-	m_apShop[20] = new CFastReload(pGameWorld, m_Owner, m_Pos);
-	m_apShop[21] = new CHealthRegen(pGameWorld, m_Owner, m_Pos);
-	m_apShop[22] = new CNoSelfDMG(pGameWorld, m_Owner, m_Pos);
-	m_apShop[23] = new CInfJumps(pGameWorld, m_Owner, m_Pos);
+	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 3));
+
+	m_aShop.push_back(group);
+	group.clear();
+
+	group.push_back(new CInfAmmo(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CAllWeapons(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CFastReload(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+
+	m_aShop.push_back(group);
+	group.clear();
 	
 	//m_Menu = 1;
-	for(int i = 0; i < 24; i++)
-	{
-		if(i == 11 || i == 8)
-			continue;
-
-		m_apShop[i]->m_Visible = true;
+	list<list<CEntity*>>::iterator it;
+	for(it = m_aShop.begin(); it != m_aShop.end(); ++it) {
+		list<CEntity*>::iterator entIt;
+		list<CEntity*>& pEnts = *it;
+		for(entIt = pEnts.begin(); entIt != pEnts.end(); ++entIt) {
+			CEntity *ent = *entIt;
+			ent->m_Visible = true;
+		}
 	}
+	
+	dbg_msg("debug", "shop size: %d", m_aShop.size());
+	dbg_msg("debug", "hammer shop size: %d", next(m_aShop.begin(), ITEM_HAMMER)->size());
 
 	GameWorld()->InsertEntity(this);
 }
 
 CGui::~CGui()
 {
-	for(int i = 0; i < 24; i++)
-		delete m_apShop[i];
-	//m_apShop = 0;
-
+	m_aShop.clear();
 }
+
 void CGui::Switch()
 {
-	for(int i = 0; i < 24; i++)
-	{
-		if(i == 11 || i == 8)
-			continue;
-
-		m_apShop[i]->m_Visible ^= true;
-	}
+	dbg_msg("debug", "switch");
 }
 
 void CGui::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
-	/*delete m_apShop;
-	m_apShop[] = 0;*/
 }
 
 void CGui::Tick()
@@ -105,79 +127,81 @@ void CGui::Tick()
 		Reset();
 		return;
 	}
-
-	if(GameServer()->Collision()->TileShop(pOwner->m_Pos) && !pOwner->m_Menu)
-		pOwner->m_Menu = 1;
-	else if(!GameServer()->Collision()->TileShop(pOwner->m_Pos) && pOwner->m_Menu)
-		pOwner->m_Menu = 0;
-
 }
 
-void CGui::CheckKlick(vec2 Pos)
+void CGui::CheckClick(vec2 Pos)
 {
-	for(int i = 0; i < 24; i++)
-	{
-		if(length(m_apShop[i]->m_Pos-Pos) < 96)
-			m_apShop[i]->m_Visible ^= true;
-	}
-
-
+	dbg_msg("debug", "checkclick");
 }
+
+
 void CGui::Menu()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
 	if(!pOwner)
 		return;
+
+	list<list<CEntity*>>::iterator it;
+	list<CEntity*>::iterator itE;
 	
-	int Menu = pOwner->m_Menu;
-
-	for(int i = 0; i < 24; i++)
-	{
-		if(i == 11 || i == 8)
-			continue;
-
-		m_apShop[i]->m_Visible = false;
-	}
-
-	int Case = 0;
-	int Start, End;
-
-	if(Menu < 7 && Menu)
-	{
-		Start = (Menu-1)*3;
-		End = 3*Menu;
-
-		Case = 1;
-
-		if(Menu == 3 || Menu == 4)
-			Case = 2;
-	}
-	else if(Menu > 6 && Menu)
-	{
-		Start = 18;
-		End = 24;
-		Case = 3;
-	}
-	else
+	if (!GameServer()->Collision()->TileShop(pOwner->m_Pos)) { // we want to hide them only once
+		if (m_ItrFlag) {
+			for(it = m_aShop.begin(); it != m_aShop.end(); ++it) {
+				list<CEntity*>::iterator entIt;
+				list<CEntity*>& pEnts = *it;
+				for(entIt = pEnts.begin(); entIt != pEnts.end(); ++entIt) {
+					CEntity *ent = *entIt;
+					ent->m_Visible = false;
+				}
+			}
+			m_ItrFlag = false;
+		}
 		return;
+	} else
+		m_ItrFlag = false;
 	
 
-	for(int i = Start; i < End; i++)
-	{
-		if(i == 11 || i == 8)
-			continue;
+	m_Page = pOwner->m_ShopPage;
+	m_Group = pOwner->m_ShopGroup;
+	
+	if (!m_ItrFlag) { // we only wanna do this, while on shop
 
-		m_apShop[i]->m_Visible = true;
+		for(it = m_aShop.begin(); it != m_aShop.end(); ++it) {
+			list<CEntity*>::iterator entIt;
+			list<CEntity*>& pEnts = *it;
+			for(entIt = pEnts.begin(); entIt != pEnts.end(); ++entIt) {
+				CEntity *ent = *entIt;
+				ent->m_Visible = false;
+			}
+		}
+
+		if (m_Page < 0)
+			m_Page = next(m_aShop.begin(), m_Group)->size();
+		else
+			m_Page = 0;
 		
-		if(Case == 1)
-			m_apShop[i]->m_Pos = pOwner->m_Pos + normalize(GetDir(pi/180 * 270-5+(i-Start)*5))*250;
-		else if(Case == 2)
-			m_apShop[i]->m_Pos = pOwner->m_Pos + normalize(GetDir(pi/180 * 270-1+(i-Start)*2))*250;
-		else if(Case == 3)
-			m_apShop[i]->m_Pos = pOwner->m_Pos + normalize(GetDir(pi/180 * 270-3*1+(i-Start)*1))*250;
-	}
+		m_Page -= m_Page % 6; // make sure we always show the same items per page
 
+		dbg_msg("debug", "group %d has %d members", m_Group, next(m_aShop.begin(), m_Group)->size());
+		list<CEntity*> Ents = *next(m_aShop.begin(), m_Group);
+
+		int ItemsLeft = next(m_aShop.begin(), m_Group)->size() - m_Page < 6 ? next(m_aShop.begin(), m_Group)->size() - m_Page : 6;
+		int i = 1;
+		for(itE = next(Ents.begin(), m_Page); (itE != next(Ents.begin(), m_Page + ItemsLeft) && itE != Ents.end()); ++itE)
+		{
+			CEntity *Ent = *itE;
+			dbg_msg("debug", "%d. is %s", i, Ent->m_Visible ? "visible" : "invisible");
+
+			Ent->m_Visible = true;
+			if (!(ItemsLeft % 2))
+				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/ItemsLeft) * -i))*250;
+			else
+				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/ItemsLeft) * -i - 0.5*pi))*250;
+			i++;
+		}
+		m_ItrFlag = true;
+	}
 }
 
 void CGui::Snap(int SnappingClient)
@@ -186,23 +210,4 @@ void CGui::Snap(int SnappingClient)
 		return;
 
 	Menu();
-	/*CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
-
-	if(pOwner)
-	{
-		
-		for(int i = 0; i < 24; i++)
-		{
-			if(i == 11 || i == 8)
-				continue;
-
-			m_apShop[i]->m_Pos = pOwner->m_Pos + normalize(GetDir(pi/180 * ((180 + i*(i?-1:1)*15)%360)))*250;
-		}
-	}*/
-
-
-
-
-	
-	
 }

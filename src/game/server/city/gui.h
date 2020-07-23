@@ -3,6 +3,8 @@
 #ifndef GAME_SERVER_ENTITIES_GUI_H
 #define GAME_SERVER_ENTITIES_GUI_H
 
+#include <list>
+
 class CGui : public CEntity
 {
 public:
@@ -14,18 +16,24 @@ public:
 	virtual void Snap(int SnappingClient);
 
 	void Switch();
-	void CheckKlick(vec2 Pos);
+	void CheckClick(vec2 Pos);
 	void Menu();
 
 	bool m_Visible;
-	CEntity *m_apShop[24];
+	
 
 private:
 	vec2 m_Pos;
 	int m_Owner;
 	int m_StartTick;
-	
+	int m_ItrFlag;
+	int m_Group;
+	int m_Page;
+	vec2 m_LastPlayerPos;
 
+	// max page size is 6
+	// groups are ITEM_** (ITEM_HAMMER)
+	std::list<std::list<CEntity*>> m_aShop; // 2d list containing a list of item groups
 };
 
 #endif

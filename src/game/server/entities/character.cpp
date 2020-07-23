@@ -73,7 +73,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
 	m_DesiredPos = Pos;
-	m_GunFreezeCooldown = 0;
 	m_LastWeapon = WEAPON_HAMMER;
 
 	m_Core.Reset();
@@ -97,12 +96,15 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_InstaKills = 0;
 	m_Gravity = .5;
+	m_ShopGroup = ITEM_HAMMER;
+	m_ShopPage = 0;
 	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
 	m_FreezeEnd = false;
 	m_HammerPos1 = vec2(0, 0);
 	m_HammerPos2 = vec2(0, 0);
+	m_GunFreezeCooldown = 0;
 	m_SpawnProtection = Server()->Tick();
 
 	new CGui(GameWorld(), m_pPlayer->GetCID());
@@ -497,15 +499,17 @@ void CCharacter::HandleWeaponSwitch()
 }
 
 void CCharacter::SwitchShop(int Value) {
-		if(GameServer()->Collision()->TileShop(m_Pos))
+	if(GameServer()->Collision()->TileShop(m_Pos))
 	{
-		m_Menu += Value;
+		
+		m_ShopGroup += Value;
+		
+		if (m_ShopGroup < 0)
+			m_ShopGroup = 6; // ITEM_AMOUNT when added all groups to shop
+		else if (m_ShopGroup > 6)
+			m_ShopGroup = 0;
 
-		if(m_Menu < 0) 
-			m_Menu = 0;
-		if(m_Menu > 7)
-			m_Menu = 7;
-
+		dbg_msg("debug", "%d", m_ShopGroup);
 		return;
 	}
 
