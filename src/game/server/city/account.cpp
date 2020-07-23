@@ -201,7 +201,7 @@ void CAccount::Login(char *Username, char *Password)
 
 	if (user["items"].HasMember("hook")) {
 		if ((user["items"]["hook"].HasMember("endless")))
-			m_pPlayer->m_AccData.m_NinjaSwitch = user["items"]["hook"]["endless"].GetInt();
+			m_pPlayer->m_AccData.m_EndlessHook = user["items"]["hook"]["endless"].GetInt();
 	}
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
