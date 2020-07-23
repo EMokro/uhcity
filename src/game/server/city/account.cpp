@@ -199,6 +199,11 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_NinjaStart = user["items"]["ninja"]["ninjastart"].GetInt();
 	m_pPlayer->m_AccData.m_NinjaSwitch = user["items"]["ninja"]["ninjaswitch"].GetInt();
 
+	if (user["items"].HasMember("hook")) {
+		if ((user["items"]["hook"].HasMember("endless")))
+			m_pPlayer->m_AccData.m_NinjaSwitch = user["items"]["hook"]["endless"].GetInt();
+	}
+
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
 
 	if(pOwner)
@@ -408,6 +413,12 @@ void CAccount::Register(char *Username, char *Password)
     writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
     writer.EndObject();
 
+	writer.Key("hook");
+	writer.StartObject();
+	writer.Key("endless");
+    writer.Int(m_pPlayer->m_AccData.m_EndlessHook);
+	writer.EndObject();
+
     writer.EndObject();
     writer.EndObject();
     writer.EndObject();
@@ -569,6 +580,12 @@ void CAccount::Apply()
     writer.Key("ninjaswitch");
     writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
     writer.EndObject();
+
+	writer.Key("hook");
+	writer.StartObject();
+	writer.Key("endless");
+    writer.Int(m_pPlayer->m_AccData.m_EndlessHook);
+	writer.EndObject();
 
     writer.EndObject();
     writer.EndObject();

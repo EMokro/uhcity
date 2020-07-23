@@ -52,13 +52,7 @@ void CHook::Tick()
 	switch (m_Type)
 	{
 	case 1:
-		pOwner->Buy("Gun spread", &pOwner->GetPlayer()->m_AccData.m_GunSpread, g_Config.m_EuGunSpread, Click, 5);
-		break;
-	case 2:
-		pOwner->Buy("Gun explode", &pOwner->GetPlayer()->m_AccData.m_GunExplode, g_Config.m_EuGunExplode, Click, 1);
-		break;
-	case 3:
-		pOwner->Buy("Gun freeze", &pOwner->GetPlayer()->m_AccData.m_GunFreeze, g_Config.m_EuGunFreeze, Click, 3);
+		pOwner->Buy("Endless Hook", &pOwner->GetPlayer()->m_AccData.m_EndlessHook, g_Config.m_EuHookEndless, Click, 1);
 		break;
 	}
 }
@@ -71,71 +65,55 @@ void CHook::Snap(int SnappingClient)
 	if (Server()->Tick() % 5 == 0)
 		m_StartTick = Server()->Tick();
 
-	if (m_Type == 1)// Heal
+	if (m_Type == 1)// Endless
 	{
-		CNetObj_Pickup* pP[5];
+		CNetObj_Laser *pObj[7];
 
-		for (int i = 0; i < 3; i++)
-		{
-			pP[i] = static_cast<CNetObj_Pickup*>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
-			if (!pP[i])
+		for (int i = 0; i < 7; i++) {
+			pObj[i] = static_cast<CNetObj_Laser*>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
+
+			if (!pObj[i])
 				return;
-
-			pP[i]->m_X = (int)m_Pos.x - 30 + 20 * rand()%8;
-			pP[i]->m_Y = (int)m_Pos.y;
-			pP[i]->m_Type = POWERUP_HEALTH;
 		}
-	}
-	else if (m_Type == 2)//Explode
-	{
-		CNetObj_Pickup* pP = static_cast<CNetObj_Pickup*>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_ID, sizeof(CNetObj_Pickup)));
 
-		if (!pP)
-			return;
+		pObj[0]->m_X = (int)m_Pos.x - 40;
+		pObj[0]->m_Y = (int)m_Pos.y;
+		pObj[0]->m_FromX = (int)m_Pos.x - 20;
+		pObj[0]->m_FromY = (int)m_Pos.y - 15;
 
-		pP->m_X = (int)m_Pos.x - 20;
-		pP->m_Y = (int)m_Pos.y;
-		pP->m_Type = POWERUP_WEAPON;
-		pP->m_Subtype = WEAPON_GUN;
+		pObj[1]->m_X = (int)m_Pos.x - 20;
+		pObj[1]->m_Y = (int)m_Pos.y + 15;
+		pObj[1]->m_FromX = (int)m_Pos.x - 40;
+		pObj[1]->m_FromY = (int)m_Pos.y;
 
-		if (Server()->Tick() % 25 == 0)
-		{
-			CNetEvent_Explosion* pEvent = (CNetEvent_Explosion*)GameServer()->m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
-			if (pEvent)
-			{
-				pEvent->m_X = (int)m_Pos.x + 20;
-				pEvent->m_Y = (int)m_Pos.y;
-			}
-		}
-	}
-	else if (m_Type == 3)//Freeze
-	{
-		CNetObj_Pickup* pP = static_cast<CNetObj_Pickup*>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_ID, sizeof(CNetObj_Pickup)));
+		pObj[2]->m_X = (int)m_Pos.x + 20;
+		pObj[2]->m_Y = (int)m_Pos.y - 15;
+		pObj[2]->m_FromX = (int)m_Pos.x - 20;
+		pObj[2]->m_FromY = (int)m_Pos.y + 15;
 
-		if (!pP)
-			return;
+		pObj[3]->m_X = (int)m_Pos.x + 40;
+		pObj[3]->m_Y = (int)m_Pos.y;
+		pObj[3]->m_FromX = (int)m_Pos.x + 20;
+		pObj[3]->m_FromY = (int)m_Pos.y - 15;
 
-		pP->m_X = (int)m_Pos.x;
-		pP->m_Y = (int)m_Pos.y - 10;
-		pP->m_Type = POWERUP_NINJA;
-		pP->m_Subtype = WEAPON_GUN;
+		pObj[4]->m_X = (int)m_Pos.x + 20;
+		pObj[4]->m_Y = (int)m_Pos.y + 15;
+		pObj[4]->m_FromX = (int)m_Pos.x + 40;
+		pObj[4]->m_FromY = (int)m_Pos.y;
 
-		CNetObj_Projectile* pProj[3];
+		pObj[5]->m_X = (int)m_Pos.x + 20;
+		pObj[5]->m_Y = (int)m_Pos.y + 15;
+		pObj[5]->m_FromX = (int)m_Pos.x - 20;
+		pObj[5]->m_FromY = (int)m_Pos.y - 15;
 
-		for (int i = 0; i < 3; i++)
-		{
-			pProj[i] = static_cast<CNetObj_Projectile*>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
+		pObj[6]->m_X = (int)m_Pos.x + 20;
+		pObj[6]->m_Y = (int)m_Pos.y + 15;
 
-			if (!pProj[i])
-				return;
-
-			pProj[i]->m_X = (int)m_Pos.x - 32 + i * 15;
-			pProj[i]->m_Y = (int)m_Pos.y + 10;
-			pProj[i]->m_VelX = (int)10;
-			pProj[i]->m_VelY = (int)-2;
-			pProj[i]->m_StartTick = Server()->Tick() - 2;
-			pProj[i]->m_Type = WEAPON_GUN;
-
-		}
+		pObj[0]->m_StartTick = Server()->Tick();
+		pObj[1]->m_StartTick = Server()->Tick();
+		pObj[2]->m_StartTick = Server()->Tick();
+		pObj[3]->m_StartTick = Server()->Tick();
+		pObj[4]->m_StartTick = Server()->Tick();
+		pObj[5]->m_StartTick = Server()->Tick();
 	}
 }

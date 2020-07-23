@@ -10,6 +10,7 @@
 #include <game/server/city/shopitems/gun.h>
 #include <game/server/city/shopitems/hammer.h>
 #include <game/server/city/shopitems/ninja.h>
+#include <game/server/city/shopitems/hook.h>
 
 #include <game/server/city/shopitems/healthregen.h>
 #include <game/server/city/shopitems/infjumps.h>
@@ -67,12 +68,6 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 1));
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -90,13 +85,7 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
-	
-	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CInfAmmo(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CAllWeapons(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CFastReload(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 1));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -111,9 +100,6 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 			ent->m_Visible = true;
 		}
 	}
-	
-	dbg_msg("debug", "shop size: %d", m_aShop.size());
-	dbg_msg("debug", "hammer shop size: %d", next(m_aShop.begin(), ITEM_HAMMER)->size());
 
 	GameWorld()->InsertEntity(this);
 }
@@ -194,12 +180,11 @@ void CGui::Menu()
 		int i = 1;
 
 
-		if (Size > 6) {
-			if (pOwner->m_ShopPage < 0)
-				pOwner->m_ShopPage = Size - Size % 6;
-			else if (pOwner->m_ShopPage > Size - 1)
-				pOwner->m_ShopPage = 0;
-		}
+		if (pOwner->m_ShopPage < 0)
+			pOwner->m_ShopPage = Size - Size % 6;
+		else if (pOwner->m_ShopPage > Size - 1)
+			pOwner->m_ShopPage = 0;
+			
 		list<CEntity*> Ents = *next(m_aShop.begin(), m_Group);
 
 		for(itE = next(Ents.begin(), pOwner->m_ShopPage); (itE != next(Ents.begin(), pOwner->m_ShopPage + ItemsLeft) && itE != Ents.end()); ++itE)

@@ -164,6 +164,8 @@ public:
 		int m_NinjaPermanent;
 		int m_NinjaStart;
 		int m_NinjaSwitch;
+
+		int m_EndlessHook;
 	} m_AccData;
 
 	int m_RainbowColor;

@@ -8,7 +8,7 @@
 MACRO_CONFIG_INT(EuHealth, eu_health, 50000, 0, 1000000, CFGFLAG_SERVER, "Price - Health+1")
 MACRO_CONFIG_INT(EuArmor, eu_armor, 50000, 0, 1000000, CFGFLAG_SERVER, "Price - Armor+1")
 
-MACRO_CONFIG_INT(EuVIP, eu_vip, 2500000, 0, 100000000, CFGFLAG_SERVER, "Price - VIP")
+MACRO_CONFIG_INT(EuVIP, eu_vip, 1000000, 0, 100000000, CFGFLAG_SERVER, "Price - VIP")
 //MACRO_CONFIG_INT(EuArrested, eu_arrested, 10000, 0, 1000000, CFGFLAG_SERVER, "Price - Freedom")
 
 MACRO_CONFIG_INT(EuAllWeapons, eu_allweapons, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - All weapons")
@@ -38,9 +38,12 @@ MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 150000, 0, 1000000, CFGFLAG_SER
 MACRO_CONFIG_INT(EuHammerShot, eu_hammer_shot, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer shot")
 MACRO_CONFIG_INT(EuHammerKill, eu_hammer_kill, 36000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer kill")
 
-MACRO_CONFIG_INT(EuNinjaPermanent, eu_ninja_permanent, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja permanent")
-MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja start")
-MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 9000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja switch")
+MACRO_CONFIG_INT(EuNinjaPermanent, eu_ninja_permanent, 5000000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja permanent")
+MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja start")
+MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja switch")
+
+MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, CFGFLAG_SERVER, "Price - Ninja switch")
+
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")
 

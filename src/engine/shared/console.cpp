@@ -548,6 +548,14 @@ struct CIntVariableData
 	int m_Max;
 };
 
+struct CLongLongVariableData
+{
+	IConsole *m_pConsole;
+	long long *m_pVariable;
+	long long  m_Min;
+	long long  m_Max;
+};
+
 struct CStrVariableData
 {
 	IConsole *m_pConsole;
@@ -578,6 +586,33 @@ static void IntVariableCommand(IConsole::IResult *pResult, void *pUserData)
 	{
 		char aBuf[1024];
 		str_format(aBuf, sizeof(aBuf), "Value: %d", *(pData->m_pVariable));
+		pData->m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+	}
+}
+
+static void LongLongVariableCommand(IConsole::IResult *pResult, void *pUserData)
+{
+	CLongLongVariableData *pData = (CLongLongVariableData *)pUserData;
+
+	if(pResult->NumArguments())
+	{
+		long long Val = pResult->GetLongLong(0);
+
+		// do clamping
+		if(pData->m_Min != pData->m_Max)
+		{
+			if (Val < pData->m_Min)
+				Val = pData->m_Min;
+			if (pData->m_Max != 0 && Val > pData->m_Max)
+				Val = pData->m_Max;
+		}
+
+		*(pData->m_pVariable) = Val;
+	}
+	else
+	{
+		char aBuf[1024];
+		str_format(aBuf, sizeof(aBuf), "Value: %lld", *(pData->m_pVariable));
 		pData->m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 	}
 }
@@ -648,6 +683,12 @@ CConsole::CConsole(int FlagMask)
 		Register(#ScriptName, "?i", Flags, IntVariableCommand, &Data, Desc); \
 	}
 
+	#define MACRO_CONFIG_LONGLONG(Name,ScriptName,Def,Min,Max,Flags,Desc) \
+	{ \
+		static CLongLongVariableData Data = { this, &g_Config.m_##Name, Min, Max }; \
+		Register(#ScriptName, "?i", Flags, LongLongVariableCommand, &Data, Desc); \
+	}
+
 	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Flags,Desc) \
 	{ \
 		static CStrVariableData Data = { this, g_Config.m_##Name, Len }; \
@@ -657,6 +698,7 @@ CConsole::CConsole(int FlagMask)
 	#include "config_variables.h"
 
 	#undef MACRO_CONFIG_INT
+	#undef MACRO_CONFIG_LONGLONG
 	#undef MACRO_CONFIG_STR
 }
 
