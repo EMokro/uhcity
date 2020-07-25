@@ -146,8 +146,10 @@ void CAccount::Login(char *Username, char *Password)
 	str_copy(m_pPlayer->m_AccData.m_Username, user["accdata"]["username"].GetString(), sizeof(m_pPlayer->m_AccData.m_Username));
 	str_copy(m_pPlayer->m_AccData.m_Password, user["accdata"]["password"].GetString(), sizeof(m_pPlayer->m_AccData.m_Password));
 
-	m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
-	m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
+	if (user["general"].HasMember("level"))
+		m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
+	if (user["general"].HasMember("exp"))
+		m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
 	m_pPlayer->m_AccData.m_Money = user["general"]["money"].GetInt64();
 	m_pPlayer->m_AccData.m_Health = user["general"]["health"].GetInt();
 	m_pPlayer->m_AccData.m_Armor = user["general"]["armor"].GetInt();
@@ -161,7 +163,6 @@ void CAccount::Login(char *Username, char *Password)
 		if (user["auth"].HasMember("vip"))
 			m_pPlayer->m_AccData.m_VIP = user["auth"]["vip"].GetInt();
 	}
-	
 
 	if (user.HasMember("event")) {
 		if (user["event"].HasMember("bounty"))

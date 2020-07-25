@@ -161,11 +161,10 @@ void CGui::Menu()
 	} else
 		m_ItrFlag = false;
 	
-
+	GameServer()->SendBroadcast("Welcome to the shop\nWrite /shop for more infos", m_Owner);
 	m_Group = pOwner->m_ShopGroup;
 	
 	if (!m_ItrFlag) { // we only wanna do this, while on shop
-
 		for(it = m_aShop.begin(); it != m_aShop.end(); ++it) {
 			list<CEntity*>::iterator entIt;
 			list<CEntity*>& pEnts = *it;

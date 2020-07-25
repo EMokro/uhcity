@@ -724,7 +724,7 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
 
     if (!str_comp_nocase(Upgr, "gun")) {
         pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
-        pSelf->SendChatTarget(pP->GetCID(), "/gfreeze -- Freeze gun");
+        pSelf->SendChatTarget(pP->GetCID(), "/fgun -- Freeze gun");
         return;
     }
 
@@ -870,7 +870,7 @@ void CGameContext::ConChatGunfreeze(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    pChr->ChangeUpgrade(ITEM_HAMMER, UPGRADE_HAMMERKILL);
+    pChr->ChangeUpgrade(ITEM_GUN, UPGRADE_GUNFREEZE);
     str_format(aBuf, sizeof(aBuf), "%s Gunfreeze", pP->m_AciveUpgrade[ITEM_GUN] == UPGRADE_GUNFREEZE ?"Enabled":"Disabled");
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }
