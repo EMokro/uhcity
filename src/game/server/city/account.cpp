@@ -146,12 +146,44 @@ void CAccount::Login(char *Username, char *Password)
 	str_copy(m_pPlayer->m_AccData.m_Username, user["accdata"]["username"].GetString(), sizeof(m_pPlayer->m_AccData.m_Username));
 	str_copy(m_pPlayer->m_AccData.m_Password, user["accdata"]["password"].GetString(), sizeof(m_pPlayer->m_AccData.m_Password));
 
-	m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
-	m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
+	if (user["general"].HasMember("level"))
+		m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
+	if (user["general"].HasMember("exp"))
+		m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
 	m_pPlayer->m_AccData.m_Money = user["general"]["money"].GetInt64();
 	m_pPlayer->m_AccData.m_Health = user["general"]["health"].GetInt();
 	m_pPlayer->m_AccData.m_Armor = user["general"]["armor"].GetInt();
 	m_pPlayer->m_AccData.m_HouseID = user["general"]["houseid"].GetInt();
+
+	if (user.HasMember("level")) {
+		if (user["level"].HasMember("normal"))
+			m_pPlayer->m_AccData.m_ExpPoints = user["level"]["normal"].GetInt();
+		if (user["level"].HasMember("hammer"))
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER] = user["level"]["hammer"].GetInt();
+		if (user["level"].HasMember("gun"))
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN] = user["level"]["gun"].GetInt();
+		if (user["level"].HasMember("shotgun"))
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN] = user["level"]["shotgun"].GetInt();
+		if (user["level"].HasMember("grenade"))
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE] = user["level"]["grenade"].GetInt();
+		if (user["level"].HasMember("rifle"))
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE] = user["level"]["rifle"].GetInt();
+	}
+
+	if (user.HasMember("exp")) {
+		if (user["exp"].HasMember("normal"))
+			m_pPlayer->m_AccData.m_ExpPoints = user["exp"]["normal"].GetInt64();
+		if (user["exp"].HasMember("hammer"))
+			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_HAMMER] = user["exp"]["hammer"].GetInt();
+		if (user["exp"].HasMember("gun"))
+			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GUN] = user["exp"]["gun"].GetInt();
+		if (user["exp"].HasMember("shotgun"))
+			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_SHOTGUN] = user["exp"]["shotgun"].GetInt();
+		if (user["exp"].HasMember("grenade"))
+			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GRENADE] = user["exp"]["grenade"].GetInt();
+		if (user["exp"].HasMember("rifle"))
+			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_RIFLE] = user["exp"]["rifle"].GetInt();
+	}
 
 	if (user.HasMember("auth")) {
 		if (user["auth"].HasMember("authlvl"))
@@ -162,7 +194,6 @@ void CAccount::Login(char *Username, char *Password)
 			m_pPlayer->m_AccData.m_VIP = user["auth"]["vip"].GetInt();
 	}
 	
-
 	if (user.HasMember("event")) {
 		if (user["event"].HasMember("bounty"))
 			m_pPlayer->m_AccData.m_Bounty = user["event"]["bounty"].GetInt64();
@@ -304,10 +335,6 @@ void CAccount::Register(char *Username, char *Password)
 
 	writer.Key("general");
 	writer.StartObject();
-	writer.Key("level");
-    writer.Int(m_pPlayer->m_AccData.m_Level);
-	writer.Key("exp");
-    writer.Int64(m_pPlayer->m_AccData.m_ExpPoints);
     writer.Key("money");
     writer.Int64(m_pPlayer->m_AccData.m_Money);
 	writer.Key("health");
@@ -317,6 +344,39 @@ void CAccount::Register(char *Username, char *Password)
 	writer.Key("houseid");
     writer.Int(m_pPlayer->m_AccData.m_HouseID);
     writer.EndObject();
+
+	writer.Key("level");
+	writer.StartObject();
+	writer.Key("normal");
+    writer.Int64(m_pPlayer->m_AccData.m_Level);
+	writer.Key("hammer");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER]);
+    writer.Key("gun");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN]);
+	writer.Key("shotung");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN]);
+	writer.Key("grenade");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE]);
+	writer.Key("rifle");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    writer.EndObject();
+
+	writer.Key("exp");
+	writer.StartObject();
+	writer.Key("normal");
+	writer.Int64(m_pPlayer->m_AccData.m_ExpPoints);
+	writer.Key("hammer");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_HAMMER]);
+    writer.Key("gun");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GUN]);
+	writer.Key("shotung");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_SHOTGUN]);
+	writer.Key("grenade");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GRENADE]);
+	writer.Key("rifle");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_RIFLE]);
+    writer.EndObject();
+
 
 	writer.Key("auth");
 	writer.StartObject();
@@ -472,10 +532,6 @@ void CAccount::Apply()
 
 	writer.Key("general");
 	writer.StartObject();
-	writer.Key("level");
-    writer.Int(m_pPlayer->m_AccData.m_Level);
-	writer.Key("exp");
-    writer.Int64(m_pPlayer->m_AccData.m_ExpPoints);
     writer.Key("money");
     writer.Int64(m_pPlayer->m_AccData.m_Money);
 	writer.Key("health");
@@ -484,6 +540,38 @@ void CAccount::Apply()
     writer.Int(m_pPlayer->m_AccData.m_Armor<10?10:m_pPlayer->m_AccData.m_Armor);
 	writer.Key("houseid");
     writer.Int(m_pPlayer->m_AccData.m_HouseID);
+    writer.EndObject();
+
+	writer.Key("level");
+	writer.StartObject();
+	writer.Key("normal");
+    writer.Int(m_pPlayer->m_AccData.m_Level);
+	writer.Key("hammer");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER]);
+    writer.Key("gun");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN]);
+	writer.Key("shotung");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN]);
+	writer.Key("grenade");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE]);
+	writer.Key("rifle");
+    writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    writer.EndObject();
+
+	writer.Key("exp");
+	writer.StartObject();
+	writer.Key("normal");
+	writer.Int64(m_pPlayer->m_AccData.m_ExpPoints);
+	writer.Key("hammer");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_HAMMER]);
+    writer.Key("gun");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GUN]);
+	writer.Key("shotung");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_SHOTGUN]);
+	writer.Key("grenade");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_GRENADE]);
+	writer.Key("rifle");
+    writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_RIFLE]);
     writer.EndObject();
 
 	writer.Key("auth");
@@ -520,7 +608,6 @@ void CAccount::Apply()
 	writer.Key("noselfdmg");
 	writer.Int(m_pPlayer->m_AccData.m_NoSelfDMG);
 	writer.EndObject();
-
     writer.Key("gun");
     writer.StartObject();
 	writer.Key("gunspread");

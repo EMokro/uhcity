@@ -906,8 +906,16 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		if(!m_pPlayer->m_Insta && !m_GameZone)
-			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay /(m_pPlayer->m_AccData.m_FastReload + 1) * Server()->TickSpeed() / 1000;
+		if(!m_pPlayer->m_Insta && !m_GameZone) {
+			int LvlSpeed = 1;
+			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
+				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/50) + 1;
+
+			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay 
+				/ LvlSpeed
+				* Server()->TickSpeed() / 1000;
+			
+		}
 		else
 			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed()/1000;
 	}
@@ -1915,6 +1923,8 @@ void CCharacter::Die(int Killer, int Weapon)
 	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_pPlayer->m_God && !pKiller->m_JailRifle))
 		return;
 
+	pKiller->AddExp(Weapon);
+
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
@@ -1947,13 +1957,17 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
-	if((Protected() && !m_GameZone) || m_pPlayer->m_God || m_pPlayer->m_Insta || GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()))
+	if((Protected() && !m_GameZone) || m_pPlayer->m_Insta)
 		return false;
 
-	m_Core.m_Vel += Force;
+	m_Core.m_Vel += Force;	
 
-	if(m_GameZone)
+	 // these will have force impact
+	if (m_pPlayer->m_God 
+	|| GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()) 
+	|| (m_GameZone && From == m_pPlayer->GetCID()))
 		return false;
+
 
 	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
 		return false;
@@ -1965,6 +1979,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
+	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
+		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 
@@ -2047,6 +2063,32 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
 
 	return true;
+}
+
+void CCharacter::AddExp(int Weapon, int Amount) {
+	char aBuf[256];
+	char WeaponBuf[128];
+
+	GameServer()->GetStrByWID(Weapon, WeaponBuf, sizeof WeaponBuf);
+
+	m_pPlayer->m_AccData.m_ExpWeapon[Weapon] += Amount;
+
+	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2) {
+
+		dbg_msg("debug", "%d - %d = %d", m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2, m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+		m_pPlayer->m_AccData.m_ExpWeapon[Weapon] = m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2;
+		m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+
+		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		str_format(aBuf, sizeof aBuf, "Your %s is level %d (%d|%d)ep", WeaponBuf, m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		
+		return;
+	}
+
+	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }
 
 void CCharacter::Snap(int SnappingClient)

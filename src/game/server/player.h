@@ -113,14 +113,18 @@ public:
 		char m_RconPassword[32];
 
 		// basic
-		unsigned int m_Level;
-		unsigned int m_ExpPoints;
 		unsigned long long m_Money;
 		unsigned long long m_exp;
 		int m_Health;
 		int m_Armor;	
 		int m_Kills;
 		int m_HouseID;
+
+		// levels
+		unsigned int m_Level;
+		unsigned long long int m_ExpPoints;
+		unsigned int m_LvlWeapon[5];
+		unsigned int m_ExpWeapon[5];
 
 		// Rank
 		int m_Donor;

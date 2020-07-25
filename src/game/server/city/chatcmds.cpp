@@ -449,6 +449,47 @@ void CGameContext::ConChatEnabledmg(IConsole::IResult *pResult, void *pUserData)
     pSelf->EnableDmg(pP->GetCID(), Victim);
 }
 
+void CGameContext::ConChatBuyUpgrade(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+
+    if (pResult->NumArguments() != 1 && pResult->NumArguments() != 2) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /buyupgr <weapon> ?<amount>");
+        return;
+    }
+
+    if (!pChr)
+        return;
+
+    const char *Weapon = pResult->GetString(0);
+    int ID = pSelf->GetWIDByStr(Weapon);
+    int Amount = pResult->NumArguments() == 2 ? pResult->GetInteger(1) : 1;
+    char aBuf[256], numBuf[32];
+
+    if (ID < 0) {
+        str_format(aBuf, sizeof aBuf, "'%s' does not exist", Weapon);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        return;
+    }
+
+    if (5000000 * Amount > pP->m_AccData.m_Money) {
+        pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
+        str_format(aBuf, sizeof aBuf, "This would cost %s$", numBuf);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        pSelf->SendChatTarget(pP->GetCID(), "Not enough money");
+        return;
+    }
+
+    pP->m_AccData.m_Money -= 5000000 * Amount;
+    pP->GetCharacter()->AddExp(ID);
+
+    pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
+    str_format(aBuf, sizeof aBuf, "Money: %s", numBuf);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
 void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
@@ -609,6 +650,14 @@ void CGameContext::ConChatMe(IConsole::IResult *pResult, void *pUserData)
     str_format(aBuf, sizeof aBuf, "Exp: %s ep / %s ep", numBuf[0], numBuf[1]);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 
+    str_format(aBuf, sizeof aBuf, "Hammer: %d, Gun: %d, Shotgun: %d, Grenade: %d, Rifle: %d",
+        pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
+        pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+
     pSelf->FormatInt(pP->m_AccData.m_Money, numBuf[0]);
     str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
@@ -660,6 +709,21 @@ void CGameContext::ConChatHelp(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "    /login <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you have any questions you can always ask a team member.");
     pSelf->SendChatTarget(pP->GetCID(), "Join our discord to contact us https://discord.gg/Rstb8ge");
+}
+
+void CGameContext::ConChatWriteStats(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    char aBuf[256];
+    
+    str_format(aBuf, sizeof aBuf, "Hammer: %d, Gun: %d, Shotgun: %d, Grenade: %d, Rifle: %d",
+        pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
+        pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    pSelf->SendChat(pP->GetCID(), pSelf->CHAT_ALL, aBuf);
 }
 
 void CGameContext::ConChatRules(IConsole::IResult *pResult, void *pUserData)

@@ -28,6 +28,7 @@ CONSOLE_COMMAND("instagib", "", CFGFLAG_CHAT, ConChatInstagib, this, "")
 CONSOLE_COMMAND("transfer", "?i", CFGFLAG_CHAT, ConChatTransfer, this, "")
 CONSOLE_COMMAND("disabledmg", "?v", CFGFLAG_CHAT, ConChatDisabledmg, this, "")
 CONSOLE_COMMAND("enabledmg", "?v", CFGFLAG_CHAT, ConChatEnabledmg, this, "")
+CONSOLE_COMMAND("buyupgr", "?s?i", CFGFLAG_CHAT, ConChatBuyUpgrade, this, "")
 CONSOLE_COMMAND("bountylist", "?i", CFGFLAG_CHAT, ConChatBountylist, this, "")
 CONSOLE_COMMAND("checkbounty", "?v", CFGFLAG_CHAT, ConChatCheckbounty, this, "")
 CONSOLE_COMMAND("setbounty", "?v?i", CFGFLAG_CHAT, ConChatSetbounty, this, "")
@@ -41,6 +42,8 @@ CONSOLE_COMMAND("vip", "", CFGFLAG_CHAT, ConChatVip, this, "")
 CONSOLE_COMMAND("upgrcmds", "?s", CFGFLAG_CHAT, ConChatUpgrCmds, this, "")
 CONSOLE_COMMAND("rules", "?s", CFGFLAG_CHAT, ConChatRules, this, "")
 CONSOLE_COMMAND("shop", "?s", CFGFLAG_CHAT, ConChatShop, this, "")
+CONSOLE_COMMAND("writestats", "", CFGFLAG_CHAT, ConChatWriteStats, this, "")
+
 
 // items
 CONSOLE_COMMAND("walls", "", CFGFLAG_CHAT, ConChatWalls, this, "")

@@ -1258,6 +1258,44 @@ void CGameContext::ResetDisabledDmg(int ID) {
 	}
 }
 
+void CGameContext::GetStrByWID(int ID, char *out, int size) {
+	switch (ID)
+	{
+	case WEAPON_HAMMER:
+		str_format(out, size, "Hammer");
+		break;
+	case WEAPON_GUN:
+		str_format(out, size, "Gun");
+		break;
+	case WEAPON_SHOTGUN:
+		str_format(out, size, "Shotgun");
+		break;
+	case WEAPON_GRENADE:
+		str_format(out, size, "Grenade");
+		break;
+	case WEAPON_RIFLE:
+		str_format(out, size, "Rifle");
+		break;
+	default:
+		return;
+	}
+}
+
+int CGameContext::GetWIDByStr(const char *Weapon) {
+	if (!str_comp_nocase(Weapon, "hammer"))
+		return WEAPON_HAMMER;
+	if (!str_comp_nocase(Weapon, "gun"))
+		return WEAPON_GUN;
+	if (!str_comp_nocase(Weapon, "shotgun"))
+		return WEAPON_SHOTGUN;
+	if (!str_comp_nocase(Weapon, "grenade"))
+		return WEAPON_GRENADE;
+	if (!str_comp_nocase(Weapon, "rifle"))
+		return WEAPON_RIFLE;
+	
+	return -1;
+}
+
 bool wayToSort(int i, int j) { return i > j; }
 
 void CGameContext::AddToBountyList(int ID) {

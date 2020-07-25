@@ -184,6 +184,7 @@ public:
 		static void ConSetMoney(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
+		static void ConSetLvlWeapon(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLife(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetArmor(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetClientName(IConsole::IResult* pResult, void* pUserData);
@@ -227,6 +228,7 @@ public:
 		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatBuyUpgrade(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSetbounty(IConsole::IResult* pResult, void* pUserData);
@@ -239,6 +241,8 @@ public:
 		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatShop(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
+
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);
@@ -274,6 +278,8 @@ public:
 	const int BountyList(int i) { return m_BountyList[i]; }
 
 	bool ValidID(int ID) { return ID >= 0 && ID < MAX_CLIENTS; }
+	int GetWIDByStr(const char *weapon);
+	void GetStrByWID(int ID, char *out, int size) ;
 
 	void strrev(char* str);
 	int string_length(char* pointer);
