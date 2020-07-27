@@ -506,7 +506,6 @@ void CCharacter::SwitchShop(int Value) {
 	if(GameServer()->Collision()->TileShop(m_Pos))
 	{
 		m_ShopPage += Value * 6;
-		dbg_msg("debug", "page: %d", m_ShopPage);
 		return;
 	}
 }

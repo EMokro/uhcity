@@ -157,12 +157,18 @@ void CGui::Menu()
 			}
 			m_ItrFlag = false;
 		}
+		m_MsgFlag = true;
 		return;
 	} else
 		m_ItrFlag = false;
-	
-	GameServer()->SendBroadcast("Welcome to the shop\nWrite /shop for more infos", m_Owner);
+		
 	m_Group = pOwner->m_ShopGroup;
+
+	if (m_MsgFlag) {
+		GameServer()->SendChatTarget(pOwner->GetPlayer()->GetCID(), "Welcome to the Shop!");
+		GameServer()->SendChatTarget(pOwner->GetPlayer()->GetCID(), "Type /shop for more informations");
+		m_MsgFlag = false;
+	}
 	
 	if (!m_ItrFlag) { // we only wanna do this, while on shop
 		for(it = m_aShop.begin(); it != m_aShop.end(); ++it) {

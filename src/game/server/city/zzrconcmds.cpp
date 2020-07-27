@@ -119,7 +119,7 @@ void CGameContext::ConGiveMoney(IConsole::IResult *pResult, void *pUserData)
 
 	if(Amount > 5000000 || Amount < 1)
 	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value between 1 and 5Mio");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Set a value between 1 and 5Mio");
 		return;
 	}
 
@@ -153,7 +153,7 @@ void CGameContext::ConSetMoney(IConsole::IResult* pResult, void* pUserData)
 
 	if (Amount < 1)
 	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value of at least 1");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Set a value of at least 1");
 		return;
 	}
 
@@ -201,7 +201,7 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 
 	if(Amount > 800 || Amount < 1)
 	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Set a value between 1 and 800");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Set a value between 1 and 800");
 		return;
 	}
 
@@ -237,7 +237,7 @@ void CGameContext::ConSetLife(IConsole::IResult* pResult, void* pUserData)
 
 	if (Amount < 10 && Amount > 500)
 	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Value must be between 10 and 500");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Value must be between 10 and 500");
 		return;
 	}
 
@@ -271,7 +271,7 @@ void CGameContext::ConSetArmor(IConsole::IResult* pResult, void* pUserData)
 
 	if (Amount < 10 && Amount > 500)
 	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Value must be between 10 and 500");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Value must be between 10 and 500");
 		return;
 	}
 
@@ -308,7 +308,7 @@ void CGameContext::ConSetClientName(IConsole::IResult* pResult, void* pUserData)
 		str_format(aBuf, sizeof aBuf, "'%s' changed name to '%s'", pSelf->Server()->ClientName(ID), Value);
 		pSelf->Server()->SetClientName(ID, Value);
 		pSelf->SendChat(-1, CHAT_ALL, aBuf);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 	}
 }
 
@@ -320,7 +320,7 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 	CPlayer* pP = pSelf->m_apPlayers[ID];
@@ -330,7 +330,7 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 		pP->KillCharacter();
 	}
 	else
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
 void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData)
@@ -342,7 +342,7 @@ void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
@@ -366,7 +366,7 @@ void CGameContext::ConFreeze(IConsole::IResult* pResult, void* pUserData)
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
@@ -379,7 +379,7 @@ void CGameContext::ConFreeze(IConsole::IResult* pResult, void* pUserData)
 		pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 	}
 	else
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
 void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
@@ -390,7 +390,7 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
@@ -401,7 +401,7 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 		pP->GetCharacter()->GameServer()->SendChatTarget(ID, "You were thawed by console");
 	}
 	else
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
 void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
@@ -422,7 +422,6 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 					pSelf->Server()->GetClientAddr(j, resAddr, NETADDR_MAXSTRSIZE);
 
 					if (!str_comp_nocase(checkAddr, resAddr)) {
-						dbg_msg("debug", "%s, %s", checkAddr, resAddr);
 						str_format(aBuf, sizeof aBuf, "IP [%s]: ID [%d] [%d]", checkAddr, i, j);
 						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 						counter++;
@@ -527,7 +526,7 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
@@ -554,7 +553,7 @@ void CGameContext::ConLookUp(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 	}
 	else
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
 void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
@@ -565,7 +564,7 @@ void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
@@ -574,9 +573,9 @@ void CGameContext::ConSendAfk(IConsole::IResult* pResult, void* pUserData)
 	if (pP) {
 		pP->SendAfk();
 
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "Player is afk now");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player is afk now");
 	} else 
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
 void CGameContext::ConSetBounty(IConsole::IResult* pResult, void* pUserData) {

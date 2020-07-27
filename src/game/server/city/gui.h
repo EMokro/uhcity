@@ -26,7 +26,8 @@ private:
 	vec2 m_Pos;
 	int m_Owner;
 	int m_StartTick;
-	int m_ItrFlag;
+	bool m_ItrFlag;
+	bool m_MsgFlag;
 	int m_Group;
 	int m_Page;
 	vec2 m_LastPlayerPos;

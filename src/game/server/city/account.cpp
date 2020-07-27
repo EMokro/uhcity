@@ -150,6 +150,7 @@ void CAccount::Login(char *Username, char *Password)
 		m_pPlayer->m_AccData.m_Level = user["general"]["level"].GetInt();
 	if (user["general"].HasMember("exp"))
 		m_pPlayer->m_AccData.m_ExpPoints = user["general"]["exp"].GetInt64();
+
 	m_pPlayer->m_AccData.m_Money = user["general"]["money"].GetInt64();
 	m_pPlayer->m_AccData.m_Health = user["general"]["health"].GetInt();
 	m_pPlayer->m_AccData.m_Armor = user["general"]["armor"].GetInt();
