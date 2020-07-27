@@ -782,6 +782,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			int Command = 0;
 			int Char = 0;
 
+			if (!pPlayer->GetCharacter() && !(pPlayer->GetTeam() == TEAM_SPECTATORS))
+				return;
+
 			for (int i = 1; i < str_length(pMsg->m_pMessage); i++)
 			{
 				if (pMsg->m_pMessage[i] == ' ')
