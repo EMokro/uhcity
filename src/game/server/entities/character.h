@@ -87,6 +87,7 @@ public:
 	void HealthRegeneration();
 	void HandleCity();
 	void Booster();
+	void HandleTrainer();
 	void SetPosition(vec2 Pos);
 	void Freeze(int Seconds);
 	void Unfreeze();

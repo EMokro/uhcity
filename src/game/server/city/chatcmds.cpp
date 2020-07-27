@@ -449,19 +449,24 @@ void CGameContext::ConChatEnabledmg(IConsole::IResult *pResult, void *pUserData)
     pSelf->EnableDmg(pP->GetCID(), Victim);
 }
 
-void CGameContext::ConChatBuyUpgrade(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (pResult->NumArguments() != 1 && pResult->NumArguments() != 2) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /buyupgr <weapon> ?<amount>");
+    if (!pChr && !pChr->IsAlive())
+        return;
+
+    if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a trainer first");
         return;
     }
 
-    if (!pChr)
+    if (pResult->NumArguments() != 1 && pResult->NumArguments() != 2) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /train <weapon> ?<amount>");
         return;
+    }
 
     const char *Weapon = pResult->GetString(0);
     int ID = pSelf->GetWIDByStr(Weapon);
@@ -474,7 +479,7 @@ void CGameContext::ConChatBuyUpgrade(IConsole::IResult *pResult, void *pUserData
         return;
     }
 
-    if (5000000 * Amount > pP->m_AccData.m_Money) {
+    if (1000000 * Amount > pP->m_AccData.m_Money) {
         pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
         str_format(aBuf, sizeof aBuf, "This would cost %s$", numBuf);
         pSelf->SendChatTarget(pP->GetCID(), aBuf);
@@ -482,7 +487,7 @@ void CGameContext::ConChatBuyUpgrade(IConsole::IResult *pResult, void *pUserData
         return;
     }
 
-    pP->m_AccData.m_Money -= 5000000 * Amount;
+    pP->m_AccData.m_Money -= 1000000 * Amount;
     pP->GetCharacter()->AddExp(ID);
 
     pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
@@ -821,6 +826,9 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
 
+    if (!pChr && !pChr->IsAlive())
+        return;
+
     if (!pSelf->Collision()->TileShop(pChr->m_Core.m_Pos)) {
         pSelf->SendChatTarget(pResult->GetClientID(), "Enter a shop first");
         return;
@@ -855,6 +863,47 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "- rifle");
         pSelf->SendChatTarget(pP->GetCID(), "- ninja");
         pSelf->SendChatTarget(pP->GetCID(), "- general");
+    }
+}   
+
+void CGameContext::ConChatTrainer(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
+
+    if (!pChr && !pChr->IsAlive())
+        return;
+
+    if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a trainer first");
+        return;
+    }
+
+    int Page = pChr->m_ShopPage;
+    pChr->m_ShopPage = 0;
+    if (!str_comp_nocase(Upgr, "hammer"))
+        pChr->m_ShopGroup = ITEM_HAMMER;
+    else if (!str_comp_nocase(Upgr, "gun"))
+        pChr->m_ShopGroup = ITEM_GUN;
+    else if (!str_comp_nocase(Upgr, "shotgun"))
+        pChr->m_ShopGroup = ITEM_SHOTGUN;
+    else if (!str_comp_nocase(Upgr, "grenade"))
+        pChr->m_ShopGroup = ITEM_GRENADE;
+    else if (!str_comp_nocase(Upgr, "rifle") || !str_comp_nocase(Upgr, "laser"))
+        pChr->m_ShopGroup = ITEM_RIFLE;
+    else {
+        pChr->m_ShopPage = Page;
+        pSelf->SendChatTarget(pResult->GetClientID(), "You can buy experience here.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "One exp costs 1.000.000$.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Use /train <weapon> ?<amount>.");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Available weapons are:");
+        pSelf->SendChatTarget(pP->GetCID(), "- hammer");
+        pSelf->SendChatTarget(pP->GetCID(), "- gun");
+        pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
+        pSelf->SendChatTarget(pP->GetCID(), "- grenade");
+        pSelf->SendChatTarget(pP->GetCID(), "- rifle");
     }
 }   
 

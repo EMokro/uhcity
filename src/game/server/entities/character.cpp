@@ -907,13 +907,15 @@ void CCharacter::FireWeapon()
 	if(!m_ReloadTimer)
 	{
 		if(!m_pPlayer->m_Insta && !m_GameZone) {
-			int LvlSpeed = 1;
+			float LvlSpeed = 1;
 			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
 				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/50) + 1;
 
+			if (m_ActiveWeapon == WEAPON_GUN)
+				LvlSpeed /= 2;
+
 			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay 
-				/ LvlSpeed
-				* Server()->TickSpeed() / 1000;
+				/ LvlSpeed * Server()->TickSpeed() / 1000;
 			
 		}
 		else
@@ -1305,28 +1307,6 @@ void CCharacter::Booster()
 		m_Core.m_Vel.x /= 2;
 	
 	}
-
-	//Space zeugs 
-	/*if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_SPACE))
-	{
-		m_SingleSpace = true;
-		m_Core.m_Vel.y = 0;
-	}
-	else
-		m_SingleSpace = false;
-
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE))
-	{
-		m_Space = true;
-	}
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NOSPACE))
-	{
-		m_Space = false;
-	}
-	if(m_Space)
-	{
-		m_Core.m_Vel.y = 0;
-	}*/
 	
 	if(m_Water || m_SingleWater || m_Space || m_SingleSpace)
 	{
@@ -1573,9 +1553,6 @@ void CCharacter::HandleCity()
 
 	HealthRegeneration();
 
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE))
-		m_Core.m_Vel.y -= GameServer()->Tuning()->m_Gravity;
-
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
 	{
 		GameServer()->SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
@@ -1604,6 +1581,10 @@ void CCharacter::HandleCity()
 		SetWeapon(WEAPON_RIFLE);
 
 	Booster();
+
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_TRAINER)) {
+		GameServer()->SendBroadcast("Welcome to the trainer!\nWrite /trainer for more information", m_pPlayer->GetCID());
+	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
 		m_Gravity = 0.2;
@@ -2075,8 +2056,8 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 
 	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2) {
 
-		dbg_msg("debug", "%d - %d = %d", m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2, m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
-		m_pPlayer->m_AccData.m_ExpWeapon[Weapon] = m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2;
+		dbg_msg("debug", "%d - %d = %d", m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+		m_pPlayer->m_AccData.m_ExpWeapon[Weapon] = m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
 		m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
 
 		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);
@@ -2087,7 +2068,7 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 		return;
 	}
 
-	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }
 

@@ -48,7 +48,7 @@ void CFastReload::Tick()
 		return;
 	}
 	
-	pOwner->Buy("Fast reload", &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 10);
+	pOwner->Buy("Fast reload", &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 1);
 }
 
 

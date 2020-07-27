@@ -161,16 +161,13 @@ void CCharacterCore::Tick(bool UseInput)
 		}
 	}
 
-	// add the speed modification according to players wanted direction
-	if(!m_pCollision->IsTile(m_Pos, TILE_SPACE))
-	{
-		if(m_Direction < 0)
-			m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, -Accel);
-		if(m_Direction > 0)
-			m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, Accel);
-		if(m_Direction == 0)
-			m_Vel.x *= Friction;
-	}
+
+	if(m_Direction < 0)
+		m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, -Accel);
+	if(m_Direction > 0)
+		m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, Accel);
+	if(m_Direction == 0)
+		m_Vel.x *= Friction;
 
 	// handle jumping
 	// 1 bit = to keep track if a jump has been made on this input
