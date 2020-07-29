@@ -157,7 +157,7 @@ void CAccount::Login(char *Username, char *Password)
 
 	if (user.HasMember("level")) {
 		if (user["level"].HasMember("normal"))
-			m_pPlayer->m_AccData.m_ExpPoints = user["level"]["normal"].GetInt();
+			m_pPlayer->m_AccData.m_Level = user["level"]["normal"].GetInt();
 		if (user["level"].HasMember("hammer"))
 			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER] = user["level"]["hammer"].GetInt();
 		if (user["level"].HasMember("gun"))
@@ -203,7 +203,7 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_HealthRegen = user["items"]["basic"]["healthregen"].GetInt();
 	m_pPlayer->m_AccData.m_InfinityAmmo = user["items"]["basic"]["infinityammo"].GetInt();
 	m_pPlayer->m_AccData.m_InfinityJumps = user["items"]["basic"]["infinityjumps"].GetInt();
-	m_pPlayer->m_AccData.m_FastReload = user["items"]["basic"]["fastreload"].GetInt() > 1 ? 1 : 0;
+	m_pPlayer->m_AccData.m_FastReload = user["items"]["basic"]["fastreload"].GetInt() >= 1 ? 1 : 0;
 	m_pPlayer->m_AccData.m_NoSelfDMG = user["items"]["basic"]["noselfdmg"].GetInt();
 
 	m_pPlayer->m_AccData.m_GunSpread = user["items"]["gun"]["gunspread"].GetInt();

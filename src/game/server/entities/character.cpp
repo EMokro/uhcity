@@ -98,7 +98,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Gravity = .5;
 	m_ShopGroup = ITEM_GENERAL;
 	m_ShopPage = 0;
-	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
 	m_FreezeEnd = false;
@@ -506,7 +505,6 @@ void CCharacter::SwitchShop(int Value) {
 	if(GameServer()->Collision()->TileShop(m_Pos))
 	{
 		m_ShopPage += Value * 6;
-		dbg_msg("debug", "page: %d", m_ShopPage);
 		return;
 	}
 }
@@ -1904,7 +1902,8 @@ void CCharacter::Die(int Killer, int Weapon)
 	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_pPlayer->m_God && !pKiller->m_JailRifle))
 		return;
 
-	pKiller->AddExp(Weapon);
+	if (Killer != m_pPlayer->GetCID())
+		pKiller->AddExp(Weapon);
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
@@ -2069,7 +2068,6 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 		
 		return;
 	}
-	dbg_msg("debug", "Amount: %d", Amount);
 	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }
