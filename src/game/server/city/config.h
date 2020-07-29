@@ -19,4 +19,7 @@ MACRO_CONFIG_INT(SvEventDurationMax, sv_event_duration_min, 240, 0, 0, CFGFLAG_S
 MACRO_CONFIG_INT(SvEventBountyMin, sv_event_bounty_min, 100000, 1000, 0, CFGFLAG_SERVER, "The minimum bounty amount")
 MACRO_CONFIG_INT(SvEventBountyMax, sv_event_bounty_max, 500000, 1000, 100000000, CFGFLAG_SERVER, "The maximum bounty amount")
 
+// coach
+MACRO_CONFIG_INT(SvExpPrice, sv_exp_price, 1000000, 0, 50000000, CFGFLAG_SERVER, "The price one exp costs")
+
 #endif

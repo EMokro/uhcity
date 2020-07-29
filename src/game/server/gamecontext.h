@@ -241,7 +241,7 @@ public:
 		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatShop(IConsole::IResult* pResult, void* pUserData);
-		static void ConChatTrainer(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatCoach(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
 
 

@@ -1583,7 +1583,7 @@ void CCharacter::HandleCity()
 	Booster();
 
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_TRAINER)) {
-		GameServer()->SendBroadcast("Welcome to the trainer!\nWrite /trainer for more information", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
@@ -2054,20 +2054,22 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 
 	m_pPlayer->m_AccData.m_ExpWeapon[Weapon] += Amount;
 
-	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2) {
+	
+	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 
-		dbg_msg("debug", "%d - %d = %d", m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
-		m_pPlayer->m_AccData.m_ExpWeapon[Weapon] = m_pPlayer->m_AccData.m_ExpWeapon[Weapon] - m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
-		m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+		while (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
+			m_pPlayer->m_AccData.m_ExpWeapon[Weapon] -= m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
+			m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+		}
 
 		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		str_format(aBuf, sizeof aBuf, "Your %s is level %d (%d|%d)ep", WeaponBuf, m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]*2);
+		str_format(aBuf, sizeof aBuf, "Your %s is level %d (%d|%d)ep", WeaponBuf, m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		
 		return;
 	}
-
+	dbg_msg("debug", "Amount: %d", Amount);
 	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }

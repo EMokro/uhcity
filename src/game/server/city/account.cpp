@@ -236,6 +236,7 @@ void CAccount::Login(char *Username, char *Password)
 	}
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
+	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 
 	if(pOwner)
 	{

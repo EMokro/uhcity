@@ -459,7 +459,7 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
         return;
 
     if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a trainer first");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a coach first");
         return;
     }
 
@@ -471,7 +471,7 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
     const char *Weapon = pResult->GetString(0);
     int ID = pSelf->GetWIDByStr(Weapon);
     int Amount = pResult->NumArguments() == 2 ? pResult->GetInteger(1) : 1;
-    char aBuf[256], numBuf[32];
+    char aBuf[256], numBuf[2][32];
 
     if (ID < 0) {
         str_format(aBuf, sizeof aBuf, "'%s' does not exist", Weapon);
@@ -479,19 +479,25 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (1000000 * Amount > pP->m_AccData.m_Money) {
-        pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
-        str_format(aBuf, sizeof aBuf, "This would cost %s$", numBuf);
+    if (Amount < 0) {
+        pSelf->SendChatTarget(pP->GetCID(), "Bad boy...");
+        return;
+    }
+
+    if (g_Config.m_SvExpPrice * Amount > pP->m_AccData.m_Money) {
+        pSelf->FormatInt(g_Config.m_SvExpPrice * Amount, numBuf[0]);
+        str_format(aBuf, sizeof aBuf, "This would cost %s$", numBuf[0]);
         pSelf->SendChatTarget(pP->GetCID(), aBuf);
         pSelf->SendChatTarget(pP->GetCID(), "Not enough money");
         return;
     }
 
-    pP->m_AccData.m_Money -= 1000000 * Amount;
-    pP->GetCharacter()->AddExp(ID);
+    pP->m_AccData.m_Money -= g_Config.m_SvExpPrice * Amount;
+    pP->GetCharacter()->AddExp(ID, Amount);
 
-    pSelf->FormatInt(pP->m_AccData.m_Money, numBuf);
-    str_format(aBuf, sizeof aBuf, "Money: %s", numBuf);
+    pSelf->FormatInt(pP->m_AccData.m_Money, numBuf[0]);
+     pSelf->FormatInt(g_Config.m_SvExpPrice * Amount, numBuf[1]);
+    str_format(aBuf, sizeof aBuf, "Money: %s (-%s$)", numBuf[0], numBuf[1]);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }
 
@@ -866,7 +872,7 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
     }
 }   
 
-void CGameContext::ConChatTrainer(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
@@ -877,7 +883,7 @@ void CGameContext::ConChatTrainer(IConsole::IResult *pResult, void *pUserData)
         return;
 
     if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a trainer first");
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a coach first");
         return;
     }
 
