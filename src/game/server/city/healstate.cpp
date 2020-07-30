@@ -9,8 +9,6 @@ CHealstate::CHealstate(CGameWorld *pGameWorld, int Owner)
 {
 	m_Owner = Owner;
 
-    dbg_msg("debug", "init");
-
 	for(int i = 0; i < 5; i++)
 		m_IDs[i] = Server()->SnapNewID();
 
@@ -24,7 +22,7 @@ void CHealstate::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
 
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 5; i++)
 		Server()->SnapFreeID(m_IDs[i]);
 }
 

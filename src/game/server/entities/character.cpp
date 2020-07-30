@@ -1011,7 +1011,6 @@ void CCharacter::HandleWeapons()
 			m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart = -1;
 		}
 	}
-
 	return;
 }
 
@@ -1102,9 +1101,6 @@ void CCharacter::ResetInput()
 
 void CCharacter::Booster()
 {
-	const float NORMAL = IsGrounded()?10:5;
-	const float FAST = IsGrounded()?30:20;
-	
 	// Booster
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_DOWN)) {
 		m_OnGavityZone = true;
@@ -1457,11 +1453,7 @@ void CCharacter::Booster()
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
-		
-			
-			
 	}
-
 }
 
 void CCharacter::SetPosition(vec2 Pos)
@@ -1521,7 +1513,6 @@ void CCharacter::Transfer(int Value)
 	}
 	else
 	{
-		int TestLength = 32;
 		vec2 SnapPos = vec2(m_Pos.x+m_LatestInput.m_TargetX,m_Pos.y+m_LatestInput.m_TargetY);
 
 		if(GameServer()->Collision()->CheckPoint(SnapPos))
@@ -1561,8 +1552,6 @@ void CCharacter::Transfer(int Value)
 
 void CCharacter::HandleCity()
 {
-	char aBuf[128];
-
 	HealthRegeneration();
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
@@ -1629,21 +1618,28 @@ void CCharacter::HandleCity()
 		GetPlayer()->m_Afk = false;
 	}
 
-	if (GameServer()->ValidID(m_Core.m_HookedPlayer) && m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
+	if (GameServer()->ValidID(m_Core.m_HookedPlayer)) {
 		
-		CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
+		if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
+			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
 
-		if (!pChr) return;
-		
-		if (m_LastHooked != m_Core.m_HookedPlayer)
-			pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
+			if (!pChr) return;
+			
+			if (m_LastHooked != m_Core.m_HookedPlayer)
+				pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
 
-		m_LastHooked = m_Core.m_HookedPlayer;
-		dbg_msg("debug", "%ds extra heal: %d", m_Core.m_HookedPlayer, pChr->m_ExternalHeal);
-	} else if (GameServer()->ValidID(m_LastHooked)) {
-		GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
-		m_LastHooked = -1;
-	}
+			m_LastHooked = m_Core.m_HookedPlayer;
+		} else if (GameServer()->ValidID(m_LastHooked)) {
+			GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
+			m_LastHooked = -1;
+		} else if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_BOOSTHOOK) {
+			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
+
+			if (!pChr) return;
+
+			pChr->m_Core.m_Vel += m_Core.m_HookDir * g_Config.m_SvBoostHookStr;
+		}
+	} 
 
 	if(Server()->Tick()%50 == 0)
 	{

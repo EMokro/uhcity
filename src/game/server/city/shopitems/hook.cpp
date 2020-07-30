@@ -43,7 +43,6 @@ void CHook::Tick()
 	if (!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if (!Click)
@@ -59,6 +58,9 @@ void CHook::Tick()
 		break;
 	case 2:
 		pOwner->Buy("Heal Hook", &pOwner->GetPlayer()->m_AccData.m_HealHook, g_Config.m_EuHookHeal, Click, 3);
+		break;
+	case 3:
+		pOwner->Buy("Boost Hook", &pOwner->GetPlayer()->m_AccData.m_BoostHook, g_Config.m_EuHookBoost, Click, 1);
 		break;
 	}
 }
@@ -143,6 +145,41 @@ void CHook::Snap(int SnappingClient)
 
 			if (m_LastPos[i].y > SpawnBound)
 				m_LastPos[i].y = 0;
+		}
+	} else if (m_Type == 3) {
+		CNetObj_Laser *pObj[3];
+
+		for (int i = 0; i < 3; i++) {
+			pObj[i] = static_cast<CNetObj_Laser*>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
+
+			if (!pObj[i])
+				return;
+			
+			switch (i)
+			{
+			case 0:
+				pObj[i]->m_X = (int)m_Pos.x + 40;
+				pObj[i]->m_Y = (int)m_Pos.y;
+				pObj[i]->m_FromX = (int)m_Pos.x - 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			case 1:
+				pObj[i]->m_X = (int)m_Pos.x + 15;
+				pObj[i]->m_Y = (int)m_Pos.y + 25;
+				pObj[i]->m_FromX = (int)m_Pos.x + 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			case 2:
+				pObj[i]->m_X = (int)m_Pos.x + 15;
+				pObj[i]->m_Y = (int)m_Pos.y - 25;
+				pObj[i]->m_FromX = (int)m_Pos.x + 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			default:
+				break;
+			}
+
+			pObj[i]->m_StartTick = Server()->Tick();
 		}
 	}
 }

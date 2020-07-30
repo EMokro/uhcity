@@ -300,11 +300,12 @@ void CCharacterCore::Tick(bool UseInput)
 		}
 
 		// release hook (max hook time is 1.25
-		if (!m_EndlessHook)
+		if (!m_EndlessHook || m_DisablePlayerHook)
 			m_HookTick++;
 
 		if(m_HookedPlayer != -1 
-			&& ((m_HookTick > SERVER_TICK_SPEED+SERVER_TICK_SPEED/5) || !m_pWorld->m_apCharacters[m_HookedPlayer]))
+			&& ((m_HookTick > SERVER_TICK_SPEED+SERVER_TICK_SPEED/5) || !m_pWorld->m_apCharacters[m_HookedPlayer])
+			|| m_DisablePlayerHook && m_HookTick > 3 && m_HookedPlayer > -1) // boost hook
 		{
 			m_HookedPlayer = -1;
 			m_HookState = HOOK_RETRACTED;

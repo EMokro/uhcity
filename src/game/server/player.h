@@ -171,6 +171,7 @@ public:
 
 		int m_EndlessHook;
 		int m_HealHook;
+		int m_BoostHook;
 	} m_AccData;
 
 	int m_RainbowColor;

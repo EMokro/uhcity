@@ -55,6 +55,7 @@ CONSOLE_COMMAND("rplasma", "", CFGFLAG_CHAT, ConChatRifleplasma, this, "")
 CONSOLE_COMMAND("swap", "", CFGFLAG_CHAT, ConChatSwap, this, "")
 CONSOLE_COMMAND("fly", "", CFGFLAG_CHAT, ConChatFly, this, "")
 CONSOLE_COMMAND("hhook", "", CFGFLAG_CHAT, ConChatHealHook, this, "")
+CONSOLE_COMMAND("bhook", "", CFGFLAG_CHAT, ConChatBoostHook, this, "")
 
 
 #undef CONSOLE_COMMAND
