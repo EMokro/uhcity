@@ -856,6 +856,8 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
         pChr->m_ShopGroup = ITEM_NINJA;
     else if (!str_comp_nocase(Upgr, "general"))
         pChr->m_ShopGroup = ITEM_GENERAL;
+    else if (!str_comp_nocase(Upgr, "hook"))
+        pChr->m_ShopGroup = ITEM_JUMP; // should be ITEM_HOOK, but we have no specials yet
     else {
         pChr->m_ShopPage = Page;
         pSelf->SendChatTarget(pResult->GetClientID(), "Use /shop <item> to see the items you want.");
@@ -869,6 +871,7 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "- rifle");
         pSelf->SendChatTarget(pP->GetCID(), "- ninja");
         pSelf->SendChatTarget(pP->GetCID(), "- general");
+        pSelf->SendChatTarget(pP->GetCID(), "- hook");
     }
 }   
 
@@ -877,7 +880,6 @@ void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *) pUserData;
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
-    const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
 
     if (!pChr && !pChr->IsAlive())
         return;
@@ -887,30 +889,15 @@ void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    int Page = pChr->m_ShopPage;
-    pChr->m_ShopPage = 0;
-    if (!str_comp_nocase(Upgr, "hammer"))
-        pChr->m_ShopGroup = ITEM_HAMMER;
-    else if (!str_comp_nocase(Upgr, "gun"))
-        pChr->m_ShopGroup = ITEM_GUN;
-    else if (!str_comp_nocase(Upgr, "shotgun"))
-        pChr->m_ShopGroup = ITEM_SHOTGUN;
-    else if (!str_comp_nocase(Upgr, "grenade"))
-        pChr->m_ShopGroup = ITEM_GRENADE;
-    else if (!str_comp_nocase(Upgr, "rifle") || !str_comp_nocase(Upgr, "laser"))
-        pChr->m_ShopGroup = ITEM_RIFLE;
-    else {
-        pChr->m_ShopPage = Page;
-        pSelf->SendChatTarget(pResult->GetClientID(), "You can buy experience here.");
-        pSelf->SendChatTarget(pResult->GetClientID(), "One exp costs 1.000.000$.");
-        pSelf->SendChatTarget(pResult->GetClientID(), "Use /train <weapon> ?<amount>.");
-        pSelf->SendChatTarget(pResult->GetClientID(), "Available weapons are:");
-        pSelf->SendChatTarget(pP->GetCID(), "- hammer");
-        pSelf->SendChatTarget(pP->GetCID(), "- gun");
-        pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
-        pSelf->SendChatTarget(pP->GetCID(), "- grenade");
-        pSelf->SendChatTarget(pP->GetCID(), "- rifle");
-    }
+    pSelf->SendChatTarget(pResult->GetClientID(), "You can buy experience here.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "One exp costs 1.000.000$.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "Use /train <weapon> ?<amount>.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "Available weapons are:");
+    pSelf->SendChatTarget(pP->GetCID(), "- hammer");
+    pSelf->SendChatTarget(pP->GetCID(), "- gun");
+    pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
+    pSelf->SendChatTarget(pP->GetCID(), "- grenade");
+    pSelf->SendChatTarget(pP->GetCID(), "- rifle");
 }   
 
 // items

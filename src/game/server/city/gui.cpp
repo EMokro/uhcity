@@ -85,6 +85,10 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
 	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+
+	m_aShop.push_back(group);
+	group.clear();
+
 	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 1));
 	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 3));
