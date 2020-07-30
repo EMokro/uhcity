@@ -170,11 +170,13 @@ public:
 		int m_NinjaSwitch;
 
 		int m_EndlessHook;
+		int m_HealHook;
 	} m_AccData;
 
 	int m_RainbowColor;
 	bool m_Rainbow;
 	bool m_God;
+	bool m_HealHook;
 	bool m_Insta;
 	bool m_Afk;
 	int m_AciveUpgrade[ITEM_AMOUNT];

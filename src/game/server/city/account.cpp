@@ -233,6 +233,8 @@ void CAccount::Login(char *Username, char *Password)
 	if (user["items"].HasMember("hook")) {
 		if ((user["items"]["hook"].HasMember("endless")))
 			m_pPlayer->m_AccData.m_EndlessHook = user["items"]["hook"]["endless"].GetInt();
+		if ((user["items"]["hook"].HasMember("heal")))
+			m_pPlayer->m_AccData.m_EndlessHook = user["items"]["hook"]["heal"].GetInt();
 	}
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
@@ -478,6 +480,8 @@ void CAccount::Register(char *Username, char *Password)
 	writer.StartObject();
 	writer.Key("endless");
     writer.Int(m_pPlayer->m_AccData.m_EndlessHook);
+	writer.Key("heal");
+    writer.Int(m_pPlayer->m_AccData.m_HealHook);
 	writer.EndObject();
 
     writer.EndObject();

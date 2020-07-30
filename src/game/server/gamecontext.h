@@ -252,6 +252,7 @@ public:
 		static void ConChatRifleplasma(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSwap(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatFly(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatHealHook(IConsole::IResult* pResult, void* pUserData);
 
 	public: //Ende :D
 

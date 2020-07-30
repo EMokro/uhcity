@@ -1053,3 +1053,23 @@ void CGameContext::ConChatFly(IConsole::IResult *pResult, void *pUserData)
     str_format(aBuf, sizeof(aBuf), "%s Fly", pP->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY ?"Enabled":"Disabled");
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }
+
+void CGameContext::ConChatHealHook(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr && !pChr->IsAlive())
+        return;
+
+    if (!pP->m_AccData.m_HealHook) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Healhook first!");
+        return;
+    }
+
+    pChr->ChangeUpgrade(ITEM_HOOK, UPGRADE_HEALHOOK);
+    str_format(aBuf, sizeof(aBuf), "%s Healhook", pP->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK ?"Enabled":"Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}

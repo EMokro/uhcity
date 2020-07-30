@@ -13,6 +13,7 @@
 #include "game/server/city/wall.h"
 #include "game/server/city/gui.h"
 #include "game/server/city/crown.h"
+#include "game/server/city/healstate.h"
 #include "game/server/city/transfer.h"
 #include "game/server/city/entities/spawnprotect.h"
 
@@ -104,6 +105,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_HammerPos1 = vec2(0, 0);
 	m_HammerPos2 = vec2(0, 0);
 	m_GunFreezeCooldown = 0;
+	m_ExternalHeal = 0;
+	m_LastHooked = -1;
 
 	if (GetPlayer()->m_AccData.m_EndlessHook)
 		m_Core.m_EndlessHook = true;
@@ -112,6 +115,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
+	new CHealstate(GameWorld(), m_pPlayer->GetCID());
 
 	m_pPlayer->m_Crown = true;
 
@@ -948,13 +952,23 @@ int CCharacter::NewPlasma()
 
 void CCharacter::HealthRegeneration()
 {
-	if(m_Health != 0 && m_pPlayer->m_AccData.m_HealthRegen && !(Server()->Tick() % (int)(251 - m_pPlayer->m_AccData.m_HealthRegen*10)))
-	{
+	if (m_Health != 0 
+		&& !m_pPlayer->m_AccData.m_HealthRegen
+		&& Server()->Tick() % 50 == 0) {
+
 		if(m_Health < m_pPlayer->m_AccData.m_Health)
-			IncreaseHealth(1);
+			IncreaseHealth(1 + m_ExternalHeal);
 		else if(m_Armor < m_pPlayer->m_AccData.m_Armor)
-			IncreaseArmor(1);
+			IncreaseArmor(1 + m_ExternalHeal);
+
+	} else if (m_Health != 0 && m_pPlayer->m_AccData.m_HealthRegen && !(Server()->Tick() % (int)(251 - m_pPlayer->m_AccData.m_HealthRegen*10))) {
+
+		if(m_Health < m_pPlayer->m_AccData.m_Health)
+			IncreaseHealth(1 + m_ExternalHeal);
+		else if(m_Armor < m_pPlayer->m_AccData.m_Armor)
+			IncreaseArmor(1 + m_ExternalHeal);
 	}
+
 }
 
 void CCharacter::HandleWeapons()
@@ -1615,6 +1629,22 @@ void CCharacter::HandleCity()
 		GetPlayer()->m_Afk = false;
 	}
 
+	if (GameServer()->ValidID(m_Core.m_HookedPlayer) && m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
+		
+		CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
+
+		if (!pChr) return;
+		
+		if (m_LastHooked != m_Core.m_HookedPlayer)
+			pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
+
+		m_LastHooked = m_Core.m_HookedPlayer;
+		dbg_msg("debug", "%ds extra heal: %d", m_Core.m_HookedPlayer, pChr->m_ExternalHeal);
+	} else if (GameServer()->ValidID(m_LastHooked)) {
+		GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
+		m_LastHooked = -1;
+	}
+
 	if(Server()->Tick()%50 == 0)
 	{
 		int Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
@@ -1676,10 +1706,9 @@ void CCharacter::HandleCity()
 				
 			}
 		}
-	
 
 		if(m_pPlayer->m_AccData.m_UserID)
-			m_pPlayer->m_pAccount->Apply();
+			m_pPlayer->m_pAccount->Apply();	
 	}
 
 }

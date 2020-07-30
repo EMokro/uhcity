@@ -43,6 +43,8 @@ MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 100000, 0, 1000000, CFGFLAG_SERVE
 MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja switch")
 
 MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, CFGFLAG_SERVER, "Price - Ninja switch")
+MACRO_CONFIG_LONGLONG(EuHookHeal, eu_hook_heal, 250000, 0, 900000000000, CFGFLAG_SERVER, "Price - Ninja switch")
+
 
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")

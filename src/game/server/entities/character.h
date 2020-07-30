@@ -135,6 +135,8 @@ public:
 	int m_FreezeWeapon;
 	int m_Transfers;
 	int m_GunFreezeCooldown;
+	int m_ExternalHeal;
+	int m_LastHooked;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
 	int64 m_LastBroadcast;
