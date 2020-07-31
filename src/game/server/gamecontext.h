@@ -16,6 +16,7 @@
 #include "player.h"
 #include "game/server/city/filesys.h"
 #include "game/server/city/gameevent.h"
+#include "game/server/city/items/portal.h"
 
 /*
 	Tick
@@ -107,7 +108,6 @@ public:
 	char m_aVoteReason[VOTE_REASON_LENGTH];
 	int m_NumVoteOptions;
 	int m_VoteEnforce;
-	
 
 	enum
 	{
@@ -247,6 +247,7 @@ public:
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPortal(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPlasma(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatGunfreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRifleplasma(IConsole::IResult* pResult, void* pUserData);
@@ -296,6 +297,9 @@ public:
 	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];
 	CMute m_aMutes[MAX_CLIENTS];
 	int m_NumMutes;
+
+	CPortal* m_aPortals[MAX_CLIENTS];
+	
 	//int m_TeleID[MAX_CLIENTS];
 private:
 	int m_BountyList[MAX_CLIENTS];

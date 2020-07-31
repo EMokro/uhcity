@@ -1077,7 +1077,27 @@ void CGameContext::ConChatBoostHook(IConsole::IResult *pResult, void *pUserData)
     }
 
     pChr->ChangeUpgrade(ITEM_HOOK, UPGRADE_BOOSTHOOK);
-    pChr->m_Core.m_DisablePlayerHook = pP->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_BOOSTHOOK;
+    pChr->m_Core.m_DisablePlayerHook ^= true;
     str_format(aBuf, sizeof(aBuf), "%s Boosthook", pP->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_BOOSTHOOK ?"Enabled":"Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
+void CGameContext::ConChatPortal(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr && !pChr->IsAlive())
+        return;
+
+    if (!pP->m_AccData.m_Portal) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Portal first!");
+        return;
+    }
+
+    pChr->ChangeUpgrade(ITEM_HAMMER, UPGRADE_PORTAL);
+    str_format(aBuf, sizeof(aBuf), "%s Portal", pP->m_AciveUpgrade[ITEM_HAMMER] == UPGRADE_PORTAL ? "Enabled" : "Disabled");
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }

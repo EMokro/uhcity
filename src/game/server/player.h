@@ -143,6 +143,7 @@ public:
 		int m_InfinityJumps;
 		int m_FastReload;
 		int m_NoSelfDMG;
+		int m_Portal;
 
 		// Weapons
 		int m_GrenadeSpread;

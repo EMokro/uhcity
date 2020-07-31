@@ -11,7 +11,6 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
-
 class CTuneParam
 {
 	int m_Value;

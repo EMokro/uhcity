@@ -60,6 +60,9 @@ void CHammer::Tick()
 	case 3:
 		pOwner->Buy("Hammer kill", &pOwner->GetPlayer()->m_AccData.m_HammerKill, g_Config.m_EuHammerKill, Click, 1);
 		break;
+	case 4:
+		pOwner->Buy("Portal", &pOwner->GetPlayer()->m_AccData.m_Portal, g_Config.m_EuPortal, Click, 1);
+		break;
 	}
 }
 
@@ -148,73 +151,16 @@ void CHammer::Snap(int SnappingClient)
 				pEvent->m_ClientID = m_Owner;
 			}
 		}
-
 	}
-
-	/*
-	CNetObj_Pickup *pP[2];
-
-	for(int i = 0; i < 2; i++)
+	else if(m_Type == 4)// Kill
 	{
-		pP[i] = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+		CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
 
-		if(!pP[i])
+		if(!pEvent)
 			return;
 
-		pP[i]->m_X = (int)m_Pos.x - 25 + 5*i;
-		pP[i]->m_Y = (int)m_Pos.y + 5*i;
-		pP[i]->m_Type = i;
-		pP[i]->m_Subtype = 0;
-	
+		pEvent->m_X = (int)m_Pos.x;
+		pEvent->m_Y = (int)m_Pos.y;
+
 	}
-
-	vec2 Positions[6];
-	Positions[0] = vec2(m_Pos.x - 45, m_Pos.y);
-	Positions[1] = vec2(m_Pos.x + 45, m_Pos.y);
-
-	
-	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
-
-	if(pOwner)
-	{
-		if(pOwner->GetPlayer()->m_AccData.m_AllWeapons)
-		{
-
-		}
-	}
-	
-	*/
 }
-
-//http://hugelol.org/lol/61730
-//http://hugelol.org/lol/61768
-//http://hugelol.org/lol/61756
-//http://hugelol.org/lol/61674
-//http://hugelol.org/lol/61400
-//http://hugelol.org/lol/61255
-//http://hugelol.org/lol/61311
-//http://hugelol.org/lol/60946
-//http://hugelol.org/lol/60690
-//http://hugelol.org/lol/60684
-//http://hugelol.org/lol/60497
-//http://hugelol.org/lol/60681
-//http://hugelol.org/lol/60519
-//http://hugelol.org/lol/59592
-//http://hugelol.org/lol/59527
-//http://hugelol.org/lol/59429
-//http://hugelol.org/lol/59112
-//http://hugelol.org/lol/59184
-//http://hugelol.org/lol/59105
-//http://hugelol.org/lol/58769
-//http://hugelol.org/lol/58701
-//http://hugelol.org/lol/58459
-//http://hugelol.org/lol/58230
-//http://hugelol.org/lol/57971
-//http://hugelol.org/lol/57724
-//http://hugelol.org/lol/57788
-//http://hugelol.org/lol/57700
-//http://hugelol.org/lol/57590
-//http://hugelol.org/lol/57461
-//http://hugelol.org/lol/57523
-//http://hugelol.org/lol/57529
-//http://hugelol.org/lol/57481

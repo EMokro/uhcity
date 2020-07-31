@@ -206,6 +206,9 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_FastReload = user["items"]["basic"]["fastreload"].GetInt() >= 1 ? 1 : 0;
 	m_pPlayer->m_AccData.m_NoSelfDMG = user["items"]["basic"]["noselfdmg"].GetInt();
 
+	if (user["items"]["basic"].HasMember("portal"))
+		m_pPlayer->m_AccData.m_NoSelfDMG = user["items"]["basic"]["portal"].GetInt();
+
 	m_pPlayer->m_AccData.m_GunSpread = user["items"]["gun"]["gunspread"].GetInt();
 	m_pPlayer->m_AccData.m_GunExplode = user["items"]["gun"]["gunexplode"].GetInt();
 	m_pPlayer->m_AccData.m_GunFreeze = user["items"]["gun"]["freezegun"].GetInt();
@@ -382,7 +385,6 @@ void CAccount::Register(char *Username, char *Password)
     writer.Int(m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_RIFLE]);
     writer.EndObject();
 
-
 	writer.Key("auth");
 	writer.StartObject();
 	writer.Key("authlvl");
@@ -416,6 +418,8 @@ void CAccount::Register(char *Username, char *Password)
 	writer.Int(m_pPlayer->m_AccData.m_FastReload);
 	writer.Key("noselfdmg");
 	writer.Int(m_pPlayer->m_AccData.m_NoSelfDMG);
+	writer.Key("portal");
+	writer.Int(m_pPlayer->m_AccData.m_Portal);
 	writer.EndObject();
 
     writer.Key("gun");
@@ -749,6 +753,8 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_Level = 1;
 	m_pPlayer->m_AccData.m_ExpPoints = 0;
 
+	if (GameServer()->m_aPortals[m_pPlayer->GetCID()])
+		GameServer()->m_aPortals[m_pPlayer->GetCID()]->Reset();
 	GameServer()->Server()->Logout(m_pPlayer->GetCID());
 }
 

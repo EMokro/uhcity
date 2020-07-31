@@ -37,6 +37,7 @@ MACRO_CONFIG_INT(EuGunFreeze, eu_gun_freeze, 720000, 0, 1000000, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 150000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer walls")
 MACRO_CONFIG_INT(EuHammerShot, eu_hammer_shot, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer shot")
 MACRO_CONFIG_INT(EuHammerKill, eu_hammer_kill, 36000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer kill")
+MACRO_CONFIG_LONGLONG(EuPortal, eu_portal, 500000000, 0, 1000000, CFGFLAG_SERVER, "Price - Portal")
 
 MACRO_CONFIG_INT(EuNinjaPermanent, eu_ninja_permanent, 5000000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja permanent")
 MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja start")

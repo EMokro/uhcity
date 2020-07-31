@@ -137,6 +137,7 @@ public:
 	int m_GunFreezeCooldown;
 	int m_ExternalHeal;
 	int m_LastHooked;
+	int m_LastTP;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
 	int64 m_LastBroadcast;
@@ -144,6 +145,7 @@ public:
 	int64 m_SpawnProtection;
 	vec2 m_HammerPos1;
 	vec2 m_HammerPos2;
+	vec2 m_PortalPos[2];
 	vec2 m_DesiredPos;
 	// Doors
 	int m_TriggerID;

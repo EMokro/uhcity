@@ -49,6 +49,8 @@ CONSOLE_COMMAND("writestats", "", CFGFLAG_CHAT, ConChatWriteStats, this, "")
 // items
 CONSOLE_COMMAND("walls", "", CFGFLAG_CHAT, ConChatWalls, this, "")
 CONSOLE_COMMAND("hammerkill", "", CFGFLAG_CHAT, ConChatHammerkill, this, "")
+CONSOLE_COMMAND("portal", "", CFGFLAG_CHAT, ConChatPortal, this, "")
+
 CONSOLE_COMMAND("plasma", "", CFGFLAG_CHAT, ConChatPlasma, this, "")
 CONSOLE_COMMAND("fgun", "", CFGFLAG_CHAT, ConChatGunfreeze, this, "")
 CONSOLE_COMMAND("rplasma", "", CFGFLAG_CHAT, ConChatRifleplasma, this, "")

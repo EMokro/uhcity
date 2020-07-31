@@ -667,6 +667,8 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 
 	ResetDisabledDmg(ClientID);
 	RemoveFromBountyList(ClientID);
+	if (m_aPortals[ClientID])
+		m_aPortals[ClientID]->Reset();
 
 	(void)m_pController->CheckTeamBalance();
 	m_VoteUpdate = true;

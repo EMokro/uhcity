@@ -300,7 +300,7 @@ void CCharacterCore::Tick(bool UseInput)
 		}
 
 		// release hook (max hook time is 1.25
-		if (!m_EndlessHook || m_DisablePlayerHook)
+		if (!m_EndlessHook)
 			m_HookTick++;
 
 		if(m_HookedPlayer != -1 
