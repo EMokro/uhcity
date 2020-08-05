@@ -11,8 +11,6 @@ CInfAmmo::CInfAmmo(CGameWorld *pGameWorld, int Owner, vec2 Pos)
 	m_Pos = Pos;
 	m_StartTick = Server()->Tick();
 
-	dbg_msg("debug", "infammo pos (%d | %d)", m_Pos.x, m_Pos.y);
-
 	m_Visible = false;
 
 	for(int i = 0; i < 4; i++)

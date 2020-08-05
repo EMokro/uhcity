@@ -384,14 +384,14 @@ void CGameContext::ConSetClientGravityY(IConsole::IResult* pResult, void* pUserD
 
 	if (ID < 0 || ID > MAX_CLIENTS) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
 	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
 
 	if (!pChar) {
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Player not available");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player not available");
 		return;
 	}
 
@@ -415,7 +415,7 @@ void CGameContext::ConSetClientGravityX(IConsole::IResult* pResult, void* pUserD
 	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
 
 	if (!pChar) {
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Player not available");
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player not available");
 		return;
 	}
 

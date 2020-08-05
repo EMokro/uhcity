@@ -128,28 +128,6 @@ void CGameContext::ConChatLoad(IConsole::IResult *pResult, void *pUserData)
     pChr->SaveLoad(true);
 }
 
-void CGameContext::ConChatTele(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
-    CCharacter *pChr = pP->GetCharacter();
-
-    if (!pChr)
-        return;
-
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
-        pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
-        return;
-    }
-
-    if (!pP->m_AccData.m_Donor) {
-        pSelf->SendChatTarget(pP->GetCID(), "This is a donor feature");
-        return;
-    }
-    
-    pChr->Tele();
-}
-
 void CGameContext::ConChatHome(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
@@ -237,6 +215,28 @@ void CGameContext::ConChatUp(IConsole::IResult *pResult, void *pUserData)
     }
     
     pChr->Move(0);
+}
+
+void CGameContext::ConChatTele(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+
+    if (!pChr)
+        return;
+
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
+        return;
+    }
+
+    if (!pP->m_AccData.m_VIP) {
+        pSelf->SendChatTarget(pP->GetCID(), "This is a vip feature");
+        return;
+    }
+    
+    pChr->Tele();
 }
 
 void CGameContext::ConChatDown(IConsole::IResult *pResult, void *pUserData)
@@ -702,6 +702,7 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "/checkbounty -- Check if a player has a bounty");
         pSelf->SendChatTarget(pP->GetCID(), "/bountylist -- Get a list of all bounties");
         pSelf->SendChatTarget(pP->GetCID(), "/instagib -- Play insta");
+        pSelf->SendChatTarget(pP->GetCID(), "/writestats -- Writes your weaponlevel down");
     } else {
         pSelf->SendChatTarget(pP->GetCID(), "We don't have so many commands :(");
     }
@@ -759,8 +760,8 @@ void CGameContext::ConChatDonor(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     
     pSelf->SendChatTarget(pP->GetCID(), "---------- DONOR ----------");
-    pSelf->SendChatTarget(pP->GetCID(), "Donor is currently for free. Ask an Admin to get donor.");
-    pSelf->SendChatTarget(pP->GetCID(), "It will be removed with the final state of the mod.");
+    pSelf->SendChatTarget(pP->GetCID(), "Donor costs 10€");
+    pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone to donate");
     pSelf->SendChatTarget(pP->GetCID(), "Donor provides following features:");
     pSelf->SendChatTarget(pP->GetCID(), "- The nice crown");
     pSelf->SendChatTarget(pP->GetCID(), "- Home teleport");
@@ -794,6 +795,7 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "/walls -- Laser walls");
         pSelf->SendChatTarget(pP->GetCID(), "/hammerkill -- Your target can't escape!");
         pSelf->SendChatTarget(pP->GetCID(), "/plasma -- Beat them with your Plasma");
+        pSelf->SendChatTarget(pP->GetCID(), "/portal -- Opens a portal to teleport between two points");
         return;
     }
 
@@ -816,6 +818,20 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
+    if (!str_comp_nocase(Upgr, "special")) {
+        pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/pushaura -- Pushes the other players");
+        pSelf->SendChatTarget(pP->GetCID(), "/pullaura -- Pull the other players");
+        return;
+    }
+
+    if (!str_comp_nocase(Upgr, "hook")) {
+        pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/bhook -- Boost other players");
+        pSelf->SendChatTarget(pP->GetCID(), "/hhook -- Increases the hooked players healthregen");
+        return;
+    }
+
     pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
     pSelf->SendChatTarget(pP->GetCID(), "Please use '/upgrcmds <item>'");
     pSelf->SendChatTarget(pP->GetCID(), "You can checkout following items:");
@@ -823,6 +839,8 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- gun");
     pSelf->SendChatTarget(pP->GetCID(), "- rifle");
     pSelf->SendChatTarget(pP->GetCID(), "- jump");
+    pSelf->SendChatTarget(pP->GetCID(), "- hook");
+    pSelf->SendChatTarget(pP->GetCID(), "- special");
 }
 
 void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)

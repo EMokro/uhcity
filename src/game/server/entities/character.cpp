@@ -185,7 +185,6 @@ void CCharacter::Tele()
 			if (!m_pPlayer->m_God)
 			{
 				if (GameServer()->Collision()->IsTile(TestPos, TILE_ANTI_TELE)
-					|| GameServer()->Collision()->IsTile(TestPos, TILE_VIP)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_POLICE)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
