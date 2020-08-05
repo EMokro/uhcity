@@ -47,7 +47,8 @@ MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, C
 MACRO_CONFIG_LONGLONG(EuHookHeal, eu_hook_heal, 250000, 0, 900000000000, CFGFLAG_SERVER, "Price - Healhook")
 MACRO_CONFIG_LONGLONG(EuHookBoost, eu_hook_boost, 200000, 0, 900000000000, CFGFLAG_SERVER, "Price - Boosthook")
 
-
+MACRO_CONFIG_LONGLONG(EuPushAura, eu_hook_boost, 1000000000, 0, 900000000000, CFGFLAG_SERVER, "Price - PushAura")
+MACRO_CONFIG_LONGLONG(EuPullAura, eu_hook_boost, 1000000000, 0, 900000000000, CFGFLAG_SERVER, "Price - PullAura")
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")
 

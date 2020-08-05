@@ -14,6 +14,7 @@
 #include "game/server/city/gui.h"
 #include "game/server/city/crown.h"
 #include "game/server/city/healstate.h"
+#include "game/server/city/items/gravaura.h"
 #include "game/server/city/transfer.h"
 #include "game/server/city/entities/spawnprotect.h"
 
@@ -96,7 +97,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	}
 
 	m_InstaKills = 0;
-	m_Gravity = .5;
+	m_GravityY = 0.5;
+	m_GravityX = 0;
 	m_ShopGroup = ITEM_GENERAL;
 	m_ShopPage = 0;
 	m_Walls = 0;
@@ -1599,10 +1601,10 @@ void CCharacter::HandleCity()
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
-		m_Gravity = 0.2;
+		m_GravityY = 0.2;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY))
-		m_Gravity = 0.5;
+		m_GravityY = 0.5;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_FREEZE))
 	{
@@ -1737,6 +1739,10 @@ bool CCharacter::Protected()
 	return false;
 }
 
+void CCharacter::AddGravAura() {
+	new CGravAura(GameWorld(), m_pPlayer->GetCID());
+}
+
 void CCharacter::Tick()
 {
 	if(m_pPlayer->m_ForceBalanced)
@@ -1749,10 +1755,12 @@ void CCharacter::Tick()
 	}
 
 	if (!m_OnGavityZone) {
-		if (m_Gravity == 0.5)
-		m_Core.m_Vel.y += GameServer()->Tuning()->m_Gravity;
-	else
-		m_Core.m_Vel.y += m_Gravity;
+		if (m_GravityY == 0.5)
+			m_Core.m_Vel.y += GameServer()->Tuning()->m_Gravity;
+		else {
+			m_Core.m_Vel.y += m_GravityY;
+			m_Core.m_Vel.x += m_GravityX;
+		}
 	}
 	
 	// City
@@ -1762,9 +1770,9 @@ void CCharacter::Tick()
 	{
 		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY) {
 			if (m_Input.m_Jump)
-				m_Gravity = -0.3;
+				m_GravityY = -0.3;
 			else
-				m_Gravity = 0.5;
+				m_GravityY = 0.5;
 		}
 		else if(m_pPlayer->m_AccData.m_InfinityJumps >= 1)
 			m_Core.m_Jumped &= ~2;

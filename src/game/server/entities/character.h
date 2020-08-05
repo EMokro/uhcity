@@ -9,6 +9,8 @@
 
 #include <game/gamecore.h>
 
+#include "game/server/city/items/gravaura.h"
+
 enum
 {
 	WEAPON_GAME = -3, // team switching etc
@@ -92,6 +94,7 @@ public:
 	void Freeze(int Seconds);
 	void Unfreeze();
 	void Transfer(int Value);
+	void AddGravAura();
 	bool Protected();
 	unsigned long long calcExp(int level);
 	//KlickFoots Water zeugs 
@@ -120,7 +123,8 @@ public:
 	bool m_IsHammerKilled;
 	bool m_OnGavityZone;
 	bool m_IgnoreGround;
-	float m_Gravity;
+	float m_GravityY;
+	float m_GravityX;
 	int m_Home;
 	int m_Invisible;
 	int m_Walls;
@@ -152,6 +156,7 @@ public:
 	int m_TriggerNR;
 	int64 m_LastSwitch;
 
+	CGravAura* m_GravAura;
 
 	// the player core for the physics
 	CCharacterCore m_Core;

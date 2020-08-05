@@ -40,15 +40,15 @@ void CHealstate::Snap(int SnappingClient)
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
     
-	if(pOwner)
-	{
-		if(pOwner->m_Invisible && SnappingClient != m_Owner)
-			return; 
+	if (!pOwner)
+		return;
 
-        if(!pOwner->m_ExternalHeal)
-            return;
-	}
-    
+	if(pOwner->m_Invisible && SnappingClient != m_Owner)
+		return; 
+
+	if(!pOwner->m_ExternalHeal)
+		return;
+
 	CNetObj_Pickup *pObj[5];
     int SpawnBound = 64;
     // this doesnt look rly nice :(

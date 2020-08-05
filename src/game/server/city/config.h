@@ -25,5 +25,9 @@ MACRO_CONFIG_INT(SvExpPrice, sv_exp_price, 1000000, 0, 50000000, CFGFLAG_SERVER,
 // items
 MACRO_CONFIG_INT(SvBoostHookStr, sv_boost_hook_str, 50, 1, 1000000, CFGFLAG_SERVER, "Strength of boosthook")
 
+MACRO_CONFIG_INT(SvGravAuraRadius, sv_gravaura_radius, 160, 1, 1000000, CFGFLAG_SERVER, "Gravity aura radius")
+MACRO_CONFIG_INT(SvGravAuraForce, sv_gravaura_force, 2, 1, 1000000, CFGFLAG_SERVER, "Gravity aura force strength")
+MACRO_CONFIG_INT(SvGravAuraCooldown, sv_gravaura_cooldown, 30, 0, 1000000, CFGFLAG_SERVER, "Gravity aura Cooldown in s")
+
 
 #endif

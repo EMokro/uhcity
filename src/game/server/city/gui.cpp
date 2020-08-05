@@ -18,6 +18,8 @@
 #include <game/server/city/shopitems/allweapons.h>
 #include <game/server/city/shopitems/fastreload.h>
 #include <game/server/city/shopitems/noselfdmg.h>
+#include <game/server/city/shopitems/pushaura.h>
+#include <game/server/city/shopitems/pullaura.h>
 
 #include "gui.h"
 
@@ -34,6 +36,7 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	m_ItrFlag = true;
 	m_Group = 0;
 	m_Page = 0;
+
 	// sorted by itemgroups, starting with ITEM_HAMMMER
 	std::list<CEntity*> group;
 
@@ -77,13 +80,15 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	m_aShop.push_back(group);
 	group.clear();
 
-	group.push_back(new CInfAmmo(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CAllWeapons(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CFastReload(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CInfAmmo(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CAllWeapons(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CFastReload(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CHealthRegen(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CNoSelfDMG(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CInfJumps(GameWorld(), m_Owner, m_Pos));
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 4));
+	group.push_back(new CPushAura(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CPullAura(GameWorld(), m_Owner, m_Pos));
 
 	m_aShop.push_back(group);
 	group.clear();

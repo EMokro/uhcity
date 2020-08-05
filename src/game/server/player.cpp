@@ -24,8 +24,9 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	// City
 	m_Rainbow = false;
 	m_Insta = false;
-	m_HealHook = false;
 	m_Afk = false;
+
+	m_GravAuraCooldown = 0;
 	m_pAccount = new CAccount(this, m_pGameServer);
 
 	if(m_AccData.m_Health < 10)
@@ -166,8 +167,13 @@ void CPlayer::Tick()
 	if(pMatchAdmin || pMatchVip || pMatchDonor || pMatchPolice)
 		Server()->SetClientClan(GetCID(), "");
 
-		/*else if(!str_find_nocase(Server()->ClientClan(GetCID()), "Admin") || !str_find_nocase(Server()->ClientClan(GetCID()), "Vip") || !str_find_nocase(Server()->ClientClan(GetCID()), "Donor") || !str_find_nocase(Server()->ClientClan(GetCID()), "Police"))
-		Server()->SetClientClan(GetCID(), " ");*/
+	if (Server()->Tick() % 50 == 0) {
+		if (m_GravAuraCooldown) {
+			dbg_msg("debug", "%d", m_GravAuraCooldown);
+			m_GravAuraCooldown--;
+		}
+			
+	}
 	
 	
 }

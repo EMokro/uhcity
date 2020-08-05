@@ -40,7 +40,6 @@ void CHammer::Tick()
 	if(!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if(!Click)
@@ -71,6 +70,7 @@ void CHammer::Snap(int SnappingClient)
 {
 	if(SnappingClient != m_Owner || NetworkClipped(SnappingClient, m_Pos) || !m_Visible)
 		return;
+
 	if(Server()->Tick()%5 == 0)
 		m_StartTick = Server()->Tick();
 
@@ -152,7 +152,7 @@ void CHammer::Snap(int SnappingClient)
 			}
 		}
 	}
-	else if(m_Type == 4)// Kill
+	else if(m_Type == 4)// portal
 	{
 		CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
 

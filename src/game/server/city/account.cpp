@@ -206,9 +206,6 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_FastReload = user["items"]["basic"]["fastreload"].GetInt() >= 1 ? 1 : 0;
 	m_pPlayer->m_AccData.m_NoSelfDMG = user["items"]["basic"]["noselfdmg"].GetInt();
 
-	if (user["items"]["basic"].HasMember("portal"))
-		m_pPlayer->m_AccData.m_NoSelfDMG = user["items"]["basic"]["portal"].GetInt();
-
 	m_pPlayer->m_AccData.m_GunSpread = user["items"]["gun"]["gunspread"].GetInt();
 	m_pPlayer->m_AccData.m_GunExplode = user["items"]["gun"]["gunexplode"].GetInt();
 	m_pPlayer->m_AccData.m_GunFreeze = user["items"]["gun"]["freezegun"].GetInt();
@@ -228,18 +225,27 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_HammerWalls = user["items"]["hammer"]["hammerwalls"].GetInt();
 	m_pPlayer->m_AccData.m_HammerShot = user["items"]["hammer"]["hammershot"].GetInt();
 	m_pPlayer->m_AccData.m_HammerKill = user["items"]["hammer"]["hammerkill"].GetInt();
+	if (user["items"]["hammer"].HasMember("portal"))
+		m_pPlayer->m_AccData.m_Portal = user["items"]["hammer"]["portal"].GetInt();
 
 	m_pPlayer->m_AccData.m_NinjaPermanent = user["items"]["ninja"]["ninjapermanent"].GetInt();
 	m_pPlayer->m_AccData.m_NinjaStart = user["items"]["ninja"]["ninjastart"].GetInt();
 	m_pPlayer->m_AccData.m_NinjaSwitch = user["items"]["ninja"]["ninjaswitch"].GetInt();
 
 	if (user["items"].HasMember("hook")) {
-		if ((user["items"]["hook"].HasMember("endless")))
+		if (user["items"]["hook"].HasMember("endless"))
 			m_pPlayer->m_AccData.m_EndlessHook = user["items"]["hook"]["endless"].GetInt();
 		if ((user["items"]["hook"].HasMember("heal")))
 			m_pPlayer->m_AccData.m_HealHook = user["items"]["hook"]["heal"].GetInt();
 		if ((user["items"]["hook"].HasMember("boost")))
 			m_pPlayer->m_AccData.m_BoostHook = user["items"]["hook"]["boost"].GetInt();
+	}
+
+	if (user["items"].HasMember("special")) {
+		if (user["items"]["special"].HasMember("pushaura"))
+			m_pPlayer->m_AccData.m_PushAura = user["items"]["special"]["pushaura"].GetInt();
+		if (user["items"]["special"].HasMember("pullaura"))
+			m_pPlayer->m_AccData.m_PushAura = user["items"]["special"]["pullaura"].GetInt();
 	}
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
@@ -669,6 +675,8 @@ void CAccount::Apply()
     writer.Int(m_pPlayer->m_AccData.m_HammerShot);
     writer.Key("hammerkill");
     writer.Int(m_pPlayer->m_AccData.m_HammerKill);
+	writer.Key("portal");
+    writer.Int(m_pPlayer->m_AccData.m_Portal);
     writer.EndObject();
 
 	writer.Key("ninja");
@@ -687,6 +695,16 @@ void CAccount::Apply()
     writer.Int(m_pPlayer->m_AccData.m_EndlessHook);
 	writer.Key("heal");
     writer.Int(m_pPlayer->m_AccData.m_HealHook);
+	writer.Key("boost");
+    writer.Int(m_pPlayer->m_AccData.m_BoostHook);
+	writer.EndObject();
+
+	writer.Key("special");
+	writer.StartObject();
+	writer.Key("pushaura");
+    writer.Int(m_pPlayer->m_AccData.m_PushAura);
+	writer.Key("pullaura");
+    writer.Int(m_pPlayer->m_AccData.m_PullAura);
 	writer.EndObject();
 
     writer.EndObject();
@@ -715,6 +733,14 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_Donor = 0;
 	m_pPlayer->m_AccData.m_VIP = 0;
 
+	m_pPlayer->m_AccData.m_Level = 1;
+	m_pPlayer->m_AccData.m_ExpPoints = 0;
+
+	for (int i = 0; i < 5; i++) {
+		m_pPlayer->m_AccData.m_LvlWeapon[i] = 0;
+		m_pPlayer->m_AccData.m_ExpWeapon[i] = 0;
+	}
+		
 	m_pPlayer->m_AccData.m_Bounty = 0;
 
 	m_pPlayer->m_AccData.m_Arrested = 0;
@@ -750,11 +776,18 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_NinjaStart = 0;
 	m_pPlayer->m_AccData.m_NinjaSwitch = 0;
 
-	m_pPlayer->m_AccData.m_Level = 1;
-	m_pPlayer->m_AccData.m_ExpPoints = 0;
+	m_pPlayer->m_AccData.m_HealHook = 0;
+	m_pPlayer->m_AccData.m_BoostHook = 0;
+	m_pPlayer->m_AccData.m_EndlessHook = 0;
+
+	m_pPlayer->m_AccData.m_Portal = 0;
+	m_pPlayer->m_AccData.m_PushAura = 0;
+	m_pPlayer->m_AccData.m_PullAura = 0;
+	
 
 	if (GameServer()->m_aPortals[m_pPlayer->GetCID()])
 		GameServer()->m_aPortals[m_pPlayer->GetCID()]->Reset();
+
 	GameServer()->Server()->Logout(m_pPlayer->GetCID());
 }
 
@@ -996,6 +1029,7 @@ void CAccount::SetAuth(char *Username, int lvl) {
 	ParseResult res = AccD.Parse(AccText);
 
 	if (res.IsError()) {
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), " Parse Error: Please contact UrinStone to get this fixed.");
 		dbg_msg("account", "parse error");
 		return;
 	}

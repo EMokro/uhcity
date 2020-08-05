@@ -375,7 +375,7 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", "No such player");
 }
 
-void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData)
+void CGameContext::ConSetClientGravityY(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
 	int ID = pResult->GetVictim();
@@ -395,7 +395,31 @@ void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData
 		return;
 	}
 
-	pChar->m_Gravity = Amount;
+	pChar->m_GravityY = Amount;
+	pSelf->SendChatTarget(ID, "Your gravity got changed");
+}
+
+void CGameContext::ConSetClientGravityX(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	float Amount = pResult->GetFloat(0);
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
+
+	if (!pChar) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Player not available");
+		return;
+	}
+
+	pChar->m_GravityX = Amount;
 	pSelf->SendChatTarget(ID, "Your gravity got changed");
 }
 
