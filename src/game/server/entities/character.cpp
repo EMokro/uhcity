@@ -194,12 +194,6 @@ void CCharacter::Tele()
 					return;
 				}
 			}
-			if (GameServer()->Collision()->IsTile(TestPos, TILE_WATER) && !m_Water) {
-				m_Water = true;
-			}
-			if (GameServer()->Collision()->IsTile(TestPos, TILE_NOWATER) && m_Water) {
-				m_Water = false;
-			}
 		}
 
 		if (Protected())
@@ -229,7 +223,7 @@ void CCharacter::SaveLoad(int Value)
 	}
 	else if(m_SavePos == vec2(0,0))
 	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Load]: Set a position first"); 
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Set a position first"); 
 		return;
 	}
 	
@@ -1276,22 +1270,9 @@ void CCharacter::Booster()
 	}
 	//Water zeugs :D
 
+
+
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_WATER))
-	{
-		if(m_Core.m_Vel.y > 10)
-			m_Core.m_Vel.y = 7;
-
-		m_Water = true;
-	}
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_NOWATER))
-	{
-		if(m_Water && !m_Frozen)
-			m_Core.m_Jumped &= ~2;
-
-		m_Water = false;
-	}
-
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_WATER))
 	{
 		if(m_Core.m_Vel.y > 10)
 			m_Core.m_Vel.y = 7;
@@ -1307,13 +1288,7 @@ void CCharacter::Booster()
 			
 	if(m_Water || m_SingleWater)
 	{
-		if(((GameServer()->Collision()->IsTile(vec2(m_Pos.x, m_Pos.y-32), TILE_NOWATER) && m_Water && !GameServer()->Collision()->IsTile(vec2(m_Pos.x, m_Pos.y-32), TILE_SINGLE_WATER)) || 
-			(!GameServer()->Collision()->IsTile(vec2(m_Pos.x, m_Pos.y-32), TILE_WATER) && m_SingleWater && !GameServer()->Collision()->IsTile(vec2(m_Pos.x, m_Pos.y-32), TILE_SINGLE_WATER)))
-			&& m_Input.m_Direction)
-		{
-			m_Core.m_Vel.y -= 1.3f;
-		}
-		else
+		if(GameServer()->Collision()->IsTile(vec2(m_Pos.x, m_Pos.y-32), TILE_WATER))
 		{
 			if(m_Core.m_Vel.y > -0.45f)
 				//m_Core.m_Vel.x /= 1.1f;
@@ -1589,6 +1564,45 @@ void CCharacter::HandleCity()
 	{
 		GameServer()->SendBroadcast("Gamezone left", m_pPlayer->GetCID());
 		m_GameZone = false;
+	}
+
+	if (m_InRace) {
+		char aBuf[128];
+		int diff = (clock() - m_RaceTime) / 10000;
+
+		int min = diff / (100 * 60);
+		int sec = (diff / 100) % 60;
+		int mili = diff % 100;
+		
+		if (!min)
+			str_format(aBuf, sizeof aBuf, "%d.%d",sec, mili);
+		else 
+			str_format(aBuf, sizeof aBuf, "%d:%d.%d", min, sec, mili);
+
+		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+	}
+
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_START)) {
+		m_GameZone = true;
+		m_InRace = true;
+		m_RaceTime = clock();
+	} else if(GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_END) && m_InRace) {
+		m_GameZone = false;
+		m_InRace = false;
+
+		char aBuf[128];
+		int diff = (clock() - m_RaceTime) / 10000;
+
+		int min = diff / (100 * 60);
+		int sec = (diff / 100) % 60;
+		int mili = diff % 100;
+		
+		if (!min)
+			str_format(aBuf, sizeof aBuf, "%s completed the race in %d.%d", Server()->ClientName(m_pPlayer->GetCID()), sec, mili);
+		else 
+			str_format(aBuf, sizeof aBuf, "%s completed the race in %d:%d.%d", Server()->ClientName(m_pPlayer->GetCID()), min, sec, mili);
+
+		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 	}
 
 	if(m_ActiveWeapon != WEAPON_RIFLE && m_pPlayer->m_Insta)

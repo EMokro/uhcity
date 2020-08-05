@@ -6,7 +6,7 @@
 #include <game/server/entity.h>
 #include <game/generated/server_data.h>
 #include <game/generated/protocol.h>
-
+#include <time.h>
 #include <game/gamecore.h>
 
 #include "game/server/city/items/gravaura.h"
@@ -120,6 +120,7 @@ public:
 	
 	bool m_Protected;
 	bool m_GameZone;
+	bool m_InRace;
 	bool m_IsHammerKilled;
 	bool m_OnGavityZone;
 	bool m_IgnoreGround;
@@ -142,6 +143,7 @@ public:
 	int m_ExternalHeal;
 	int m_LastHooked;
 	int m_LastTP;
+	int m_RaceTime;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
 	int64 m_LastBroadcast;
