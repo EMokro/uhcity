@@ -185,14 +185,16 @@ void CAccount::Login(char *Username, char *Password)
 			m_pPlayer->m_AccData.m_ExpWeapon[WEAPON_RIFLE] = user["exp"]["rifle"].GetInt();
 	}
 
+	
+
 	if (user.HasMember("auth")) {
 		if (user["auth"].HasMember("authlvl"))
 			if(user["auth"]["authlvl"].GetInt()) GameServer()->Server()->SetRconlvl(m_pPlayer->GetCID(), user["auth"]["authlvl"].GetInt());
-		if (user["auth"].HasMember("donor"))
-			m_pPlayer->m_AccData.m_Donor = user["auth"]["donor"].GetInt();
 		if (user["auth"].HasMember("vip"))
 			m_pPlayer->m_AccData.m_VIP = user["auth"]["vip"].GetInt();
 	}
+	if (user.HasMember("Donor"))
+		m_pPlayer->m_AccData.m_Donor = user["donor"].GetInt();
 	
 	if (user.HasMember("event")) {
 		if (user["event"].HasMember("bounty"))
@@ -597,11 +599,12 @@ void CAccount::Apply()
 	writer.StartObject();
 	writer.Key("authlvl");
 	writer.Int(GameServer()->Server()->AuthLvl(m_pPlayer->GetCID()));
-	writer.Key("donor");
-	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
 	writer.Int(m_pPlayer->m_AccData.m_VIP);
 	writer.EndObject();
+
+	writer.Key("donor");
+	writer.Int(m_pPlayer->m_AccData.m_Donor);
 
 	writer.Key("event");
 	writer.StartObject();
@@ -941,7 +944,7 @@ bool CAccount::OldLogin(char *Username, char *Password)
 		&m_pPlayer->m_AccData.m_Armor, // Done
 		&m_pPlayer->m_Score, // Done
 
-		&m_pPlayer->m_AccData.m_Donor, 
+		&m_pPlayer->m_AccData.m_VIP, 
 		&m_pPlayer->m_AccData.m_VIP, // Done
 		&m_pPlayer->m_AccData.m_Arrested, // Done
 
