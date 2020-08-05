@@ -43,7 +43,7 @@ void CGameContext::ConChatLogout(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_UserID)
@@ -70,7 +70,7 @@ void CGameContext::ConChatChangePw(IConsole::IResult *pResult, void *pUserData)
     char NewPw[512];
     str_copy(NewPw, pResult->GetString(0), sizeof(NewPw));
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_UserID)
@@ -90,7 +90,7 @@ void CGameContext::ConChatSave(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
@@ -112,7 +112,7 @@ void CGameContext::ConChatLoad(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
@@ -134,7 +134,7 @@ void CGameContext::ConChatTele(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
@@ -156,7 +156,7 @@ void CGameContext::ConChatHome(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
@@ -183,7 +183,7 @@ void CGameContext::ConChatRainbow(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_Donor) {
@@ -203,7 +203,7 @@ void CGameContext::ConChatCrown(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_Donor) {
@@ -223,7 +223,7 @@ void CGameContext::ConChatUp(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
@@ -245,7 +245,7 @@ void CGameContext::ConChatDown(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
@@ -267,7 +267,7 @@ void CGameContext::ConChatLeft(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
@@ -289,7 +289,7 @@ void CGameContext::ConChatRight(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
@@ -313,7 +313,7 @@ void CGameContext::ConChatJailrifle(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pSelf->Server()->AuthLvl(pP->GetCID())) {
@@ -353,7 +353,7 @@ void CGameContext::ConChatInstagib(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pChr->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
@@ -380,7 +380,7 @@ void CGameContext::ConChatTransfer(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     long long Money = pResult->GetLongLong(0);
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pChr->m_Frozen || pChr->m_GameZone || pP->m_Insta) {
@@ -455,7 +455,7 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
@@ -832,7 +832,7 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pSelf->Collision()->TileShop(pChr->m_Core.m_Pos)) {
@@ -881,7 +881,7 @@ void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
@@ -908,7 +908,7 @@ void CGameContext::ConChatWalls(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerWalls) {
@@ -928,7 +928,7 @@ void CGameContext::ConChatPlasma(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerShot) {
@@ -948,7 +948,7 @@ void CGameContext::ConChatHammerkill(IConsole::IResult *pResult, void *pUserData
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerKill) {
@@ -968,7 +968,7 @@ void CGameContext::ConChatGunfreeze(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_GunFreeze) {
@@ -988,7 +988,7 @@ void CGameContext::ConChatRifleplasma(IConsole::IResult *pResult, void *pUserDat
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_RiflePlasma) {
@@ -1008,7 +1008,7 @@ void CGameContext::ConChatSwap(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)
@@ -1031,7 +1031,7 @@ void CGameContext::ConChatFly(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)
@@ -1054,7 +1054,7 @@ void CGameContext::ConChatHealHook(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)
@@ -1077,10 +1077,10 @@ void CGameContext::ConChatBoostHook(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
-    if (pP->m_Insta || pChr->m_GameZone)
+    if (!pChr->IsAlive() || pP->m_Insta || pChr->m_GameZone)
         return;
 
     if (!pP->m_AccData.m_HealHook) {
@@ -1101,7 +1101,7 @@ void CGameContext::ConChatPortal(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)
@@ -1124,7 +1124,7 @@ void CGameContext::ConChatPushAura(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)
@@ -1152,7 +1152,7 @@ void CGameContext::ConChatPullAura(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pP->m_Insta || pChr->m_GameZone)

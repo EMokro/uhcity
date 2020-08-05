@@ -153,10 +153,8 @@ void CPlayer::Tick()
 	else if(GameServer()->Server()->IsPolice(GetCID()))
 		str_copy(m_aRank, "[*Police*]", sizeof(m_aRank));
 	else if(m_AccData.m_Donor)
-		//Server()->SetClientClan(GetCID(), "[*Donor*]");
 		str_copy(m_aRank, "[*Donor*]", sizeof(m_aRank));
 	else if(m_AccData.m_VIP)
-		//Server()->SetClientClan(GetCID(), "[*Vip*]");
 		str_copy(m_aRank, "[*Vip*]", sizeof(m_aRank));
 
 	const char *pMatchAdmin = str_find_nocase(Server()->ClientClan(GetCID()), "Admin");
@@ -168,14 +166,9 @@ void CPlayer::Tick()
 		Server()->SetClientClan(GetCID(), "");
 
 	if (Server()->Tick() % 50 == 0) {
-		if (m_GravAuraCooldown) {
-			dbg_msg("debug", "%d", m_GravAuraCooldown);
+		if (m_GravAuraCooldown) 
 			m_GravAuraCooldown--;
-		}
-			
 	}
-	
-	
 }
 
 void CPlayer::PostTick()
