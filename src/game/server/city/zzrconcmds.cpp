@@ -195,8 +195,9 @@ void CGameContext::ConUnjail(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	int Amount = pResult->GetInteger(0);
 	int ID = pResult->GetVictim();
+	int Weapon = pResult->GetInteger(0);
+	int Amount = pResult->GetInteger(1);
 	char aBuf[200];
 
 	if(Amount > 800 || Amount < 1)
@@ -222,6 +223,47 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Level", aBuf);
 
 				str_format(aBuf, sizeof aBuf, "An Admin set your level to %d", Amount);
+				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
+			}
+		}
+	}
+}
+
+void CGameContext::ConSetLvlWeapon(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	int ID = pResult->GetVictim();
+	int Weapon = pResult->GetInteger(0);
+	int Amount = pResult->GetInteger(1);
+	char aBuf[200];
+
+	if(Amount > 800 || Amount < 1)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Set a value between 1 and 800");
+		return;
+	}
+
+	if (Weapon < -1 || Weapon > WEAPON_RIFLE) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such weapon");
+		return;
+	}
+
+	CCharacter* pChr = pSelf->GetPlayerChar(ID);
+	if(pChr)
+	{
+		if(pChr->IsAlive())
+		{
+			if(Amount)
+			{
+				CPlayer* pP = pChr->GetPlayer();
+
+				pP->m_AccData.m_LvlWeapon[Weapon] = Amount;
+				pP->m_AccData.m_ExpWeapon[Weapon] = 0;
+
+				str_format(aBuf, sizeof aBuf, "'%s' Weapon level is now %d", pSelf->Server()->ClientName(ID), Amount);
+				pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+
+				str_format(aBuf, sizeof aBuf, "An admin set your level to %d", Amount);
 				pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
 			}
 		}
@@ -333,7 +375,31 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
 }
 
-void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData)
+void CGameContext::ConSetClientGravityY(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int ID = pResult->GetVictim();
+	float Amount = pResult->GetFloat(0);
+	char aBuf[128];
+
+	if (ID < 0 || ID > MAX_CLIENTS) {
+		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Debug", aBuf);
+		return;
+	}
+
+	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
+
+	if (!pChar) {
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Player not available");
+		return;
+	}
+
+	pChar->m_GravityY = Amount;
+	pSelf->SendChatTarget(ID, "Your gravity got changed");
+}
+
+void CGameContext::ConSetClientGravityX(IConsole::IResult* pResult, void* pUserData)
 {
 	CGameContext* pSelf = (CGameContext*)pUserData;
 	int ID = pResult->GetVictim();
@@ -353,7 +419,7 @@ void CGameContext::ConSetCharGravity(IConsole::IResult* pResult, void* pUserData
 		return;
 	}
 
-	pChar->m_Gravity = Amount;
+	pChar->m_GravityX = Amount;
 	pSelf->SendChatTarget(ID, "Your gravity got changed");
 }
 

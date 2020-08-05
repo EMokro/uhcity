@@ -43,7 +43,7 @@ void CGameContext::ConChatLogout(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_UserID)
@@ -70,7 +70,7 @@ void CGameContext::ConChatChangePw(IConsole::IResult *pResult, void *pUserData)
     char NewPw[512];
     str_copy(NewPw, pResult->GetString(0), sizeof(NewPw));
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_UserID)
@@ -90,10 +90,10 @@ void CGameContext::ConChatSave(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -112,10 +112,10 @@ void CGameContext::ConChatLoad(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -134,10 +134,10 @@ void CGameContext::ConChatTele(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -156,10 +156,10 @@ void CGameContext::ConChatHome(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -183,7 +183,7 @@ void CGameContext::ConChatRainbow(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_Donor) {
@@ -203,7 +203,7 @@ void CGameContext::ConChatCrown(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_Donor) {
@@ -223,10 +223,10 @@ void CGameContext::ConChatUp(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -245,10 +245,10 @@ void CGameContext::ConChatDown(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -267,10 +267,10 @@ void CGameContext::ConChatLeft(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -289,10 +289,10 @@ void CGameContext::ConChatRight(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     CCharacter *pChr = pP->GetCharacter();
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -313,7 +313,7 @@ void CGameContext::ConChatJailrifle(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive() && !pP->m_Insta)
+    if (!pChr)
         return;
 
     if (!pSelf->Server()->AuthLvl(pP->GetCID())) {
@@ -353,7 +353,7 @@ void CGameContext::ConChatInstagib(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (pChr->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
@@ -380,10 +380,10 @@ void CGameContext::ConChatTransfer(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     long long Money = pResult->GetLongLong(0);
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
-    if (pChr->m_Frozen || pChr->m_GameZone) {
+    if (pChr->m_Frozen || pChr->m_GameZone || pP->m_Insta) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -447,6 +447,58 @@ void CGameContext::ConChatEnabledmg(IConsole::IResult *pResult, void *pUserData)
     }
 
     pSelf->EnableDmg(pP->GetCID(), Victim);
+}
+
+void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+
+    if (!pChr)
+        return;
+
+    if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a coach first");
+        return;
+    }
+
+    if (pResult->NumArguments() != 1 && pResult->NumArguments() != 2) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /train <weapon> ?<amount>");
+        return;
+    }
+
+    const char *Weapon = pResult->GetString(0);
+    int ID = pSelf->GetWIDByStr(Weapon);
+    int Amount = pResult->NumArguments() == 2 ? pResult->GetInteger(1) : 1;
+    char aBuf[256], numBuf[2][32];
+
+    if (ID < 0) {
+        str_format(aBuf, sizeof aBuf, "'%s' does not exist", Weapon);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        return;
+    }
+
+    if (Amount < 0) {
+        pSelf->SendChatTarget(pP->GetCID(), "Bad boy...");
+        return;
+    }
+
+    if (g_Config.m_SvExpPrice * Amount > pP->m_AccData.m_Money) {
+        pSelf->FormatInt(g_Config.m_SvExpPrice * Amount, numBuf[0]);
+        str_format(aBuf, sizeof aBuf, "This would cost %s$", numBuf[0]);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        pSelf->SendChatTarget(pP->GetCID(), "Not enough money");
+        return;
+    }
+
+    pP->m_AccData.m_Money -= g_Config.m_SvExpPrice * Amount;
+    pP->GetCharacter()->AddExp(ID, Amount);
+
+    pSelf->FormatInt(pP->m_AccData.m_Money, numBuf[0]);
+     pSelf->FormatInt(g_Config.m_SvExpPrice * Amount, numBuf[1]);
+    str_format(aBuf, sizeof aBuf, "Money: %s (-%s$)", numBuf[0], numBuf[1]);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }
 
 void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData)
@@ -609,6 +661,14 @@ void CGameContext::ConChatMe(IConsole::IResult *pResult, void *pUserData)
     str_format(aBuf, sizeof aBuf, "Exp: %s ep / %s ep", numBuf[0], numBuf[1]);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 
+    str_format(aBuf, sizeof aBuf, "Hammer: %d, Gun: %d, Shotgun: %d, Grenade: %d, Rifle: %d",
+        pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
+        pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+
     pSelf->FormatInt(pP->m_AccData.m_Money, numBuf[0]);
     str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
@@ -660,6 +720,21 @@ void CGameContext::ConChatHelp(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "    /login <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you have any questions you can always ask a team member.");
     pSelf->SendChatTarget(pP->GetCID(), "Join our discord to contact us https://discord.gg/Rstb8ge");
+}
+
+void CGameContext::ConChatWriteStats(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    char aBuf[256];
+    
+    str_format(aBuf, sizeof aBuf, "Hammer: %d, Gun: %d, Shotgun: %d, Grenade: %d, Rifle: %d",
+        pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
+        pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
+        pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE]);
+    pSelf->SendChat(pP->GetCID(), pSelf->CHAT_ALL, aBuf);
 }
 
 void CGameContext::ConChatRules(IConsole::IResult *pResult, void *pUserData)
@@ -757,6 +832,9 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     const char *Upgr = !pResult->NumArguments() ? "" : pResult->GetString(0);
 
+    if (!pChr)
+        return;
+
     if (!pSelf->Collision()->TileShop(pChr->m_Core.m_Pos)) {
         pSelf->SendChatTarget(pResult->GetClientID(), "Enter a shop first");
         return;
@@ -778,6 +856,8 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
         pChr->m_ShopGroup = ITEM_NINJA;
     else if (!str_comp_nocase(Upgr, "general"))
         pChr->m_ShopGroup = ITEM_GENERAL;
+    else if (!str_comp_nocase(Upgr, "hook"))
+        pChr->m_ShopGroup = ITEM_JUMP; // should be ITEM_HOOK, but we have no specials yet
     else {
         pChr->m_ShopPage = Page;
         pSelf->SendChatTarget(pResult->GetClientID(), "Use /shop <item> to see the items you want.");
@@ -791,7 +871,33 @@ void CGameContext::ConChatShop(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "- rifle");
         pSelf->SendChatTarget(pP->GetCID(), "- ninja");
         pSelf->SendChatTarget(pP->GetCID(), "- general");
+        pSelf->SendChatTarget(pP->GetCID(), "- hook");
     }
+}   
+
+void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+
+    if (!pChr)
+        return;
+
+    if (!pSelf->Collision()->IsTile(pChr->m_Core.m_Pos, TILE_TRAINER)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Visit a coach first");
+        return;
+    }
+
+    pSelf->SendChatTarget(pResult->GetClientID(), "You can buy experience here.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "One exp costs 1.000.000$.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "Use /train <weapon> ?<amount>.");
+    pSelf->SendChatTarget(pResult->GetClientID(), "Available weapons are:");
+    pSelf->SendChatTarget(pP->GetCID(), "- hammer");
+    pSelf->SendChatTarget(pP->GetCID(), "- gun");
+    pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
+    pSelf->SendChatTarget(pP->GetCID(), "- grenade");
+    pSelf->SendChatTarget(pP->GetCID(), "- rifle");
 }   
 
 // items
@@ -802,7 +908,7 @@ void CGameContext::ConChatWalls(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerWalls) {
@@ -822,7 +928,7 @@ void CGameContext::ConChatPlasma(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerShot) {
@@ -842,7 +948,7 @@ void CGameContext::ConChatHammerkill(IConsole::IResult *pResult, void *pUserData
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_HammerKill) {
@@ -862,7 +968,7 @@ void CGameContext::ConChatGunfreeze(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_GunFreeze) {
@@ -882,7 +988,7 @@ void CGameContext::ConChatRifleplasma(IConsole::IResult *pResult, void *pUserDat
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
         return;
 
     if (!pP->m_AccData.m_RiflePlasma) {
@@ -902,7 +1008,10 @@ void CGameContext::ConChatSwap(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
         return;
 
     if (!pP->m_AccData.m_RifleSwap) {
@@ -922,7 +1031,10 @@ void CGameContext::ConChatFly(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pP->GetCharacter();
     char aBuf[128];
 
-    if (!pChr && !pChr->IsAlive())
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
         return;
 
     if (!(pP->m_AccData.m_InfinityJumps == 2)) {
@@ -933,4 +1045,130 @@ void CGameContext::ConChatFly(IConsole::IResult *pResult, void *pUserData)
     pChr->ChangeUpgrade(ITEM_JUMP, UPGRADE_FLY);
     str_format(aBuf, sizeof(aBuf), "%s Fly", pP->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY ?"Enabled":"Disabled");
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
+void CGameContext::ConChatHealHook(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_HealHook) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Healhook first!");
+        return;
+    }
+
+    pChr->ChangeUpgrade(ITEM_HOOK, UPGRADE_HEALHOOK);
+    str_format(aBuf, sizeof(aBuf), "%s Healhook", pP->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK ?"Enabled":"Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
+void CGameContext::ConChatBoostHook(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (!pChr->IsAlive() || pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_HealHook) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Boosthook first!");
+        return;
+    }
+
+    pChr->ChangeUpgrade(ITEM_HOOK, UPGRADE_BOOSTHOOK);
+    pChr->m_Core.m_DisablePlayerHook ^= true;
+    str_format(aBuf, sizeof(aBuf), "%s Boosthook", pP->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_BOOSTHOOK ?"Enabled":"Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
+void CGameContext::ConChatPortal(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_Portal) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Portal first!");
+        return;
+    }
+
+    pChr->ChangeUpgrade(ITEM_HAMMER, UPGRADE_PORTAL);
+    str_format(aBuf, sizeof(aBuf), "%s Portal", pP->m_AciveUpgrade[ITEM_HAMMER] == UPGRADE_PORTAL ? "Enabled" : "Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
+void CGameContext::ConChatPushAura(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_PushAura) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy PushAura first!");
+        return;
+    }
+
+    if (pP->m_GravAuraCooldown) {
+        str_format(aBuf, sizeof aBuf, "You can use this aura in %d seconds again", pP->m_GravAuraCooldown);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        return;
+    }
+
+    pChr->m_GravAura = new CGravAura(pChr->GameWorld(), pP->GetCID(), 1);
+    pP->m_GravAuraCooldown = g_Config.m_SvGravAuraCooldown;
+}
+
+void CGameContext::ConChatPullAura(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_PullAura) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy PullAura first!");
+        return;
+    }
+
+    if (pP->m_GravAuraCooldown) {
+        str_format(aBuf, sizeof aBuf, "You can use this aura in %d seconds again", pP->m_GravAuraCooldown);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        return;
+    }
+
+    pChr->m_GravAura = new CGravAura(pChr->GameWorld(), pP->GetCID(), -1);
+    pP->m_GravAuraCooldown = g_Config.m_SvGravAuraCooldown;
 }

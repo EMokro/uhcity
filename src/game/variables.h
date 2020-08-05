@@ -11,39 +11,42 @@ MACRO_CONFIG_INT(EuArmor, eu_armor, 50000, 0, 1000000, CFGFLAG_SERVER, "Price - 
 MACRO_CONFIG_INT(EuVIP, eu_vip, 1000000, 0, 100000000, CFGFLAG_SERVER, "Price - VIP")
 //MACRO_CONFIG_INT(EuArrested, eu_arrested, 10000, 0, 1000000, CFGFLAG_SERVER, "Price - Freedom")
 
-MACRO_CONFIG_INT(EuAllWeapons, eu_allweapons, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - All weapons")
-MACRO_CONFIG_INT(EuHealthRegen, eu_health_regen, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - Health Regeneration")
-MACRO_CONFIG_INT(EuInfAmmo, eu_infammo, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Infinity ammo")
-MACRO_CONFIG_INT(EuInfJumps, eu_infjumps, 18000, 0, 1000000, CFGFLAG_SERVER, "Price - Infinity jumps")
-MACRO_CONFIG_INT(EuFastReload, eu_fast_reload, 360000, 0, 1000000, CFGFLAG_SERVER, "Price - Fast reload")
-MACRO_CONFIG_INT(EuNoSelfDMG, eu_no_selfdmg, 18000, 0, 1000000, CFGFLAG_SERVER, "Price - No self Damage")
+MACRO_CONFIG_INT(EuAllWeapons, eu_allweapons, 100000, 0, 10000000, CFGFLAG_SERVER, "Price - All weapons")
+MACRO_CONFIG_INT(EuHealthRegen, eu_health_regen, 1000000, 0, 10000000, CFGFLAG_SERVER, "Price - Health Regeneration")
+MACRO_CONFIG_INT(EuInfAmmo, eu_infammo, 500000, 0, 10000000, CFGFLAG_SERVER, "Price - Infinity ammo")
+MACRO_CONFIG_INT(EuInfJumps, eu_infjumps, 16000000, 0, 10000000, CFGFLAG_SERVER, "Price - Infinity jumps")
+MACRO_CONFIG_INT(EuFastReload, eu_fast_reload, 500000, 0, 10000000, CFGFLAG_SERVER, "Price - Fast reload")
+MACRO_CONFIG_INT(EuNoSelfDMG, eu_no_selfdmg, 500000, 0, 10000000, CFGFLAG_SERVER, "Price - No self Damage")
 
-MACRO_CONFIG_INT(EuGrenadeSpread, eu_grenade_spread, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Grenade spread")
-MACRO_CONFIG_INT(EuGrenadeBounce, eu_grenade_bounce, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Grenade ammo")
-MACRO_CONFIG_INT(EuGrenadeMine, eu_grenade_mine, 500, 0, 1000000, CFGFLAG_SERVER, "Price - Grenade ammo")// -.-
+MACRO_CONFIG_INT(EuGrenadeSpread, eu_grenade_spread, 2000000, 0, 10000000, CFGFLAG_SERVER, "Price - Grenade spread")
+MACRO_CONFIG_INT(EuGrenadeBounce, eu_grenade_bounce, 5000000, 0, 10000000, CFGFLAG_SERVER, "Price - Grenade ammo")
 
-MACRO_CONFIG_INT(EuShotgunSpread, eu_shotgun_spread, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Shotgun spread")
-MACRO_CONFIG_INT(EuShotgunExplode, eu_shotgun_explode, 360000, 0, 1000000, CFGFLAG_SERVER, "Price - Shotgun explode")
-MACRO_CONFIG_INT(EuShotgunStars, eu_shotgun_stars, 500, 0, 1000000, CFGFLAG_SERVER, "Price - Shotgun ammo")// -.-
+MACRO_CONFIG_INT(EuShotgunSpread, eu_shotgun_spread, 2000000, 0, 10000000, CFGFLAG_SERVER, "Price - Shotgun spread")
+MACRO_CONFIG_INT(EuShotgunExplode, eu_shotgun_explode, 5000000, 0, 10000000, CFGFLAG_SERVER, "Price - Shotgun explode")
 
-MACRO_CONFIG_INT(EuRifleSpread, eu_rifle_spread, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Rifle spread")
-MACRO_CONFIG_INT(EuRifleSwap, eu_rifle_swap, 9000, 0, 1000000, CFGFLAG_SERVER, "Price - Rifle swap")
-MACRO_CONFIG_INT(EuRiflePlasma, eu_rifle_plasma, 72000, 0, 1000000, CFGFLAG_SERVER, "Price - Rifle plasma")
+MACRO_CONFIG_INT(EuRifleSpread, eu_rifle_spread, 2000000, 0, 10000000, CFGFLAG_SERVER, "Price - Rifle spread")
+MACRO_CONFIG_INT(EuRifleSwap, eu_rifle_swap, 5000000, 0, 1000000, CFGFLAG_SERVER, "Price - Rifle swap")
+MACRO_CONFIG_INT(EuRiflePlasma, eu_rifle_plasma, 100000000, 0, 100000000, CFGFLAG_SERVER, "Price - Rifle plasma")
 
-MACRO_CONFIG_INT(EuGunSpread, eu_gun_spread, 180000, 0, 1000000, CFGFLAG_SERVER, "Price - Gun spread")
-MACRO_CONFIG_INT(EuGunExplode, eu_gun_explode, 360000, 0, 1000000, CFGFLAG_SERVER, "Price - Gun explode")
-MACRO_CONFIG_INT(EuGunFreeze, eu_gun_freeze, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Gun ammo")
+MACRO_CONFIG_INT(EuGunSpread, eu_gun_spread, 2000000, 0, 100000000, CFGFLAG_SERVER, "Price - Gun spread")
+MACRO_CONFIG_INT(EuGunExplode, eu_gun_explode, 5000000, 0, 100000000, CFGFLAG_SERVER, "Price - Gun explode")
+MACRO_CONFIG_INT(EuGunFreeze, eu_gun_freeze, 800000000, 0, 1000000000, CFGFLAG_SERVER, "Price - Gun ammo")
 
-MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 150000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer walls")
-MACRO_CONFIG_INT(EuHammerShot, eu_hammer_shot, 720000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer shot")
-MACRO_CONFIG_INT(EuHammerKill, eu_hammer_kill, 36000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer kill")
+MACRO_CONFIG_INT(EuHammerWalls, eu_hammer_walls, 50000000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer walls")
+MACRO_CONFIG_INT(EuHammerShot, eu_hammer_shot, 30000000, 0, 1000000, CFGFLAG_SERVER, "Price - Hammer shot")
+MACRO_CONFIG_INT(EuHammerKill, eu_hammer_kill, 100000000, 0, 500000000, CFGFLAG_SERVER, "Price - Hammer kill")
+MACRO_CONFIG_LONGLONG(EuPortal, eu_portal, 500000000, 0, 1000000, CFGFLAG_SERVER, "Price - Portal")
 
 MACRO_CONFIG_INT(EuNinjaPermanent, eu_ninja_permanent, 5000000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja permanent")
 MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja start")
 MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja switch")
 
-MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, CFGFLAG_SERVER, "Price - Ninja switch")
+MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, CFGFLAG_SERVER, "Price - Endlesshook")
+MACRO_CONFIG_LONGLONG(EuHookHeal, eu_hook_heal, 50000000, 0, 900000000000, CFGFLAG_SERVER, "Price - Healhook")
+MACRO_CONFIG_LONGLONG(EuHookBoost, eu_hook_boost, 50000000, 0, 900000000000, CFGFLAG_SERVER, "Price - Boosthook")
 
+MACRO_CONFIG_LONGLONG(EuPushAura, eu_special_pushaura, 1000000000, 0, 900000000000, CFGFLAG_SERVER, "Price - PushAura")
+MACRO_CONFIG_LONGLONG(EuPullAura, eu_special_pullaura, 1000000000, 0, 900000000000, CFGFLAG_SERVER, "Price - PullAura")
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")
 
@@ -52,8 +55,6 @@ MACRO_CONFIG_INT(SvChatDelay, sv_chat_delay, 1, 0, 9999, CFGFLAG_SERVER, "The ti
 MACRO_CONFIG_INT(SvChatPenalty, sv_chat_penalty, 250, 50, 1000, CFGFLAG_SERVER, "chat score will be increased by this on every message, and decremented by 1 on every tick.")
 MACRO_CONFIG_INT(SvChatThreshold, sv_chat_threshold, 1000, 50, 10000 , CFGFLAG_SERVER, "if chats core exceeds this, the player will be muted for sv_spam_mute_duration seconds")
 MACRO_CONFIG_INT(SvSpamMuteDuration, sv_spam_mute_duration, 60, 0, 3600 , CFGFLAG_SERVER, "how many seconds to mute, if player triggers mute on spam. 0 = off")
-
-
 
 // client
 MACRO_CONFIG_INT(ClPredict, cl_predict, 1, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Predict client movements")

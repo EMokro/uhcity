@@ -11,7 +11,6 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
-
 class CTuneParam
 {
 	int m_Value;
@@ -189,6 +188,7 @@ public:
 	bool m_IsGrounded;
 	bool m_IgnoreGround;
 	bool m_EndlessHook;
+	bool m_DisablePlayerHook;
 	bool m_Afk;
 
 	int m_Jumped;

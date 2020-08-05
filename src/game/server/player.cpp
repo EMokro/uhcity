@@ -25,6 +25,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Rainbow = false;
 	m_Insta = false;
 	m_Afk = false;
+
+	m_GravAuraCooldown = 0;
 	m_pAccount = new CAccount(this, m_pGameServer);
 
 	if(m_AccData.m_Health < 10)
@@ -151,10 +153,8 @@ void CPlayer::Tick()
 	else if(GameServer()->Server()->IsPolice(GetCID()))
 		str_copy(m_aRank, "[*Police*]", sizeof(m_aRank));
 	else if(m_AccData.m_Donor)
-		//Server()->SetClientClan(GetCID(), "[*Donor*]");
 		str_copy(m_aRank, "[*Donor*]", sizeof(m_aRank));
 	else if(m_AccData.m_VIP)
-		//Server()->SetClientClan(GetCID(), "[*Vip*]");
 		str_copy(m_aRank, "[*Vip*]", sizeof(m_aRank));
 
 	const char *pMatchAdmin = str_find_nocase(Server()->ClientClan(GetCID()), "Admin");
@@ -165,10 +165,10 @@ void CPlayer::Tick()
 	if(pMatchAdmin || pMatchVip || pMatchDonor || pMatchPolice)
 		Server()->SetClientClan(GetCID(), "");
 
-		/*else if(!str_find_nocase(Server()->ClientClan(GetCID()), "Admin") || !str_find_nocase(Server()->ClientClan(GetCID()), "Vip") || !str_find_nocase(Server()->ClientClan(GetCID()), "Donor") || !str_find_nocase(Server()->ClientClan(GetCID()), "Police"))
-		Server()->SetClientClan(GetCID(), " ");*/
-	
-	
+	if (Server()->Tick() % 50 == 0) {
+		if (m_GravAuraCooldown) 
+			m_GravAuraCooldown--;
+	}
 }
 
 void CPlayer::PostTick()

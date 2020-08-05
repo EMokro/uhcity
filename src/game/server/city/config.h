@@ -19,4 +19,15 @@ MACRO_CONFIG_INT(SvEventDurationMax, sv_event_duration_min, 240, 0, 0, CFGFLAG_S
 MACRO_CONFIG_INT(SvEventBountyMin, sv_event_bounty_min, 100000, 1000, 0, CFGFLAG_SERVER, "The minimum bounty amount")
 MACRO_CONFIG_INT(SvEventBountyMax, sv_event_bounty_max, 500000, 1000, 100000000, CFGFLAG_SERVER, "The maximum bounty amount")
 
+// coach
+MACRO_CONFIG_INT(SvExpPrice, sv_exp_price, 1000000, 0, 50000000, CFGFLAG_SERVER, "The price one exp costs")
+
+// items
+MACRO_CONFIG_INT(SvBoostHookStr, sv_boost_hook_str, 50, 1, 1000000, CFGFLAG_SERVER, "Strength of boosthook")
+
+MACRO_CONFIG_INT(SvGravAuraRadius, sv_gravaura_radius, 160, 1, 1000000, CFGFLAG_SERVER, "Gravity aura radius")
+MACRO_CONFIG_INT(SvGravAuraForce, sv_gravaura_force, 2, 1, 1000000, CFGFLAG_SERVER, "Gravity aura force strength")
+MACRO_CONFIG_INT(SvGravAuraCooldown, sv_gravaura_cooldown, 30, 0, 1000000, CFGFLAG_SERVER, "Gravity aura Cooldown in s")
+
+
 #endif

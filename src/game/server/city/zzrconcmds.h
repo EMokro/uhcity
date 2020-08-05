@@ -17,11 +17,14 @@ CONSOLE_COMMAND("donor", "vi", CFGFLAG_SERVER, ConDonor, this, "Enable disable d
 //Admincmds
 CONSOLE_COMMAND("add_money", "vi", CFGFLAG_SERVER, ConGiveMoney, this, "add_money id money(1-5mio)")
 CONSOLE_COMMAND("set_money", "vi", CFGFLAG_SERVER, ConSetMoney, this, "set_money id money")
-CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "set_lvl id level(max 800)")
+CONSOLE_COMMAND("set_lvl", "vi", CFGFLAG_SERVER, ConSetLvl, this, "")
+CONSOLE_COMMAND("set_lvl_weapon", "vii", CFGFLAG_SERVER, ConSetLvlWeapon, this, "set_lvl_weapon <id> <weaponid> <level>(max 800)")
+
 CONSOLE_COMMAND("set_life", "vi", CFGFLAG_SERVER, ConSetLife, this, "set_life id amount")
 CONSOLE_COMMAND("set_armor", "vi", CFGFLAG_SERVER, ConSetArmor, this, "set_armor id amount")
 CONSOLE_COMMAND("set_client_name", "vi", CFGFLAG_SERVER, ConSetClientName, this, "set_client_name id value")
-CONSOLE_COMMAND("set_client_gravity", "vi", CFGFLAG_SERVER, ConSetCharGravity, this, "sendafk id")
+CONSOLE_COMMAND("set_client_gravity_y", "vi", CFGFLAG_SERVER, ConSetClientGravityY, this, "set_client_gravity_y id value")
+CONSOLE_COMMAND("set_client_gravity_x", "vi", CFGFLAG_SERVER, ConSetClientGravityX, this, "set_client_gravity_x id value")
 CONSOLE_COMMAND("event_start", "vi", CFGFLAG_SERVER, ConStartEvent, this, "event_start <id> <time> | 0 - Bounty")
 CONSOLE_COMMAND("event_abort", "", CFGFLAG_SERVER, ConAbortEvent, this, "aborts the current event")
 CONSOLE_COMMAND("event_timer", "", CFGFLAG_SERVER, ConEventTimer, this, "time till next event or till event end in seconds")

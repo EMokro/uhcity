@@ -31,7 +31,7 @@ void CNinja::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if(!pOwner)
+	if(!pOwner || !pOwner->IsAlive())
 	{
 		Reset();
 		return;
@@ -40,7 +40,6 @@ void CNinja::Tick()
 	if(!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if(!Click)

@@ -16,6 +16,7 @@
 #include "player.h"
 #include "game/server/city/filesys.h"
 #include "game/server/city/gameevent.h"
+#include "game/server/city/items/portal.h"
 
 /*
 	Tick
@@ -107,7 +108,6 @@ public:
 	char m_aVoteReason[VOTE_REASON_LENGTH];
 	int m_NumVoteOptions;
 	int m_VoteEnforce;
-	
 
 	enum
 	{
@@ -184,10 +184,12 @@ public:
 		static void ConSetMoney(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnjail(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLvl(IConsole::IResult *pResult, void *pUserData);
+		static void ConSetLvlWeapon(IConsole::IResult *pResult, void *pUserData);
 		static void ConSetLife(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetArmor(IConsole::IResult* pResult, void* pUserData);
 		static void ConSetClientName(IConsole::IResult* pResult, void* pUserData);
-		static void ConSetCharGravity(IConsole::IResult* pResult, void* pUserData);
+		static void ConSetClientGravityY(IConsole::IResult* pResult, void* pUserData);
+		static void ConSetClientGravityX(IConsole::IResult* pResult, void* pUserData);
 		static void ConKill(IConsole::IResult* pResult, void* pUserData);
 		static void ConFreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConUnFreeze(IConsole::IResult* pResult, void* pUserData);
@@ -227,6 +229,7 @@ public:
 		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatTrain(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSetbounty(IConsole::IResult* pResult, void* pUserData);
@@ -239,14 +242,22 @@ public:
 		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatShop(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatCoach(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
+
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPortal(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPlasma(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatGunfreeze(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRifleplasma(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSwap(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatFly(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatHealHook(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatBoostHook(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPushAura(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPullAura(IConsole::IResult* pResult, void* pUserData);
 
 	public: //Ende :D
 
@@ -274,6 +285,8 @@ public:
 	const int BountyList(int i) { return m_BountyList[i]; }
 
 	bool ValidID(int ID) { return ID >= 0 && ID < MAX_CLIENTS; }
+	int GetWIDByStr(const char *weapon);
+	void GetStrByWID(int ID, char *out, int size) ;
 
 	void strrev(char* str);
 	int string_length(char* pointer);
@@ -287,6 +300,9 @@ public:
 	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];
 	CMute m_aMutes[MAX_CLIENTS];
 	int m_NumMutes;
+
+	CPortal* m_aPortals[MAX_CLIENTS];
+	
 	//int m_TeleID[MAX_CLIENTS];
 private:
 	int m_BountyList[MAX_CLIENTS];

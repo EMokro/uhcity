@@ -11,6 +11,8 @@ CInfAmmo::CInfAmmo(CGameWorld *pGameWorld, int Owner, vec2 Pos)
 	m_Pos = Pos;
 	m_StartTick = Server()->Tick();
 
+	dbg_msg("debug", "infammo pos (%d | %d)", m_Pos.x, m_Pos.y);
+
 	m_Visible = false;
 
 	for(int i = 0; i < 4; i++)
@@ -31,7 +33,7 @@ void CInfAmmo::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if(!pOwner)
+	if(!pOwner || !pOwner->IsAlive())
 	{
 		Reset();
 		return;
@@ -40,7 +42,6 @@ void CInfAmmo::Tick()
 	if(!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if(!Click)
@@ -89,15 +90,5 @@ void CInfAmmo::Snap(int SnappingClient)
 
 	}
 
-	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
-
-	if(pOwner)
-	{
-		if(pOwner->GetPlayer()->m_AccData.m_AllWeapons)
-		{
-
-		}
-	}
-	
-	
+	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);	
 }

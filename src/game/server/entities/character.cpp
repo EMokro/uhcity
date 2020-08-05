@@ -13,6 +13,8 @@
 #include "game/server/city/wall.h"
 #include "game/server/city/gui.h"
 #include "game/server/city/crown.h"
+#include "game/server/city/healstate.h"
+#include "game/server/city/items/gravaura.h"
 #include "game/server/city/transfer.h"
 #include "game/server/city/entities/spawnprotect.h"
 
@@ -95,16 +97,18 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	}
 
 	m_InstaKills = 0;
-	m_Gravity = .5;
+	m_GravityY = 0.5;
+	m_GravityX = 0;
 	m_ShopGroup = ITEM_GENERAL;
 	m_ShopPage = 0;
-	m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 	m_Walls = 0;
 	m_Plasma = 0;
 	m_FreezeEnd = false;
 	m_HammerPos1 = vec2(0, 0);
 	m_HammerPos2 = vec2(0, 0);
 	m_GunFreezeCooldown = 0;
+	m_ExternalHeal = 0;
+	m_LastHooked = -1;
 
 	if (GetPlayer()->m_AccData.m_EndlessHook)
 		m_Core.m_EndlessHook = true;
@@ -113,6 +117,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	new CGui(GameWorld(), m_pPlayer->GetCID());
 	new CCrown(GameWorld(), m_pPlayer->GetCID());
+	new CHealstate(GameWorld(), m_pPlayer->GetCID());
 
 	m_pPlayer->m_Crown = true;
 
@@ -614,11 +619,6 @@ void CCharacter::FireWeapon()
 			// if we Hit anything, we have to wait for the reload
 			if(Hits)
 				m_ReloadTimer = Server()->TickSpeed()/3;
-			else if(m_pPlayer->m_AccData.m_HammerShot && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERSHOT && !m_GameZone)
-			{
-				NewPlasma();
-				m_ReloadTimer = Server()->TickSpeed()/3;
-			}
 
 			if(m_pPlayer->m_AccData.m_HammerWalls > m_Walls && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERWALLS && !Hits && !m_GameZone)
 			{
@@ -654,6 +654,22 @@ void CCharacter::FireWeapon()
 			else if (m_pPlayer->m_AccData.m_HammerKill && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_HAMMERKILL && !m_GameZone)
 			{
 				m_ReloadTimer = Server()->TickSpeed() / 3;
+			} else if (m_pPlayer->m_AccData.m_Portal && m_pPlayer->m_AciveUpgrade[m_ActiveWeapon] == UPGRADE_PORTAL && !m_GameZone)
+			{
+				m_ReloadTimer = Server()->TickSpeed()/3;
+
+				if (!m_PortalPos[0].x && !m_PortalPos[0].y) {
+					m_PortalPos[0] = m_Pos;
+				} else if (!m_PortalPos[1].x && !m_PortalPos[1].y) {
+					m_PortalPos[1] = m_Pos;
+
+					GameServer()->m_aPortals[m_pPlayer->GetCID()] = new CPortal(GameWorld(), m_pPlayer->GetCID(), m_PortalPos[0], m_PortalPos[1]);
+				} else {
+					m_PortalPos[0] = vec2(0, 0);
+					m_PortalPos[1] = vec2(0, 0);
+
+					GameServer()->m_aPortals[m_pPlayer->GetCID()]->Reset();
+				}
 			}
 		} break;
 
@@ -905,8 +921,18 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		if(!m_pPlayer->m_Insta && !m_GameZone)
-			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay /(m_pPlayer->m_AccData.m_FastReload + 1) * Server()->TickSpeed() / 1000;
+		if(!m_pPlayer->m_Insta && !m_GameZone) {
+			float LvlSpeed = 1;
+			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
+				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/50) + 1;
+
+			if (m_ActiveWeapon == WEAPON_GUN)
+				LvlSpeed /= 2;
+
+			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay 
+				/ LvlSpeed * Server()->TickSpeed() / 1000;
+			
+		}
 		else
 			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed()/1000;
 	}
@@ -939,13 +965,23 @@ int CCharacter::NewPlasma()
 
 void CCharacter::HealthRegeneration()
 {
-	if(m_Health != 0 && m_pPlayer->m_AccData.m_HealthRegen && !(Server()->Tick() % (int)(251 - m_pPlayer->m_AccData.m_HealthRegen*10)))
-	{
+	if (m_Health != 0 
+		&& !m_pPlayer->m_AccData.m_HealthRegen
+		&& Server()->Tick() % 50 == 0) {
+
 		if(m_Health < m_pPlayer->m_AccData.m_Health)
-			IncreaseHealth(1);
+			IncreaseHealth(1 + m_ExternalHeal);
 		else if(m_Armor < m_pPlayer->m_AccData.m_Armor)
-			IncreaseArmor(1);
+			IncreaseArmor(1 + m_ExternalHeal);
+
+	} else if (m_Health != 0 && m_pPlayer->m_AccData.m_HealthRegen && !(Server()->Tick() % (int)(251 - m_pPlayer->m_AccData.m_HealthRegen*10))) {
+
+		if(m_Health < m_pPlayer->m_AccData.m_Health)
+			IncreaseHealth(1 + m_ExternalHeal);
+		else if(m_Armor < m_pPlayer->m_AccData.m_Armor)
+			IncreaseArmor(1 + m_ExternalHeal);
 	}
+
 }
 
 void CCharacter::HandleWeapons()
@@ -988,7 +1024,6 @@ void CCharacter::HandleWeapons()
 			m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart = -1;
 		}
 	}
-
 	return;
 }
 
@@ -1079,9 +1114,6 @@ void CCharacter::ResetInput()
 
 void CCharacter::Booster()
 {
-	const float NORMAL = IsGrounded()?10:5;
-	const float FAST = IsGrounded()?30:20;
-	
 	// Booster
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_BOOST_DOWN)) {
 		m_OnGavityZone = true;
@@ -1296,28 +1328,6 @@ void CCharacter::Booster()
 		m_Core.m_Vel.x /= 2;
 	
 	}
-
-	//Space zeugs 
-	/*if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_SPACE))
-	{
-		m_SingleSpace = true;
-		m_Core.m_Vel.y = 0;
-	}
-	else
-		m_SingleSpace = false;
-
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE))
-	{
-		m_Space = true;
-	}
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NOSPACE))
-	{
-		m_Space = false;
-	}
-	if(m_Space)
-	{
-		m_Core.m_Vel.y = 0;
-	}*/
 	
 	if(m_Water || m_SingleWater || m_Space || m_SingleSpace)
 	{
@@ -1456,11 +1466,7 @@ void CCharacter::Booster()
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
-		
-			
-			
 	}
-
 }
 
 void CCharacter::SetPosition(vec2 Pos)
@@ -1520,7 +1526,6 @@ void CCharacter::Transfer(int Value)
 	}
 	else
 	{
-		int TestLength = 32;
 		vec2 SnapPos = vec2(m_Pos.x+m_LatestInput.m_TargetX,m_Pos.y+m_LatestInput.m_TargetY);
 
 		if(GameServer()->Collision()->CheckPoint(SnapPos))
@@ -1560,12 +1565,7 @@ void CCharacter::Transfer(int Value)
 
 void CCharacter::HandleCity()
 {
-	char aBuf[128];
-
 	HealthRegeneration();
-
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE))
-		m_Core.m_Vel.y -= GameServer()->Tuning()->m_Gravity;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
 	{
@@ -1596,11 +1596,15 @@ void CCharacter::HandleCity()
 
 	Booster();
 
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_TRAINER)) {
+		GameServer()->SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
+	}
+
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
-		m_Gravity = 0.2;
+		m_GravityY = 0.2;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY))
-		m_Gravity = 0.5;
+		m_GravityY = 0.5;
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_FREEZE))
 	{
@@ -1625,6 +1629,35 @@ void CCharacter::HandleCity()
 	} else {
 		m_Core.m_Afk = false;
 		GetPlayer()->m_Afk = false;
+	}
+
+	if (GameServer()->ValidID(m_Core.m_HookedPlayer)) { // hook items
+		if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
+			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
+
+			if (!pChr) return;
+
+			if (m_LastHooked != m_Core.m_HookedPlayer) {
+				pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
+				m_LastHooked = m_Core.m_HookedPlayer;
+			}
+		} else if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_BOOSTHOOK) {
+			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
+
+			if (!pChr) return;
+			m_Core.m_EndlessHook = false;
+			pChr->m_Core.m_Vel += m_Core.m_HookDir * g_Config.m_SvBoostHookStr;
+		}
+	} else {
+		
+		if (GameServer()->ValidID(m_LastHooked)) {
+			if (GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal)
+				GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
+
+			m_LastHooked = -1;
+		}
+		if (m_pPlayer->m_AccData.m_EndlessHook)
+			m_Core.m_EndlessHook = true;
 	}
 
 	if(Server()->Tick()%50 == 0)
@@ -1688,10 +1721,9 @@ void CCharacter::HandleCity()
 				
 			}
 		}
-	
 
 		if(m_pPlayer->m_AccData.m_UserID)
-			m_pPlayer->m_pAccount->Apply();
+			m_pPlayer->m_pAccount->Apply();	
 	}
 
 }
@@ -1707,6 +1739,10 @@ bool CCharacter::Protected()
 	return false;
 }
 
+void CCharacter::AddGravAura() {
+	new CGravAura(GameWorld(), m_pPlayer->GetCID());
+}
+
 void CCharacter::Tick()
 {
 	if(m_pPlayer->m_ForceBalanced)
@@ -1719,10 +1755,12 @@ void CCharacter::Tick()
 	}
 
 	if (!m_OnGavityZone) {
-		if (m_Gravity == 0.5)
-		m_Core.m_Vel.y += GameServer()->Tuning()->m_Gravity;
-	else
-		m_Core.m_Vel.y += m_Gravity;
+		if (m_GravityY == 0.5)
+			m_Core.m_Vel.y += GameServer()->Tuning()->m_Gravity;
+		else {
+			m_Core.m_Vel.y += m_GravityY;
+			m_Core.m_Vel.x += m_GravityX;
+		}
 	}
 	
 	// City
@@ -1732,9 +1770,9 @@ void CCharacter::Tick()
 	{
 		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY) {
 			if (m_Input.m_Jump)
-				m_Gravity = -0.3;
+				m_GravityY = -0.3;
 			else
-				m_Gravity = 0.5;
+				m_GravityY = 0.5;
 		}
 		else if(m_pPlayer->m_AccData.m_InfinityJumps >= 1)
 			m_Core.m_Jumped &= ~2;
@@ -1914,6 +1952,9 @@ void CCharacter::Die(int Killer, int Weapon)
 	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_pPlayer->m_God && !pKiller->m_JailRifle))
 		return;
 
+	if (Killer != m_pPlayer->GetCID())
+		pKiller->AddExp(Weapon);
+
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
@@ -1946,13 +1987,17 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
-	if((Protected() && !m_GameZone) || m_pPlayer->m_God || m_pPlayer->m_Insta || GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()))
+	if((Protected() && !m_GameZone) || m_pPlayer->m_Insta)
 		return false;
 
-	m_Core.m_Vel += Force;
+	m_Core.m_Vel += Force;	
 
-	if(m_GameZone)
+	 // these will have force impact
+	if (m_pPlayer->m_God 
+	|| GameServer()->HasDmgDisabled(From, m_pPlayer->GetCID()) 
+	|| (m_GameZone && From == m_pPlayer->GetCID()))
 		return false;
+
 
 	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
 		return false;
@@ -1964,6 +2009,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
+	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
+		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 
@@ -2046,6 +2093,33 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
 
 	return true;
+}
+
+void CCharacter::AddExp(int Weapon, int Amount) {
+	char aBuf[256];
+	char WeaponBuf[128];
+
+	GameServer()->GetStrByWID(Weapon, WeaponBuf, sizeof WeaponBuf);
+
+	m_pPlayer->m_AccData.m_ExpWeapon[Weapon] += Amount;
+
+	
+	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
+
+		while (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
+			m_pPlayer->m_AccData.m_ExpWeapon[Weapon] -= m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
+			m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+		}
+
+		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		str_format(aBuf, sizeof aBuf, "Your %s is level %d (%d|%d)ep", WeaponBuf, m_pPlayer->m_AccData.m_LvlWeapon[Weapon], m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		
+		return;
+	}
+	str_format(aBuf, sizeof aBuf, "%s: +%dep (%d|%d)ep", WeaponBuf, Amount, m_pPlayer->m_AccData.m_ExpWeapon[Weapon], m_pPlayer->m_AccData.m_LvlWeapon[Weapon]);
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }
 
 void CCharacter::Snap(int SnappingClient)

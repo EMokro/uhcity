@@ -9,6 +9,8 @@
 
 #include <game/gamecore.h>
 
+#include "game/server/city/items/gravaura.h"
+
 enum
 {
 	WEAPON_GAME = -3, // team switching etc
@@ -56,6 +58,7 @@ public:
 	void FireWeapon();
 
 	void Die(int Killer, int Weapon);
+	void AddExp(int Weapon, int Amount = 1);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
@@ -86,10 +89,12 @@ public:
 	void HealthRegeneration();
 	void HandleCity();
 	void Booster();
+	void HandleTrainer();
 	void SetPosition(vec2 Pos);
 	void Freeze(int Seconds);
 	void Unfreeze();
 	void Transfer(int Value);
+	void AddGravAura();
 	bool Protected();
 	unsigned long long calcExp(int level);
 	//KlickFoots Water zeugs 
@@ -118,7 +123,8 @@ public:
 	bool m_IsHammerKilled;
 	bool m_OnGavityZone;
 	bool m_IgnoreGround;
-	float m_Gravity;
+	float m_GravityY;
+	float m_GravityX;
 	int m_Home;
 	int m_Invisible;
 	int m_Walls;
@@ -133,6 +139,9 @@ public:
 	int m_FreezeWeapon;
 	int m_Transfers;
 	int m_GunFreezeCooldown;
+	int m_ExternalHeal;
+	int m_LastHooked;
+	int m_LastTP;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
 	int64 m_LastBroadcast;
@@ -140,12 +149,14 @@ public:
 	int64 m_SpawnProtection;
 	vec2 m_HammerPos1;
 	vec2 m_HammerPos2;
+	vec2 m_PortalPos[2];
 	vec2 m_DesiredPos;
 	// Doors
 	int m_TriggerID;
 	int m_TriggerNR;
 	int64 m_LastSwitch;
 
+	CGravAura* m_GravAura;
 
 	// the player core for the physics
 	CCharacterCore m_Core;

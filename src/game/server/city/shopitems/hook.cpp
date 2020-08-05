@@ -16,6 +16,9 @@ CHook::CHook(CGameWorld* pGameWorld, int Owner, vec2 Pos, int Type)
 	for (int i = 0; i < 10; i++)
 		m_IDs[i] = Server()->SnapNewID();
 
+	for (int i = 0; i < 5; i++)
+		m_LastPos[i] = vec2(0, ((rand() % 64) - 32));
+
 	GameWorld()->InsertEntity(this);
 }
 
@@ -31,7 +34,7 @@ void CHook::Tick()
 {
 	CCharacter* pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if (!pOwner)
+	if (!pOwner || !pOwner->IsAlive())
 	{
 		Reset();
 		return;
@@ -40,7 +43,6 @@ void CHook::Tick()
 	if (!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if (!Click)
@@ -53,6 +55,12 @@ void CHook::Tick()
 	{
 	case 1:
 		pOwner->Buy("Endless Hook", &pOwner->GetPlayer()->m_AccData.m_EndlessHook, g_Config.m_EuHookEndless, Click, 1);
+		break;
+	case 2:
+		pOwner->Buy("Heal Hook", &pOwner->GetPlayer()->m_AccData.m_HealHook, g_Config.m_EuHookHeal, Click, 3);
+		break;
+	case 3:
+		pOwner->Buy("Boost Hook", &pOwner->GetPlayer()->m_AccData.m_BoostHook, g_Config.m_EuHookBoost, Click, 1);
 		break;
 	}
 }
@@ -115,5 +123,63 @@ void CHook::Snap(int SnappingClient)
 		pObj[3]->m_StartTick = Server()->Tick();
 		pObj[4]->m_StartTick = Server()->Tick();
 		pObj[5]->m_StartTick = Server()->Tick();
+	} else if (m_Type == 2) {
+		CNetObj_Pickup *pObj[5];
+		int SpawnBound = 64;
+
+		// this doesnt look rly nice :(
+		for (int i = 0; i < 5; i++) {
+
+			pObj[i] = static_cast<CNetObj_Pickup*>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+			if (!pObj[i])
+				return;
+			
+			if (!m_LastPos[i].y)
+				m_LastPos[i].x = ((rand() % SpawnBound) - SpawnBound/2);
+				
+			pObj[i]->m_X = (int)m_Pos.x + (int)m_LastPos[i].x;
+			pObj[i]->m_Y = (int)m_Pos.y - (int)m_LastPos[i].y;
+			pObj[i]->m_Type = 0;
+			pObj[i]->m_Subtype = 0;
+			m_LastPos[i].y += 2;
+
+			if (m_LastPos[i].y > SpawnBound)
+				m_LastPos[i].y = 0;
+		}
+	} else if (m_Type == 3) {
+		CNetObj_Laser *pObj[3];
+
+		for (int i = 0; i < 3; i++) {
+			pObj[i] = static_cast<CNetObj_Laser*>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
+
+			if (!pObj[i])
+				return;
+			
+			switch (i)
+			{
+			case 0:
+				pObj[i]->m_X = (int)m_Pos.x + 40;
+				pObj[i]->m_Y = (int)m_Pos.y;
+				pObj[i]->m_FromX = (int)m_Pos.x - 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			case 1:
+				pObj[i]->m_X = (int)m_Pos.x + 15;
+				pObj[i]->m_Y = (int)m_Pos.y + 25;
+				pObj[i]->m_FromX = (int)m_Pos.x + 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			case 2:
+				pObj[i]->m_X = (int)m_Pos.x + 15;
+				pObj[i]->m_Y = (int)m_Pos.y - 25;
+				pObj[i]->m_FromX = (int)m_Pos.x + 40;
+				pObj[i]->m_FromY = (int)m_Pos.y;
+				break;
+			default:
+				break;
+			}
+
+			pObj[i]->m_StartTick = Server()->Tick();
+		}
 	}
 }

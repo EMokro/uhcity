@@ -18,6 +18,8 @@
 #include <game/server/city/shopitems/allweapons.h>
 #include <game/server/city/shopitems/fastreload.h>
 #include <game/server/city/shopitems/noselfdmg.h>
+#include <game/server/city/shopitems/pushaura.h>
+#include <game/server/city/shopitems/pullaura.h>
 
 #include "gui.h"
 
@@ -34,14 +36,13 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	m_ItrFlag = true;
 	m_Group = 0;
 	m_Page = 0;
+
 	// sorted by itemgroups, starting with ITEM_HAMMMER
 	std::list<CEntity*> group;
 
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 1));
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 3));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 2));
-	group.push_back(new CRifle(GameWorld(), m_Owner, m_Pos, 3));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -79,13 +80,23 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	m_aShop.push_back(group);
 	group.clear();
 
-	group.push_back(new CInfAmmo(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CAllWeapons(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CFastReload(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CHealthRegen(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CNoSelfDMG(pGameWorld, m_Owner, m_Pos));
-	group.push_back(new CInfJumps(pGameWorld, m_Owner, m_Pos));
+	group.push_back(new CHammer(GameWorld(), m_Owner, m_Pos, 4));
+	group.push_back(new CInfAmmo(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CAllWeapons(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CFastReload(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CHealthRegen(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CNoSelfDMG(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CInfJumps(GameWorld(), m_Owner, m_Pos));
+	
+	group.push_back(new CPushAura(GameWorld(), m_Owner, m_Pos));
+	group.push_back(new CPullAura(GameWorld(), m_Owner, m_Pos));
+
+	m_aShop.push_back(group);
+	group.clear();
+
 	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 1));
+	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 2));
+	group.push_back(new CHook(GameWorld(), m_Owner, m_Pos, 3));
 
 	m_aShop.push_back(group);
 	group.clear();
@@ -181,7 +192,7 @@ void CGui::Menu()
 		}
 
 		int Size = next(m_aShop.begin(), m_Group)->size();
-		int ItemsLeft = Size - pOwner->m_ShopPage < 6 ? Size - pOwner->m_ShopPage : 6;
+		int VisibleItems = Size - pOwner->m_ShopPage < 6 ? Size - pOwner->m_ShopPage : 6;
 		int i = 1;
 
 
@@ -192,15 +203,19 @@ void CGui::Menu()
 			
 		list<CEntity*> Ents = *next(m_aShop.begin(), m_Group);
 
-		for(itE = next(Ents.begin(), pOwner->m_ShopPage); (itE != next(Ents.begin(), pOwner->m_ShopPage + ItemsLeft) && itE != Ents.end()); ++itE)
+		for(itE = next(Ents.begin(), pOwner->m_ShopPage); (itE != next(Ents.begin(), pOwner->m_ShopPage + VisibleItems) && itE != Ents.end()); ++itE)
 		{
 			CEntity *Ent = *itE;
 
+			if(!pOwner)
+				return;
+
 			Ent->m_Visible = true;
-			if (!(ItemsLeft % 2))
-				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/ItemsLeft) * -i))*250;
+			if (!(VisibleItems % 2))
+				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/VisibleItems) * -i))*250;
 			else
-				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/ItemsLeft) * -i - 0.5*pi))*250;
+				Ent->m_Pos = pOwner->m_Pos + normalize(GetDir((2*pi/VisibleItems) * -i - 0.5*pi))*250;
+
 			i++;
 		}
 		m_ItrFlag = true;

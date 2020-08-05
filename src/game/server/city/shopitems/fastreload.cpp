@@ -30,7 +30,7 @@ void CFastReload::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if(!pOwner)
+	if(!pOwner || !pOwner->IsAlive())
 	{
 		Reset();
 		return;
@@ -39,7 +39,6 @@ void CFastReload::Tick()
 	if(!m_Visible)
 		return;
 
-	char aBuf[128];
 	int Click = pOwner->MouseEvent(m_Pos);
 
 	if(!Click)
@@ -48,7 +47,7 @@ void CFastReload::Tick()
 		return;
 	}
 	
-	pOwner->Buy("Fast reload", &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 10);
+	pOwner->Buy("Fast reload", &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 1);
 }
 
 

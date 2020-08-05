@@ -113,14 +113,18 @@ public:
 		char m_RconPassword[32];
 
 		// basic
-		unsigned int m_Level;
-		unsigned int m_ExpPoints;
 		unsigned long long m_Money;
 		unsigned long long m_exp;
 		int m_Health;
 		int m_Armor;	
 		int m_Kills;
 		int m_HouseID;
+
+		// levels
+		unsigned int m_Level;
+		unsigned long long int m_ExpPoints;
+		unsigned int m_LvlWeapon[5];
+		unsigned int m_ExpWeapon[5];
 
 		// Rank
 		int m_Donor;
@@ -139,6 +143,7 @@ public:
 		int m_InfinityJumps;
 		int m_FastReload;
 		int m_NoSelfDMG;
+		int m_Portal;
 
 		// Weapons
 		int m_GrenadeSpread;
@@ -166,6 +171,11 @@ public:
 		int m_NinjaSwitch;
 
 		int m_EndlessHook;
+		int m_HealHook;
+		int m_BoostHook;
+
+		int m_PushAura;
+		int m_PullAura;
 	} m_AccData;
 
 	int m_RainbowColor;
@@ -173,12 +183,13 @@ public:
 	bool m_God;
 	bool m_Insta;
 	bool m_Afk;
+	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;
 	char m_aRank[64];
 	int m_ChatScore;
 			
-	//Klickfoots schei�
+	//Klickfoots scheiß
 	int m_ReleaseCarousel;
 	int m_Crown;
 
