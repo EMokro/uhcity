@@ -27,13 +27,13 @@ void CBuyHealth::Tick()
 {
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CCharacter *pUser = GameServer()->GetPlayerChar(i);
+		CCharacter *pOwner = GameServer()->GetPlayerChar(i);
 
-		if(!pUser)
+		if(!pOwner || !pOwner->IsAlive())
 			continue;
 
-		int Click = pUser->MouseEvent(m_Pos-vec2(50,50));
-		int Click1 = pUser->MouseEvent(m_Pos-vec2(-50,50));
+		int Click = pOwner->MouseEvent(m_Pos-vec2(50,50));
+		int Click1 = pOwner->MouseEvent(m_Pos-vec2(-50,50));
 
 		if(!Click && !Click1)
 		{
@@ -41,8 +41,8 @@ void CBuyHealth::Tick()
 			continue;
 		}
 	
-		pUser->Buy("Health", &pUser->GetPlayer()->m_AccData.m_Health, g_Config.m_EuHealth, Click, 500);
-		pUser->Buy("Armor", &pUser->GetPlayer()->m_AccData.m_Armor, g_Config.m_EuArmor, Click1, 500);
+		pOwner->Buy("Health", &pOwner->GetPlayer()->m_AccData.m_Health, g_Config.m_EuHealth, Click, 500);
+		pOwner->Buy("Armor", &pOwner->GetPlayer()->m_AccData.m_Armor, g_Config.m_EuArmor, Click1, 500);
 	}
 }
 

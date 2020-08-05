@@ -39,20 +39,6 @@ void CHammerKill::Tick()
 		{
 			vec2 TempPos = Victim->m_Pos + normalize(GetDir(pi/180 * (i+m_VictimTick))) * (m_VictimTick/3);
 			new CProjectile(GameWorld(), WEAPON_HAMMER,	m_Owner, TempPos, vec2(0, 0), 1, 1, 0, 0, -1, 0);
-
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(i == m_Victim || i == m_Owner)
-					continue;
-
-				CCharacter *pVictim = GameServer()->GetPlayerChar(i);
-
-				if(pVictim)
-				{
-					if(distance(pVictim->m_Pos, TempPos) < 20)
-						pVictim->Die(m_Owner, WEAPON_HAMMER);
-				}
-			}
 		}
 		
 		if((float)(m_VictimTick/3) < 28)

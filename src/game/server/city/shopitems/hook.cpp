@@ -34,7 +34,7 @@ void CHook::Tick()
 {
 	CCharacter* pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if (!pOwner)
+	if (!pOwner || !pOwner->IsAlive())
 	{
 		Reset();
 		return;

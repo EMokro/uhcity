@@ -245,7 +245,7 @@ void CAccount::Login(char *Username, char *Password)
 		if (user["items"]["special"].HasMember("pushaura"))
 			m_pPlayer->m_AccData.m_PushAura = user["items"]["special"]["pushaura"].GetInt();
 		if (user["items"]["special"].HasMember("pullaura"))
-			m_pPlayer->m_AccData.m_PushAura = user["items"]["special"]["pullaura"].GetInt();
+			m_pPlayer->m_AccData.m_PullAura = user["items"]["special"]["pullaura"].GetInt();
 	}
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());

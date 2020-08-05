@@ -21,21 +21,21 @@ void CVip::Tick()
 {
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-	CCharacter *pUser = GameServer()->GetPlayerChar(i);
+		CCharacter *pOwner = GameServer()->GetPlayerChar(i);
 
-	if(!pUser)
-		continue;
+		if(!pOwner || !pOwner->IsAlive())
+			continue;
 
-	int Click = pUser->MouseEvent(m_Pos);
+		int Click = pOwner->MouseEvent(m_Pos);
 
-	if(!Click)
-	{
-		//m_LastClick = 0;
-		continue;
+		if(!Click)
+		{
+			//m_LastClick = 0;
+			continue;
+		}
+		
+		pOwner->Buy("Vip", &pOwner->GetPlayer()->m_AccData.m_VIP, g_Config.m_EuVIP, Click, 1);
 	}
-	
-	pUser->Buy("Vip", &pUser->GetPlayer()->m_AccData.m_VIP, g_Config.m_EuVIP, Click, 1);
-}
 }
 
 
