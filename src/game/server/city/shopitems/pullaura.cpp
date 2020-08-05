@@ -67,6 +67,9 @@ void CPullAura::Snap(int SnappingClient)
     {
 		pObj[i] = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
 
+		if (!pObj[i])
+            continue;
+
         vec2 TempPos =	normalize(GetDir((pi/180) * (i * 360/MAX_PROJECTILS))) * ((((m_LifeTime - 3000) + m_StartPos[i]) % 80) + 80);
 
 		pObj[i]->m_X = m_Pos.x + TempPos.x;
