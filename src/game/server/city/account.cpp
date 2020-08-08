@@ -193,7 +193,7 @@ void CAccount::Login(char *Username, char *Password)
 		if (user["auth"].HasMember("vip"))
 			m_pPlayer->m_AccData.m_VIP = user["auth"]["vip"].GetInt();
 	}
-	if (user.HasMember("Donor"))
+	if (user.HasMember("donor"))
 		m_pPlayer->m_AccData.m_Donor = user["donor"].GetInt();
 	
 	if (user.HasMember("event")) {
@@ -397,11 +397,12 @@ void CAccount::Register(char *Username, char *Password)
 	writer.StartObject();
 	writer.Key("authlvl");
 	writer.Int(0);
-	writer.Key("donor");
-	writer.Int(m_pPlayer->m_AccData.m_Donor);
 	writer.Key("vip");
 	writer.Int(m_pPlayer->m_AccData.m_VIP);
 	writer.EndObject();
+
+	writer.Key("donor");
+	writer.Int(m_pPlayer->m_AccData.m_Donor);
 
 	writer.Key("event");
 	writer.StartObject();

@@ -184,12 +184,6 @@ public:
 	int m_HookTick;
 	int m_HookState;
 	int m_HookedPlayer;
-	bool m_Protected;
-	bool m_IsGrounded;
-	bool m_IgnoreGround;
-	bool m_EndlessHook;
-	bool m_DisablePlayerHook;
-	bool m_Afk;
 
 	int m_Jumped;
 
@@ -207,6 +201,18 @@ public:
 	void Read(const CNetObj_CharacterCore *pObjCore);
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
+
+	// city
+
+	bool CanCollide(int ID1, int ID2);
+
+	int m_ClientID;
+	bool m_Protected;
+	bool m_IsGrounded;
+	bool m_IgnoreGround;
+	bool m_EndlessHook;
+	bool m_DisablePlayerHook;
+	bool m_Afk;
 };
 
 #endif

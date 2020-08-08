@@ -396,6 +396,7 @@ void CGameContext::ConSetClientGravityY(IConsole::IResult* pResult, void* pUserD
 	}
 
 	pChar->m_GravityY = Amount;
+	pSelf->SendTuningParams(ID);
 	pSelf->SendChatTarget(ID, "Your gravity got changed");
 }
 
@@ -488,7 +489,9 @@ void CGameContext::ConSameIP(IConsole::IResult* pResult, void* pUserData)
 					pSelf->Server()->GetClientAddr(j, resAddr, NETADDR_MAXSTRSIZE);
 
 					if (!str_comp_nocase(checkAddr, resAddr)) {
-						str_format(aBuf, sizeof aBuf, "IP [%s]: ID [%d] [%d]", checkAddr, i, j);
+						str_format(aBuf, sizeof aBuf, "IP [%s]: ID [%d]%s [%d]%s", checkAddr,
+						i, !pSelf->m_apPlayers[i]->m_AccData.m_UserID ? "D" : "",
+						j, !pSelf->m_apPlayers[j]->m_AccData.m_UserID ? "D" : "");
 						pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 						counter++;
 					}
@@ -697,6 +700,14 @@ void CGameContext::ConEventTimer(IConsole::IResult* pResult, void* pUserData) {
 
 	str_format(aBuf, sizeof aBuf, "%d", pSelf->GameEvent()->m_Timer);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+}
+
+void CGameContext::ConSendFakeParams(IConsole::IResult* pResult, void* pUserData)
+{
+	CGameContext* pSelf = (CGameContext*)pUserData;
+	int Victim = pResult->GetVictim();
+
+	pSelf->SendTuningParams(Victim);
 }
 
 // Filesystem

@@ -691,17 +691,16 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "/disabledmg -- Disables damage on someone");
         pSelf->SendChatTarget(pP->GetCID(), "/enabledmg -- Enables damage on someone");
         pSelf->SendChatTarget(pP->GetCID(), "/transfer -- Drops money at your cursors position");
-        pSelf->SendChatTarget(pP->GetCID(), "/rainbow -- Rainbow skin");
         pSelf->SendChatTarget(pP->GetCID(), "/donor -- Infos about Donor");
         pSelf->SendChatTarget(pP->GetCID(), "/vip -- Infos about VIP");
         pSelf->SendChatTarget(pP->GetCID(), "/upgrcmds -- Get a list of all Upgrade commands");
+        pSelf->SendChatTarget(pP->GetCID(), "/instagib -- Play insta");
         pSelf->SendChatTarget(pP->GetCID(), "/cmdlist 1 -- see more commands");
     } else if (ID == 1) {
         pSelf->SendChatTarget(pP->GetCID(), "---------- COMMAND LIST ----------");
         pSelf->SendChatTarget(pP->GetCID(), "/setbounty -- Put a bounty on someone");
         pSelf->SendChatTarget(pP->GetCID(), "/checkbounty -- Check if a player has a bounty");
         pSelf->SendChatTarget(pP->GetCID(), "/bountylist -- Get a list of all bounties");
-        pSelf->SendChatTarget(pP->GetCID(), "/instagib -- Play insta");
         pSelf->SendChatTarget(pP->GetCID(), "/writestats -- Writes your weaponlevel down");
     } else {
         pSelf->SendChatTarget(pP->GetCID(), "We don't have so many commands :(");
@@ -763,12 +762,58 @@ void CGameContext::ConChatDonor(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "Donor costs 10€");
     pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone to donate");
     pSelf->SendChatTarget(pP->GetCID(), "Donor provides following features:");
+    pSelf->SendChatTarget(pP->GetCID(), "- x5 Money and Exp");
     pSelf->SendChatTarget(pP->GetCID(), "- The nice crown");
+    pSelf->SendChatTarget(pP->GetCID(), "- Rainbow");
+    pSelf->SendChatTarget(pP->GetCID(), "- Your own House");
     pSelf->SendChatTarget(pP->GetCID(), "- Home teleport");
     pSelf->SendChatTarget(pP->GetCID(), "- Save and load a position");
-    pSelf->SendChatTarget(pP->GetCID(), "- Exclusive 1000$ money tiles");
+    pSelf->SendChatTarget(pP->GetCID(), "- Exclusive 1000$ money tiles that give x6 money & exp");
     pSelf->SendChatTarget(pP->GetCID(), "Checkout /donorcmds for more information.");
 }
+
+void CGameContext::ConChatDonorCmds(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    
+    pSelf->SendChatTarget(pP->GetCID(), "---------- DONORCMDS ----------");
+    pSelf->SendChatTarget(pP->GetCID(), " /save -- Saves your position");
+    pSelf->SendChatTarget(pP->GetCID(), " /load -- Teleports you to the saved position");
+    pSelf->SendChatTarget(pP->GetCID(), " /rainbow -- Gives you rainbow colors");
+    pSelf->SendChatTarget(pP->GetCID(), " /crown -- The nice crown");
+    pSelf->SendChatTarget(pP->GetCID(), " /home -- Teleports you Into your Home");
+    pSelf->SendChatTarget(pP->GetCID(), "Checkout /donor to get more information.");
+}
+
+void CGameContext::ConChatIDs(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    int Page = !pResult->NumArguments() ? 0 : pResult->GetInteger(0);
+    int IDs[MAX_CLIENTS];
+    char aBuf[128];
+    int j = 0;
+    
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (pSelf->Server()->ClientIngame(i)) {
+            IDs[j] = i;
+            j++;
+        }
+    }
+
+    pSelf->SendChatTarget(pP->GetCID(), "---------- IDS ----------");
+    for  (int i = Page*6; i < Page*6 + 6 && i < j; i++) {
+        str_format(aBuf, sizeof aBuf, "[%d] %s", IDs[i], pSelf->Server()->ClientName(IDs[i]));
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+    }
+
+    if (Page*6+6 < j) {
+        str_format(aBuf, sizeof aBuf, "/ids %d", Page+1);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+    }
+}
+
 
 void CGameContext::ConChatVip(IConsole::IResult *pResult, void *pUserData)
 {
@@ -782,6 +827,7 @@ void CGameContext::ConChatVip(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- /down");
     pSelf->SendChatTarget(pP->GetCID(), "- /left");
     pSelf->SendChatTarget(pP->GetCID(), "- /right");
+    pSelf->SendChatTarget(pP->GetCID(), "- /tele");
 }
 
 void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
@@ -1101,7 +1147,7 @@ void CGameContext::ConChatBoostHook(IConsole::IResult *pResult, void *pUserData)
     if (!pChr->IsAlive() || pP->m_Insta || pChr->m_GameZone)
         return;
 
-    if (!pP->m_AccData.m_HealHook) {
+    if (!pP->m_AccData.m_BoostHook) {
         pSelf->SendChatTarget(pP->GetCID(), "Buy Boosthook first!");
         return;
     }

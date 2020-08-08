@@ -80,6 +80,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
 	m_Core.m_Pos = m_Pos;
+	m_Core.m_ClientID = m_pPlayer->GetCID();
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = &m_Core;
 
 	m_ReckoningTick = 0;
@@ -131,6 +132,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Home = 0;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
+	GameServer()->SendTuningParams(m_pPlayer->GetCID());
 	return true;
 }
 
@@ -917,7 +919,7 @@ void CCharacter::FireWeapon()
 		if(!m_pPlayer->m_Insta && !m_GameZone) {
 			float LvlSpeed = 1;
 			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
-				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/50) + 1;
+				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/30) + 1;
 
 			if (m_ActiveWeapon == WEAPON_GUN)
 				LvlSpeed /= 2;
@@ -1378,7 +1380,13 @@ void CCharacter::Booster()
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 					GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-					if (m_pPlayer->m_AccData.m_VIP) {
+					if (m_pPlayer->m_AccData.m_Donor) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x6\nExp: %sep | +%sep x6\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+
+						Money *= 6;
+						ExpPoints *= 6;
+					}
+					else if (m_pPlayer->m_AccData.m_VIP) {
 						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 						Money *= 3;
@@ -1535,8 +1543,6 @@ void CCharacter::Transfer(int Value)
 	}
 }
 
-
-
 void CCharacter::HandleCity()
 {
 	HealthRegeneration();
@@ -1544,14 +1550,20 @@ void CCharacter::HandleCity()
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
 	{
 		GameServer()->SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
-		m_Protected = true;
-		m_Core.m_Protected = true;
+		if (!m_Protected) {
+			m_Protected = true;
+			m_Core.m_Protected = true;
+			GameServer()->SendTuningParams(m_pPlayer->GetCID());
+		}
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_KILL) && m_Protected)
 	{
 		GameServer()->SendBroadcast("Protected zone left", m_pPlayer->GetCID());
-		m_Protected = false;
-		m_Core.m_Protected = false;
+		if (m_Protected) {
+			m_Protected = false;
+			m_Core.m_Protected = false;
+			GameServer()->SendTuningParams(m_pPlayer->GetCID());
+		}
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_START) && !m_GameZone)
@@ -1567,7 +1579,7 @@ void CCharacter::HandleCity()
 
 	if (m_InRace) {
 		char aBuf[128];
-		int diff = (clock() - m_RaceTime) / 10000;
+		int diff = (Server()->Tick() - m_RaceTime) * 2;
 
 		int min = diff / (100 * 60);
 		int sec = (diff / 100) % 60;
@@ -1584,13 +1596,13 @@ void CCharacter::HandleCity()
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_START)) {
 		m_GameZone = true;
 		m_InRace = true;
-		m_RaceTime = clock();
+		m_RaceTime = Server()->Tick();
 	} else if(GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_END) && m_InRace) {
 		m_GameZone = false;
 		m_InRace = false;
 
 		char aBuf[128];
-		int diff = (clock() - m_RaceTime) / 10000;
+		int diff = (Server()->Tick() - m_RaceTime) * 2;
 
 		int min = diff / (100 * 60);
 		int sec = (diff / 100) % 60;
@@ -1613,11 +1625,20 @@ void CCharacter::HandleCity()
 		GameServer()->SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
 	}
 
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY))
-		m_GravityY = 0.2;
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY)) {
+		if (m_GravityY != 0.2) {
+			m_GravityY = 0.2;
+			GameServer()->SendTuningParams(m_pPlayer->GetCID());
+		}
+	}
+		
 
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY))
-		m_GravityY = 0.5;
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY)) {
+		if (m_GravityY != 0.5) {
+			m_GravityY = 0.5;
+			GameServer()->SendTuningParams(m_pPlayer->GetCID());
+		}
+	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SINGLE_FREEZE))
 	{
@@ -1636,12 +1657,19 @@ void CCharacter::HandleCity()
 		if (!m_Core.m_Afk)
 			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 
-		m_Core.m_Afk = true;
-		GetPlayer()->m_Afk = true;
+		if (!GetPlayer()->m_Afk) {
+			m_Core.m_Afk = true;
+			GetPlayer()->m_Afk = true;
+			GameServer()->SendTuningParams(GetPlayer()->m_Afk);
+		}
+		
 		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());
 	} else {
-		m_Core.m_Afk = false;
-		GetPlayer()->m_Afk = false;
+		if (GetPlayer()->m_Afk) {
+			m_Core.m_Afk = false;
+			GetPlayer()->m_Afk = false;
+			GameServer()->SendTuningParams(GetPlayer()->m_Afk);
+		}
 	}
 
 	if (GameServer()->ValidID(m_Core.m_HookedPlayer)) { // hook items
@@ -1707,7 +1735,13 @@ void CCharacter::HandleCity()
 			GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 			GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-			if (m_pPlayer->m_AccData.m_VIP) {
+			if (m_pPlayer->m_AccData.m_Donor) {
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x5\nExp: %sep | +%sep x5\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+
+				Money *= 5;
+				ExpPoints *= 5;
+			}
+			else if (m_pPlayer->m_AccData.m_VIP) {
 				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 				Money *= 3;
@@ -1834,7 +1868,7 @@ void CCharacter::Tick()
 
 			if(m_FreezeWeapon == WEAPON_NINJA)
 			{
-				SetWeapon(WEAPON_NINJA);
+				SetWeapon(m_LastWeapon);
 				m_LastWeapon = m_ActiveWeapon?WEAPON_HAMMER:WEAPON_GUN;
 			}
 		}

@@ -44,6 +44,23 @@ bool CTuningParams::Get(const char *pName, float *pValue)
 	return false;
 }
 
+bool CCharacterCore::CanCollide(int ClientID1, int ClientID2)
+{
+	if (ClientID1 > MAX_CLIENTS || ClientID1 < 0)
+		return false;
+
+	if (ClientID2 > MAX_CLIENTS || ClientID2 < 0)
+		return false;
+
+	CCharacterCore *pChrCore1 = m_pWorld->m_apCharacters[ClientID1];
+	CCharacterCore *pChrCore2 = m_pWorld->m_apCharacters[ClientID2];
+
+	if (!pChrCore1 || !pChrCore2)
+		return false;
+
+	return (!pChrCore1->m_Afk && !pChrCore2->m_Afk) && (!pChrCore1->m_Protected && !pChrCore2->m_Protected);
+}
+
 float HermiteBasis1(float v)
 {
 	return 2*v*v*v - 3*v*v+1;
@@ -220,7 +237,7 @@ void CCharacterCore::Tick(bool UseInput)
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[i];
-				if(!pCharCore || pCharCore == this)
+				if(!pCharCore || pCharCore == this || !CanCollide(i, m_ClientID))
 					continue;
 
 				vec2 ClosestPoint = closest_point_on_line(m_HookPos, NewPos, pCharCore->m_Pos);
@@ -328,7 +345,8 @@ void CCharacterCore::Tick(bool UseInput)
 			// handle player <-> player collision
 			float Distance = distance(m_Pos, pCharCore->m_Pos);
 			vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
-			if(Distance < PhysSize*1.25f && Distance > 0.0f)
+
+			if (CanCollide(i, m_ClientID) && Distance < PhysSize*1.25f && Distance > 0.0f)
 			{
 				float a = (PhysSize*1.45f - Distance);
 				float Velocity = 0.5f;
@@ -345,8 +363,9 @@ void CCharacterCore::Tick(bool UseInput)
 			// handle hook influence
 			if(m_HookedPlayer == i)
 			{
-			if(pCharCore->m_Protected || pCharCore->m_Afk)
-			return;
+				// if(CanCollide(i, m_ClientID))
+				// 	return;
+
 				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
 				{
 					float Accel = m_pWorld->m_Tuning.m_HookDragAccel * (Distance/m_pWorld->m_Tuning.m_HookLength);
@@ -380,7 +399,7 @@ void CCharacterCore::Move()
 
 	m_Vel.x = m_Vel.x*(1.0f/RampValue);
 
-	if(m_pWorld && m_pWorld->m_Tuning.m_PlayerCollision)
+	if(m_pWorld && m_pWorld->m_Tuning.m_PlayerCollision && (!m_Afk && !m_Protected))
 	{
 		// check player collision
 		float Distance = distance(m_Pos, NewPos);
@@ -395,6 +414,10 @@ void CCharacterCore::Move()
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[p];
 				if(!pCharCore || pCharCore == this)
 					continue;
+
+				// if(!CanCollide(i, m_ClientID))
+				// 	continue;
+
 				float D = distance(Pos, pCharCore->m_Pos);
 				if(D < 28.0f && D > 0.0f)
 				{

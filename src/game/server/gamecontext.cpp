@@ -381,7 +381,6 @@ void CGameContext::CheckPureTuning()
 		if(mem_comp(&p, &m_Tuning, sizeof(p)) != 0)
 		{
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "resetting tuning due to pure server");
-			m_Tuning = p;
 		}
 	}
 }
@@ -391,9 +390,24 @@ void CGameContext::SendTuningParams(int ClientID)
 	CheckPureTuning();
 
 	CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
-	int *pParams = (int *)&m_Tuning;
-	for(unsigned i = 0; i < sizeof(m_Tuning)/sizeof(int); i++)
+	CCharacter* pChr = 0x00;
+	CTuningParams FakeParams = m_Tuning;
+
+	if (ValidID(ClientID)) {
+		if (Server()->ClientIngame(ClientID))
+			pChr = m_apPlayers[ClientID]->GetCharacter();
+	}
+
+	if (pChr) {
+		FakeParams.m_Gravity = pChr->m_GravityY != 0.5 ? pChr->m_GravityY : m_Tuning.m_Gravity;
+		FakeParams.m_PlayerCollision = (pChr->m_Core.m_Protected || pChr->m_Core.m_Afk) ? 0 : m_Tuning.m_PlayerCollision;
+	}
+
+	int *pParams = (int *)&FakeParams;
+
+	for(unsigned i = 0; i < sizeof(FakeParams)/sizeof(int); i++)
 		Msg.AddInt(pParams[i]);
+
 	Server()->SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 

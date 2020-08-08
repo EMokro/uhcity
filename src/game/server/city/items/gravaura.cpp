@@ -50,7 +50,7 @@ void CGravAura::Tick()
         if (!pTarget)
             continue;
 
-        if (pTarget->GetPlayer()->m_Insta || pTarget->m_GameZone || pTarget->GetPlayer()->m_God)
+        if (pTarget->GetPlayer()->m_Insta || pTarget->m_GameZone || pTarget->GetPlayer()->m_God || pTarget->Protected())
             return;
 
         vec2 Dist = pTarget->m_Core.m_Pos - pOwner->m_Core.m_Pos;
@@ -65,7 +65,7 @@ void CGravAura::Tick()
 
 void CGravAura::Snap(int SnappingClient)
 {
-    CCharacter* pChr = GameServer()->GetPlayerChar(m_Owner);    
+    CCharacter* pChr = GameServer()->GetPlayerChar(m_Owner);
 
     if (!pChr)
         return;

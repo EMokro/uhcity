@@ -38,12 +38,14 @@ CONSOLE_COMMAND("me", "", CFGFLAG_CHAT, ConChatMe, this, "")
 CONSOLE_COMMAND("cmdlist", "?i", CFGFLAG_CHAT, ConChatCmdlist, this, "")
 CONSOLE_COMMAND("help", "", CFGFLAG_CHAT, ConChatHelp, this, "")
 CONSOLE_COMMAND("donor", "", CFGFLAG_CHAT, ConChatDonor, this, "")
+CONSOLE_COMMAND("donorcmds", "", CFGFLAG_CHAT, ConChatDonorCmds, this, "")
 CONSOLE_COMMAND("vip", "", CFGFLAG_CHAT, ConChatVip, this, "")
 CONSOLE_COMMAND("upgrcmds", "?s", CFGFLAG_CHAT, ConChatUpgrCmds, this, "")
 CONSOLE_COMMAND("rules", "?s", CFGFLAG_CHAT, ConChatRules, this, "")
 CONSOLE_COMMAND("shop", "?s", CFGFLAG_CHAT, ConChatShop, this, "")
 CONSOLE_COMMAND("coach", "", CFGFLAG_CHAT, ConChatCoach, this, "")
 CONSOLE_COMMAND("writestats", "", CFGFLAG_CHAT, ConChatWriteStats, this, "")
+CONSOLE_COMMAND("ids", "?i", CFGFLAG_CHAT, ConChatIDs, this, "")
 
 
 // items

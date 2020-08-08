@@ -204,6 +204,7 @@ public:
 		static void ConMuteIP(IConsole::IResult *pResult, void *pUserData);
 		static void ConUnmute(IConsole::IResult *pResult, void *pUserData);
 		static void ConMutes(IConsole::IResult *pResult, void *pUserData);
+		static void ConSendFakeParams(IConsole::IResult *pResult, void *pUserData);
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
 
@@ -238,12 +239,14 @@ public:
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDonor(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatDonorCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatVip(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatUpgrCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatRules(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatShop(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCoach(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatIDs(IConsole::IResult* pResult, void* pUserData);
 
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);

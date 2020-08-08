@@ -45,6 +45,9 @@ CONSOLE_COMMAND("unfreeze", "v", CFGFLAG_SERVER, ConUnFreeze, this, "unfreeze id
 CONSOLE_COMMAND("freeze", "vi", CFGFLAG_SERVER, ConFreeze, this, "freeze id seconds")
 CONSOLE_COMMAND("unjail", "v", CFGFLAG_SERVER, ConUnjail, this, "release v from jail")
 
+CONSOLE_COMMAND("sendfake", "v", CFGFLAG_SERVER, ConSendFakeParams, this, "")
+
+
 // filesystem
 CONSOLE_COMMAND("fs_backup_accounts", "", CFGFLAG_SERVER, ConFsBackupAccounts, this, "Makes a backup")
 
