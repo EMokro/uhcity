@@ -33,7 +33,6 @@ void CGameContext::ConAuth(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	int Level = pResult->GetInteger(0);
 	int ID = pResult->GetVictim();
-	char aBuf[200];
 
 	CCharacter* pChr = pSelf->GetPlayerChar(ID);
 	if (pChr)
@@ -196,8 +195,7 @@ void CGameContext::ConSetLvl(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	int ID = pResult->GetVictim();
-	int Weapon = pResult->GetInteger(0);
-	int Amount = pResult->GetInteger(1);
+	int Amount = pResult->GetInteger(0);
 	char aBuf[200];
 
 	if(Amount > 800 || Amount < 1)
@@ -365,6 +363,7 @@ void CGameContext::ConKill(IConsole::IResult* pResult, void* pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
+
 	CPlayer* pP = pSelf->m_apPlayers[ID];
 
 	if (pP) {
@@ -511,7 +510,6 @@ void CGameContext::ConMute(IConsole::IResult *pResult, void *pUserData)
 	int Victim = pResult->GetVictim();
 	int Amount = clamp(pResult->GetInteger(0), 1, 86400);
 	const char *pReason = pResult->NumArguments() > 2 ? pResult->GetString(1) : "";
-	char aBuf[128];
 
 	if (Victim < 0 || Victim > MAX_CLIENTS || !pSelf->m_apPlayers[Victim])
 	{

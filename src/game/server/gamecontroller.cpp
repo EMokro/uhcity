@@ -400,9 +400,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	}
 	else
 	{
-		if(IsTeamplay() && pVictim->GetPlayer()->GetTeam() == pKiller->GetTeam())
-			pKiller->m_Score; // teamkill
-		else
+		if(!(IsTeamplay() && pVictim->GetPlayer()->GetTeam() == pKiller->GetTeam()))
 		{
 			if(!pKiller->m_Insta)
 			{
@@ -465,7 +463,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 						str_format(aBuf, sizeof(aBuf), "%s is unstoppable with 10 kills", Server()->ClientName(pKiller->GetCID()));
 					else if(pKiller->GetCharacter()->m_InstaKills >= 15 && pKiller->GetCharacter()->m_InstaKills <= 45)
 						str_format(aBuf, sizeof(aBuf), "%s is dominating with %i kills", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->m_InstaKills);
-					else if(pKiller->m_AccData.m_Money,pKiller->GetCharacter()->m_InstaKills == 50)
+					else if(pKiller->GetCharacter()->m_InstaKills == 50)
 						str_format(aBuf, sizeof(aBuf), "%s is Godlike! (50 kills)", Server()->ClientName(pKiller->GetCID()));
 
 					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);

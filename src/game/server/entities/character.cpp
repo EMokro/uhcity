@@ -8,11 +8,11 @@
 #include "character.h"
 #include "laser.h"
 #include "projectile.h"
-#include "game/server/city/plasma.h"
-#include "game/server/city/hammerkill.h"
+#include "game/server/city/items/plasma.h"
+#include "game/server/city/items/hammerkill.h"
 #include "game/server/city/wall.h"
 #include "game/server/city/gui.h"
-#include "game/server/city/crown.h"
+#include "game/server/city/items/crown.h"
 #include "game/server/city/healstate.h"
 #include "game/server/city/items/gravaura.h"
 #include "game/server/city/transfer.h"
@@ -271,14 +271,14 @@ void CCharacter::Move(int dir)
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_FREEZE))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID()))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID())
-		|| GameServer()->Collision()->IsTile(movePos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor
-		|| GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor))
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor)
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor)))
 		return;
 
 	m_Core.m_Pos = movePos;
 }
 
-void CCharacter::Buy(const char *Name, int *Upgrade, int Price, int Click, int Max)
+void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, int Click, int Max)
 {
 	char aBuf[128];
 	char numBuf[2][16];
@@ -1361,7 +1361,7 @@ void CCharacter::Booster()
 	
 				if(Money && ExpPoints)
 				{
-					int NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
+					long long unsigned NeededExp = calcExp(m_pPlayer->m_AccData.m_Level);
 
 					double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 					int pos = barWidth * progress;
@@ -1432,7 +1432,7 @@ void CCharacter::Booster()
 		m_LifeCost = (m_ArmorCost+m_HealthCost)*50;
 		if(m_LifeCost > 0)
 		{
-				if(GetPlayer()->m_AccData.m_Money >= m_LifeCost)
+				if(GetPlayer()->m_AccData.m_Money >= (long long unsigned)m_LifeCost)
 				{
 					m_Armor += m_NeedArmor;
 					m_Health += m_NeedHealth;
@@ -1497,7 +1497,7 @@ void CCharacter::Transfer(int Value)
 			
 		return;
 	}
-	else if(m_pPlayer->m_AccData.m_Money < Value)
+	else if(m_pPlayer->m_AccData.m_Money < (long long unsigned)Value)
 	{
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not enough money.");
 		return;
@@ -1586,9 +1586,9 @@ void CCharacter::HandleCity()
 		int mili = diff % 100;
 		
 		if (!min)
-			str_format(aBuf, sizeof aBuf, "%d.%d",sec, mili);
+			str_format(aBuf, sizeof aBuf, "%d.%d seconds", sec, mili);
 		else 
-			str_format(aBuf, sizeof aBuf, "%d:%d.%d", min, sec, mili);
+			str_format(aBuf, sizeof aBuf, "%d : %d.%d sec", min, sec, mili);
 
 		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
@@ -1600,6 +1600,7 @@ void CCharacter::HandleCity()
 	} else if(GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_END) && m_InRace) {
 		m_GameZone = false;
 		m_InRace = false;
+		char numBuf[16];
 
 		char aBuf[128];
 		int diff = (Server()->Tick() - m_RaceTime) * 2;
@@ -1609,11 +1610,24 @@ void CCharacter::HandleCity()
 		int mili = diff % 100;
 		
 		if (!min)
-			str_format(aBuf, sizeof aBuf, "%s completed the race in %d.%d", Server()->ClientName(m_pPlayer->GetCID()), sec, mili);
+			str_format(aBuf, sizeof aBuf, "%s completed the race in %d.%d seconds", Server()->ClientName(m_pPlayer->GetCID()), sec, mili);
 		else 
-			str_format(aBuf, sizeof aBuf, "%s completed the race in %d:%d.%d", Server()->ClientName(m_pPlayer->GetCID()), min, sec, mili);
+			str_format(aBuf, sizeof aBuf, "%s completed the race in %d minutes and %d.%d seconds", Server()->ClientName(m_pPlayer->GetCID()), min, sec, mili);
+
+		int Reward = 500000 - diff*50;
+		m_pPlayer->m_AccData.m_Money += Reward;
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
+
+		if (Reward > 0) {
+			GameServer()->FormatInt(Reward, numBuf);
+			str_format(aBuf, sizeof aBuf, "You got a Reward of %s$", numBuf);
+		} else {
+			GameServer()->FormatInt(-Reward, numBuf);
+			str_format(aBuf, sizeof aBuf, "You got a Reward of -%s$", numBuf);
+		}
+		
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 	}
 
 	if(m_ActiveWeapon != WEAPON_RIFLE && m_pPlayer->m_Insta)
@@ -1996,7 +2010,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
-	if(Weapon >= 0 && (Protected() && !pKiller->m_JailRifle || m_pPlayer->m_God && !pKiller->m_JailRifle))
+	if(Weapon >= 0 && ((Protected() && !pKiller->m_JailRifle) || (m_pPlayer->m_God && !pKiller->m_JailRifle)))
 		return;
 
 	if (Killer != m_pPlayer->GetCID())

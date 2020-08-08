@@ -3,7 +3,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "projectile.h"
-#include "game/server/city/plasma.h"
+#include "game/server/city/items/plasma.h"
 
 
 CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
