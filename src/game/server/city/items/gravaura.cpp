@@ -11,6 +11,7 @@ CGravAura::CGravAura(CGameWorld *pGameWorld, int Owner, int Mode)
 	m_Owner = Owner;
     m_Mode = Mode;
     m_LifeTime = 3000;
+    m_StartRadius = 48;
 
 	for(int i = 0; i < MAX_PROJECTILS; i++) {
         m_IDs[i] = Server()->SnapNewID();

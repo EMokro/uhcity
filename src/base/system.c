@@ -1778,7 +1778,14 @@ char str_uppercase(char c)
 }
 
 int str_toint(const char *str) { return atoi(str); }
-long long str_toll(const char *str) { return atoll(str); }
+long long str_toll(const char *str)
+{ 
+#if defined(CONF_FAMILY_WINDOWS)
+	return atol(str);
+#else
+	return atoll(str); 
+#endif
+}
 float str_tofloat(const char *str) { return atof(str); }
 
 

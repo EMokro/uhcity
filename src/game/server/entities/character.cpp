@@ -2023,7 +2023,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
 	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
-		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
+		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 
