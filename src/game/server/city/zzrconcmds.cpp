@@ -387,14 +387,14 @@ void CGameContext::ConSetClientGravityY(IConsole::IResult* pResult, void* pUserD
 		return;
 	}
 
-	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
+	CCharacter *pChr = pSelf->m_apPlayers[ID]->GetCharacter();
 
-	if (!pChar) {
+	if (!pChr) {
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player not available");
 		return;
 	}
 
-	pChar->m_GravityY = Amount;
+	pChr->m_GravityY = Amount;
 	pSelf->SendTuningParams(ID);
 	pSelf->SendChatTarget(ID, "Your gravity got changed");
 }
@@ -412,14 +412,14 @@ void CGameContext::ConSetClientGravityX(IConsole::IResult* pResult, void* pUserD
 		return;
 	}
 
-	CCharacter *pChar = pSelf->m_apPlayers[ID]->GetCharacter();
+	CCharacter *pChr = pSelf->m_apPlayers[ID]->GetCharacter();
 
-	if (!pChar) {
+	if (!pChr) {
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "Player not available");
 		return;
 	}
 
-	pChar->m_GravityX = Amount;
+	pChr->m_GravityX = Amount;
 	pSelf->SendChatTarget(ID, "Your gravity got changed");
 }
 
@@ -430,19 +430,19 @@ void CGameContext::ConFreeze(IConsole::IResult* pResult, void* pUserData)
 	int ID = pResult->GetVictim();
 	char aBuf[128];
 
-	if (ID < 0 || ID > MAX_CLIENTS) {
+	if (!pSelf->ValidID(ID)) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
-	CPlayer* pP = pSelf->m_apPlayers[ID];
+	CCharacter* pChr = pSelf->m_apPlayers[ID]->GetCharacter();
 
-	if (pP) {
-		pP->GetCharacter()->Freeze(Amount * 50);
+	if (pChr) {
+		pChr->Freeze(Amount * 50);
 
 		str_format(aBuf, sizeof aBuf, "You got freezed for %d seconds by console", Amount);
-		pP->GetCharacter()->GameServer()->SendChatTarget(ID, aBuf);
+		pChr->GameServer()->SendChatTarget(ID, aBuf);
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
@@ -454,17 +454,17 @@ void CGameContext::ConUnFreeze(IConsole::IResult* pResult, void* pUserData)
 	int ID = pResult->GetVictim();
 	char aBuf[128];
 
-	if (ID < 0 || ID > MAX_CLIENTS) {
+	if (pSelf->ValidID(ID)) {
 		str_format(aBuf, sizeof aBuf, "%d ist invalid", ID);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		return;
 	}
 
-	CPlayer* pP = pSelf->m_apPlayers[ID];
+	CCharacter* pChr = pSelf->m_apPlayers[ID]->GetCharacter();
 
-	if (pP) {
-		pP->GetCharacter()->Unfreeze();
-		pP->GetCharacter()->GameServer()->SendChatTarget(ID, "You were thawed by console");
+	if (pChr) {
+		pChr->Unfreeze();
+		pChr->GameServer()->SendChatTarget(ID, "You were thawed by console");
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", "No such player");
