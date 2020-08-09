@@ -21,8 +21,10 @@ void CPacker::AddInt(int i)
 	// make sure that we have space enough
 	if(m_pEnd - m_pCurrent < 6)
 	{
-		dbg_break();
+		dbg_msg("ERROR", "AddInt() couldn't pack (m_pEnd - m_pCurrent < 6)");
+		// dbg_break();
 		m_Error = 1;
+		return; // cuz dbg_break() caused crashes
 	}
 	else
 		m_pCurrent = CVariableInt::Pack(m_pCurrent, i);
