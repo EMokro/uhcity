@@ -270,9 +270,9 @@ void CCharacter::Move(int dir)
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_DEATH))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_FREEZE))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_POLICE) && !Server()->IsAuthed(m_pPlayer->GetCID()))
-		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID())
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_ADMIN) && !Server()->IsAdmin(m_pPlayer->GetCID()))
 		|| (GameServer()->Collision()->IsTile(movePos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor)
-		|| (GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor)))
+		|| (GameServer()->Collision()->IsTile(movePos, TILE_MONEY_DONOR) && !m_pPlayer->m_AccData.m_Donor))
 		return;
 
 	m_Core.m_Pos = movePos;
@@ -1830,10 +1830,15 @@ void CCharacter::Tick()
 	if(!m_Frozen && !m_pPlayer->m_Insta && !m_GameZone && !m_Water && !m_SingleWater)
 	{
 		if(m_pPlayer->m_AccData.m_InfinityJumps == 2 && m_pPlayer->m_AciveUpgrade[ITEM_JUMP] == UPGRADE_FLY) {
-			if (m_Input.m_Jump)
+			if (m_Input.m_Jump && m_GravityY != -0.3) {
 				m_GravityY = -0.3;
-			else
+				GameServer()->SendTuningParams(m_pPlayer->GetCID());
+			}
+			else if (!m_Input.m_Jump && m_GravityY < 0) {
+				
 				m_GravityY = 0.5;
+				GameServer()->SendTuningParams(m_pPlayer->GetCID());
+			}
 		}
 		else if(m_pPlayer->m_AccData.m_InfinityJumps >= 1)
 			m_Core.m_Jumped &= ~2;
