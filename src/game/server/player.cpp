@@ -332,15 +332,17 @@ void CPlayer::KillCharacter(int Weapon)
 }
 
 void CPlayer::SendAfk() {
+	CCharacter *pChr = GetCharacter();
 
-	CCharacter *pChar = GetCharacter();
-
-	if (!pChar)
+	if (!pChr)
 		return;
 
-	m_Afk = true;
-	pChar->m_Core.m_Afk = true;
-
+	if (!m_Afk) {
+		m_Afk = true;
+		pChr->m_Core.m_Afk = true;
+		GameServer()->SendTuningParams(m_ClientID);
+	}
+	
 	KillCharacter(-3);
 }
 
