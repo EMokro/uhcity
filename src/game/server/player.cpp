@@ -339,7 +339,6 @@ void CPlayer::SendAfk() {
 
 	if (!m_Afk) {
 		m_Afk = true;
-		pChr->m_Core.m_Afk = true;
 		GameServer()->SendTuningParams(m_ClientID);
 	}
 	

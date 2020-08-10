@@ -81,6 +81,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
 	m_Core.m_Pos = m_Pos;
 	m_Core.m_ClientID = m_pPlayer->GetCID();
+	m_Core.m_Afk = GetPlayer()->m_Afk;
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = &m_Core;
 
 	m_ReckoningTick = 0;
@@ -1669,12 +1670,12 @@ void CCharacter::HandleCity()
 
 	if (GameServer()->Collision()->IsTile(m_Pos, ENTITY_AFK + ENTITY_OFFSET)) {
 		if (!m_Core.m_Afk)
-			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
+			
 
 		if (!GetPlayer()->m_Afk) {
-			m_Core.m_Afk = true;
 			GetPlayer()->m_Afk = true;
-			GameServer()->SendTuningParams(GetPlayer()->m_Afk);
+			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
+			GameServer()->SendTuningParams(GetPlayer()->GetCID());
 		}
 		
 		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());

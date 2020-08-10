@@ -363,8 +363,8 @@ void CCharacterCore::Tick(bool UseInput)
 			// handle hook influence
 			if(m_HookedPlayer == i)
 			{
-				// if(CanCollide(i, m_ClientID))
-				// 	return;
+				if(!CanCollide(i, m_ClientID))
+					return;
 
 				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
 				{
