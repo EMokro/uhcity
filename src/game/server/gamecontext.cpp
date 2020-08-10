@@ -46,6 +46,7 @@ void CGameContext::Construct(int Resetting)
 
 	m_pFilesys = new CFileSys(this);
 	m_pGameEvent = new CGameEvent(this);
+	m_pMoneyCollector = new CMoneyCollector(this);
 }
 
 CGameContext::CGameContext(int Resetting)

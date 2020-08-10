@@ -1397,6 +1397,7 @@ void CCharacter::Booster()
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+					GameServer()->MoneyCollector()->m_Money += Money * 0.04;
 
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
@@ -1577,6 +1578,16 @@ void CCharacter::HandleCity()
 		m_GameZone = false;
 	}
 
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_MONEYCOLLECTOR)) {
+		char aBuf[256], numBuf[2][32];
+		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Price, numBuf[0]);
+		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Money, numBuf[1]);
+		str_format(aBuf, sizeof aBuf, "~ Money Collector ~\nHolder: %s\nPrice: %s$\nPot: %s$\n/mchelp",
+			GameServer()->MoneyCollector()->m_aHolderName,
+			numBuf[0], numBuf[1]);
+		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+	}
+
 	if (m_InRace) {
 		char aBuf[128];
 		int diff = (Server()->Tick() - m_RaceTime) * 2;
@@ -1616,6 +1627,9 @@ void CCharacter::HandleCity()
 
 		int Reward = 500000 - diff*50;
 		m_pPlayer->m_AccData.m_Money += Reward;
+
+		if (Reward > 0)
+			GameServer()->MoneyCollector()->m_Money += Reward * 0.04;
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 
@@ -1766,6 +1780,7 @@ void CCharacter::HandleCity()
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+			GameServer()->MoneyCollector()->m_Money += Money * 0.04;
 
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 

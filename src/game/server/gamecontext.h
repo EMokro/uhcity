@@ -16,6 +16,7 @@
 #include "player.h"
 #include "game/server/city/filesys.h"
 #include "game/server/city/gameevent.h"
+#include "game/server/city/moneycollector.h"
 #include "game/server/city/items/portal.h"
 
 /*
@@ -44,6 +45,7 @@ class CGameContext : public IGameServer
 	IServer *m_pServer;
 	class IConsole *m_pConsole;
 	class CFileSys *m_pFilesys;
+	class CMoneyCollector *m_pMoneyCollector;
 	class CGameEvent *m_pGameEvent;
 	CLayers m_Layers;
 	CCollision m_Collision;
@@ -75,6 +77,7 @@ public:
 	class IConsole *Console() { return m_pConsole; }
 	CFileSys *Filesystem() { return m_pFilesys; }
 	CGameEvent *GameEvent() { return m_pGameEvent; }
+	CMoneyCollector *MoneyCollector() { return m_pMoneyCollector; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
 
@@ -234,6 +237,9 @@ public:
 		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatSetbounty(IConsole::IResult* pResult, void* pUserData);
+
+		static void ConChatMCBuy(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatMCCollect(IConsole::IResult* pResult, void* pUserData);
 
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
