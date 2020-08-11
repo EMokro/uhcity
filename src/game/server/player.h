@@ -195,6 +195,8 @@ public:
 
 	class CAccount *m_pAccount;//(CPlayer *m_Player, CGameContext *gameserver);
 
+	void FakeSnap(int SnappingClient);
+
 private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;

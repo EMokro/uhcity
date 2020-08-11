@@ -11,6 +11,7 @@ CPushAura::CPushAura(CGameWorld *pGameWorld, int Owner, vec2 Pos)
 	m_Owner = Owner;
     m_Pos = Pos;
     m_LifeTime = 3000;
+	m_StartRadius = 48;
 
 	for(int i = 0; i < MAX_PROJECTILS; i++) {
         m_IDs[i] = Server()->SnapNewID();
