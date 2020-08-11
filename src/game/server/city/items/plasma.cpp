@@ -80,7 +80,6 @@ void CPlasma::RiflePlasma()
 	m_LifeSpan--;
 
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	float d = distance(m_Pos, m_Pos2) / 3;
 	if(!OwnerChar/* || GameServer()->Collision()->IntersectLine(m_Pos+normalize(m_Pos2-m_Pos)*d, m_Pos2+normalize(m_Pos-m_Pos2)*d, 0x0, 0x0)*/ || !m_LifeSpan)
 	{
 		Reset();
@@ -208,7 +207,7 @@ void CPlasma::GetPath()
 		}
 	}
 
-	int FirstNode;
+	int FirstNode = 0;
 	for(int i = m_Nodes; i >= 0; i--)
 	{
 		if(!GameServer()->Collision()->IntersectLine(TempPos[i], m_Pos, 0x0, 0x0) && (m_Pos.x || m_Pos.y))

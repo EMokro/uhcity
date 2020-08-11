@@ -56,7 +56,6 @@ void CFileSys::CreateLoginLog(CPlayer *Player) {
 
 void CFileSys::CreateDebugLog(int Level, const char *pFrom, const char *pStr) {
     char nameBuf[256];
-    char aBuf[256];
     time_t now = time(NULL);
     tm tm = *localtime(&now);
     FILE *File;

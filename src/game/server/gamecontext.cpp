@@ -1741,7 +1741,7 @@ void CGameContext::OnConsoleInit()
 	#define CONSOLE_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
 	#include "game/server/city/chatcmds.h"
 	#define CONSOLE_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
-	#include "game/server/city/zzrconcmds.h"
+	#include "game/server/city/rconcmds.h"
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)

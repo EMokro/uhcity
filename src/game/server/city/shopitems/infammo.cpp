@@ -87,6 +87,4 @@ void CInfAmmo::Snap(int SnappingClient)
 		pProj[i]->m_Type = i+1;
 
 	}
-
-	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);	
 }

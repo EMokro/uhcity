@@ -42,7 +42,6 @@ CCollision::~CCollision()
 void CCollision::Init(class CLayers *pLayers)
 {
 	Dest();
-	char aBuf[128];
 	m_pLayers = pLayers;
 	m_Width = m_pLayers->GameLayer()->m_Width;
 	m_Height = m_pLayers->GameLayer()->m_Height;

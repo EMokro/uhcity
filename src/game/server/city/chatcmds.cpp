@@ -597,8 +597,9 @@ void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (Amount > 0) {
-        pSelf->SendChatTarget(pP->GetCID(), "Ts ts ts...");
+    if (Amount < 1000) {
+        pSelf->SendChatTarget(pP->GetCID(), "Put a bounty of at least 1.000$");
+        return;
     }
 
     CPlayer *pTarget = pSelf->m_apPlayers[Victim];
@@ -608,7 +609,7 @@ void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (Amount > pP->m_AccData.m_Money) {
+    if ((long long unsigned)Amount > pP->m_AccData.m_Money) {
         pSelf->SendChatTarget(pP->GetCID(), "Not enough money");
         return;
     }
