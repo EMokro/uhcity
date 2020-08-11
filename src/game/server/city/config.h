@@ -29,5 +29,7 @@ MACRO_CONFIG_INT(SvGravAuraRadius, sv_gravaura_radius, 160, 1, 1000000, CFGFLAG_
 MACRO_CONFIG_INT(SvGravAuraForce, sv_gravaura_force, 2, 1, 1000000, CFGFLAG_SERVER, "Gravity aura force strength")
 MACRO_CONFIG_INT(SvGravAuraCooldown, sv_gravaura_cooldown, 120, 0, 1000000, CFGFLAG_SERVER, "Gravity aura Cooldown in s")
 
+// - 64 player
+MACRO_CONFIG_INT(SvMapUpdateRate, sv_mapupdaterate, 5, 1, 100, CFGFLAG_SERVER, "How often the ClientID's are swapped for a player")
 
 #endif

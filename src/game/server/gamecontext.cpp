@@ -3,9 +3,11 @@
 #include <new>
 #include <base/math.h>
 #include <string.h>
+
 #include <engine/shared/config.h>
 #include <engine/map.h>
 #include <engine/console.h>
+
 #include "gamecontext.h"
 #include "game/server/city/filesys.h"
 #include <game/version.h>
@@ -349,6 +351,16 @@ void CGameContext::SendVoteSet(int ClientID)
 
 void CGameContext::SendVoteStatus(int ClientID, int Total, int Yes, int No)
 {
+	if (ClientID < 0 || ClientID >= MAX_CLIENTS) // invalid now
+		return;
+
+	if (Total > VANILLA_MAX_CLIENTS && !Server()->IsClient64(ClientID))
+	{
+		Yes = float(Yes) * VANILLA_MAX_CLIENTS / float(Total);
+		No = float(No) * VANILLA_MAX_CLIENTS / float(Total);
+		Total = VANILLA_MAX_CLIENTS;
+	}
+
 	CNetMsg_Sv_VoteStatus Msg = {0};
 	Msg.m_Total = Total;
 	Msg.m_Yes = Yes;
@@ -356,7 +368,6 @@ void CGameContext::SendVoteStatus(int ClientID, int Total, int Yes, int No)
 	Msg.m_Pass = Total - (Yes+No);
 
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-
 }
 
 void CGameContext::AbortVoteKickOnDisconnect(int ClientID)
@@ -558,7 +569,9 @@ void CGameContext::OnTick()
 			else if(m_VoteUpdate)
 			{
 				m_VoteUpdate = false;
-				SendVoteStatus(-1, Total, Yes, No);
+				for (int i = 0; i < MAX_CLIENTS; ++i)
+					if (Server()->ClientIngame(i))
+						SendVoteStatus(i, Total, Yes, No);
 			}
 		}
 	}
@@ -892,6 +905,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 
 			int KickID = str_toint(pMsg->m_Value);
+			if (!Server()->ReverseTranslate(KickID, ClientID))
+				return;
+
 			if(KickID < 0 || KickID >= MAX_CLIENTS || !m_apPlayers[KickID])
 			{
 				SendChatTarget(ClientID, "Invalid client id to kick");
@@ -932,6 +948,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 
 			int SpectateID = str_toint(pMsg->m_Value);
+			if (!Server()->ReverseTranslate(SpectateID, ClientID))
+				return;
+
 			if(SpectateID < 0 || SpectateID >= MAX_CLIENTS || !m_apPlayers[SpectateID] || m_apPlayers[SpectateID]->GetTeam() == TEAM_SPECTATORS)
 			{
 				SendChatTarget(ClientID, "Invalid client id to move");
@@ -1034,6 +1053,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	else if (MsgID == NETMSGTYPE_CL_SETSPECTATORMODE && !m_World.m_Paused)
 	{
 		CNetMsg_Cl_SetSpectatorMode *pMsg = (CNetMsg_Cl_SetSpectatorMode *)pRawMsg;
+
+		if (pMsg->m_SpectatorID != SPEC_FREEVIEW)
+			if (!Server()->ReverseTranslate(pMsg->m_SpectatorID, ClientID))
+				return;
 
 		if(pPlayer->GetTeam() != TEAM_SPECTATORS || pPlayer->m_SpectatorID == pMsg->m_SpectatorID || ClientID == pMsg->m_SpectatorID ||
 			(g_Config.m_SvSpamprotection && pPlayer->m_LastSetSpectatorMode && pPlayer->m_LastSetSpectatorMode+Server()->TickSpeed()*3 > Server()->Tick()))
@@ -1210,6 +1233,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 		pPlayer->m_LastKill = Server()->Tick();
 		pPlayer->KillCharacter(WEAPON_SELF);
+	}
+	else if (MsgID == NETMSGTYPE_CL_ISDDNET || MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	{
+		Server()->SetClient64(ClientID);
 	}
 }
 
@@ -1902,6 +1929,8 @@ void CGameContext::OnSnap(int ClientID)
 		if(m_apPlayers[i])
 			m_apPlayers[i]->Snap(ClientID);
 	}
+
+	m_apPlayers[ClientID]->FakeSnap(ClientID);
 }
 void CGameContext::OnPreSnap() {}
 void CGameContext::OnPostSnap()

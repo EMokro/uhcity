@@ -2137,13 +2137,17 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 
 void CCharacter::Snap(int SnappingClient)
 {
+	int FakeID = m_pPlayer->GetCID();
+	if (!Server()->Translate(FakeID, SnappingClient))
+		return;
+
 	if(NetworkClipped(SnappingClient))
 		return;
 
 	if(m_Invisible && !Server()->IsAuthed(SnappingClient) && SnappingClient != m_pPlayer->GetCID())
 		return;
 
-	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
+	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, FakeID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
 
@@ -2166,6 +2170,12 @@ void CCharacter::Snap(int SnappingClient)
 	{
 		m_EmoteType = m_Emote;
 		m_EmoteStop = -1;
+	}
+
+	if (pCharacter->m_HookedPlayer != -1)
+	{
+		if (!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
+			pCharacter->m_HookedPlayer = -1;
 	}
 
 	pCharacter->m_Emote = m_EmoteType;
@@ -2195,6 +2205,4 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
-
-			
 }

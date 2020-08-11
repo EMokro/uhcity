@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-
+#include <algorithm>
+#include <utility>
 #include "gameworld.h"
 #include "entity.h"
 #include "gamecontext.h"
@@ -101,6 +102,96 @@ void CGameWorld::RemoveEntity(CEntity *pEnt)
 	pEnt->m_pPrevTypeEntity = 0;
 }
 
+bool distCompare(std::pair<float, int> a, std::pair<float, int> b)
+{
+	return (a.first < b.first);
+}
+
+void CGameWorld::UpdatePlayerMaps()
+{
+	if (Server()->Tick() % g_Config.m_SvMapUpdateRate != 0)
+		return;
+
+	std::pair<float, int> aDist[MAX_CLIENTS];
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!Server()->ClientIngame(i))
+			continue;
+
+		int* pMap = Server()->GetIdMap(i);
+
+		// compute distances
+		for (int j = 0; j < MAX_CLIENTS; j++)
+		{
+			aDist[j].second = j;
+			if (!Server()->ClientIngame(j))
+			{
+				aDist[j].first = 1e10;
+				continue;
+			}
+
+			CCharacter* pChr = GameServer()->m_apPlayers[j]->GetCharacter();
+			if (!pChr)
+			{
+				aDist[j].first = 1e9;
+				continue;
+			}
+
+			// copypasted chunk from character.cpp Snap() follows
+			CCharacter* SnapChar = GameServer()->GetPlayerChar(i);
+			if (SnapChar && GameServer()->m_apPlayers[i]->GetTeam() != -1)
+				aDist[j].first = 1e8;
+			else
+				aDist[j].first = 0;
+
+			aDist[j].first += distance(GameServer()->m_apPlayers[i]->m_ViewPos, GameServer()->m_apPlayers[j]->m_ViewPos);
+		}
+
+		// always send the player himself
+		aDist[i].first = 0;
+
+		// compute reverse map
+		int rMap[MAX_CLIENTS];
+		for (int j = 0; j < MAX_CLIENTS; j++)
+			rMap[j] = -1;
+
+		for (int j = 0; j < VANILLA_MAX_CLIENTS; j++)
+		{
+			if (pMap[j] == -1)
+				continue;
+
+			if (aDist[pMap[j]].first > 5e9)
+				pMap[j] = -1;
+			else 
+				rMap[pMap[j]] = j;
+		}
+
+		std::nth_element(&aDist[0], &aDist[VANILLA_MAX_CLIENTS - 1], &aDist[MAX_CLIENTS], distCompare);
+
+		int Mapc = 0;
+		int Demand = 0;
+		for (int j = 0; j < VANILLA_MAX_CLIENTS - 1; j++)
+		{
+			int k = aDist[j].second;
+			if (rMap[k] != -1 || aDist[j].first > 5e9) continue;
+			while (Mapc < VANILLA_MAX_CLIENTS && pMap[Mapc] != -1) Mapc++;
+			if (Mapc < VANILLA_MAX_CLIENTS - 1)
+				pMap[Mapc] = k;
+			else
+				Demand++;
+		}
+
+		for (int j = MAX_CLIENTS - 1; j > VANILLA_MAX_CLIENTS - 2; j--)
+		{
+			int k = aDist[j].second;
+			if (rMap[k] != -1 && Demand-- > 0)
+				pMap[rMap[k]] = -1;
+		}
+
+		pMap[VANILLA_MAX_CLIENTS - 1] = -1; // player with empty name to say chat msgs
+	}
+}
+
 //
 void CGameWorld::Snap(int SnappingClient)
 {
@@ -175,8 +266,8 @@ void CGameWorld::Tick()
 	}
 
 	RemoveEntities();
+	UpdatePlayerMaps();
 }
-
 
 // TODO: should be more general
 CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, CEntity *pNotThis)

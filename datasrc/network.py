@@ -340,4 +340,8 @@ Messages = [
 		NetStringStrict("m_Value"),
 		NetStringStrict("m_Reason"),
 	]),
+
+        # ddnet acknowledge
+        NetMessage("Cl_IsDDNet", []),
+        NetMessage("Cl_IsDDRace64", [])
 ]

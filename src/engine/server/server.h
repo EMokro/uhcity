@@ -110,10 +110,13 @@ public:
 
 		void Reset();
 
+		bool m_Client64; // 64 clients
+
 		int m_NextMapChunk;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
+	int m_aIdMap[MAX_CLIENTS * VANILLA_MAX_CLIENTS];
 
 	CSnapshotDelta m_SnapshotDelta;
 	CSnapshotBuilder m_SnapshotBuilder;
@@ -202,7 +205,7 @@ public:
 
 	void ProcessClientPacket(CNetChunk *pPacket);
 
-	void SendServerInfo(NETADDR *pAddr, int Token);
+	void SendServerInfo(NETADDR *pAddr, int Token, bool Extended = false, int Offset = 0);
 	void UpdateServerInfo();
 
 	int BanAdd(NETADDR Addr, int Seconds, const char *pReason);
@@ -232,11 +235,15 @@ public:
 
 	void RegisterCommands();
 
-
 	virtual int SnapNewID();
 	virtual void SnapFreeID(int ID);
 	virtual void *SnapNewItem(int Type, int ID, int Size);
 	void SnapSetStaticsize(int ItemType, int Size);
+
+	// 64 clients
+	virtual int* GetIdMap(int ClientID);
+	virtual void SetClient64(int ClientID);
+	virtual bool IsClient64(int ClientID) { return m_aClients[ClientID].m_Client64; }
 };
 
 #endif
