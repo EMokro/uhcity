@@ -144,6 +144,7 @@ public:
 	int m_LastHooked;
 	int m_LastTP;
 	int m_LastAtkID;
+	int m_LastAtkWeapon;
 	int m_LastAtkIDTimer;
 	int m_RaceTime;
 	bool m_FreezeEnd;

@@ -112,6 +112,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_ExternalHeal = 0;
 	m_LastHooked = -1;
 	m_LastAtkID = -1;
+	m_LastAtkWeapon = WEAPON_GAME;
 	m_LastAtkIDTimer = 0;
 
 	if (GetPlayer()->m_AccData.m_EndlessHook)
@@ -1321,7 +1322,7 @@ void CCharacter::Booster()
 	{
 		if(!m_pPlayer->m_Insta)
 		{
-			GameServer()->SendBroadcast("Entered insta zone (/insta to quit)", m_pPlayer->GetCID());
+			GameServer()->SendBroadcast("Entered insta zone (/instagib to quit)", m_pPlayer->GetCID());
 			m_pPlayer->m_Insta = true;
 			//m_ActiveWeapon = WEAPON_RIFLE;
 			SetWeapon(WEAPON_RIFLE);
@@ -1785,16 +1786,17 @@ void CCharacter::HandleCity()
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-
-				
 			}
 		}
 
 		if (m_LastAtkIDTimer) {
 			m_LastAtkIDTimer--;
 
-			if (!m_LastAtkIDTimer)
+			if (!m_LastAtkIDTimer) {
 				m_LastAtkID = -1;
+				m_LastAtkWeapon = WEAPON_GAME;
+			}
+				
 		}
 
 		if(m_pPlayer->m_AccData.m_UserID)
@@ -2026,6 +2028,11 @@ void CCharacter::Die(int Killer, int Weapon)
 	if (!m_Alive)
 		return;
 
+	if ((!GameServer()->ValidID(Killer) || Killer == m_pPlayer->GetCID()) && GameServer()->ValidID(m_LastAtkID)) {
+		Killer = m_LastAtkID;
+		Weapon = m_LastAtkWeapon;
+	}
+
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
@@ -2035,9 +2042,6 @@ void CCharacter::Die(int Killer, int Weapon)
 
 	if (Killer != m_pPlayer->GetCID())
 		pKiller->AddExp(Weapon);
-
-	if ((!GameServer()->ValidID(Killer) || Killer == m_pPlayer->GetCID()) && GameServer()->ValidID(m_LastAtkID))	
-		Killer = m_LastAtkID;
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
@@ -2082,7 +2086,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	|| (m_GameZone && From == m_pPlayer->GetCID()))
 		return false;
 
-
 	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
 		return false;
 
@@ -2097,7 +2100,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
-	m_LastAtkID = From;
+	if (GameServer()->ValidID(From)) {
+		m_LastAtkID = From;
+		m_LastAtkWeapon = Weapon;
+	}
 	m_LastAtkIDTimer = 20; // 20 sec save
 
 	// create healthmod indicator
