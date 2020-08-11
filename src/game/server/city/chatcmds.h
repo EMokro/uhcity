@@ -36,7 +36,8 @@ CONSOLE_COMMAND("setbounty", "?v?i", CFGFLAG_CHAT, ConChatSetbounty, this, "")
 // moneycollector
 CONSOLE_COMMAND("mcbuy", "?i", CFGFLAG_CHAT, ConChatMCBuy, this, "")
 CONSOLE_COMMAND("mccollect", "", CFGFLAG_CHAT, ConChatMCCollect, this, "")
-
+CONSOLE_COMMAND("mchelp", "", CFGFLAG_CHAT, ConChatMCHelp, this, "")
+CONSOLE_COMMAND("mccmds", "", CFGFLAG_CHAT, ConChatMCCmds, this, "")
 
 // info
 CONSOLE_COMMAND("me", "", CFGFLAG_CHAT, ConChatMe, this, "")

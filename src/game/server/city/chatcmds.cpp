@@ -658,8 +658,32 @@ void CGameContext::ConChatMCBuy(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConChatMCCollect(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-
     pSelf->MoneyCollector()->Collect(pResult->GetClientID());
+}
+
+void CGameContext::ConChatMCHelp(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    int ID = pResult->GetClientID();
+
+    pSelf->SendChatTarget(ID, "~~ Money Collector Help ~~");
+    pSelf->SendChatTarget(ID, "The Money Collector collects 4% of the farmed income on the server.");
+    pSelf->SendChatTarget(ID, "This money ends up in the pot.");
+    pSelf->SendChatTarget(ID, "The pot is increased by 50% every hour.");
+    pSelf->SendChatTarget(ID, "The price is reduced by 1% every hour.");
+    pSelf->SendChatTarget(ID, "The Holder can collect the money from the pot.");
+    pSelf->SendChatTarget(ID, "Checkout /mccmds to get more information.");
+}
+
+void CGameContext::ConChatMCCmds(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    int ID = pResult->GetClientID();
+
+    pSelf->SendChatTarget(ID, "~~ Money Collector Cmds ~~");
+    pSelf->SendChatTarget(ID, "/mcbuy");
+    pSelf->SendChatTarget(ID, "/mccollect");
+    pSelf->SendChatTarget(ID, "/mchelp");
 }
 
 // info

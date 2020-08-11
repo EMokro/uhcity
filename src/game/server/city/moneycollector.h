@@ -13,10 +13,8 @@ class CMoneyCollector {
         CGameContext *GameServer() const { return m_pGameServer; }
 
         void Apply();
-
         
         int m_HolderID;
-
     public:
         CMoneyCollector(CGameContext *pGameServer);
         

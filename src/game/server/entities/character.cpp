@@ -1739,8 +1739,6 @@ void CCharacter::HandleCity()
 		char progressBuf[128];
 		
 		int barWidth = 40;
-		Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
-		ExpPoints = Money * 10;
 		
 		if(Money && ExpPoints)
 		{

@@ -240,6 +240,9 @@ public:
 
 		static void ConChatMCBuy(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatMCCollect(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatMCHelp(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatMCCmds(IConsole::IResult* pResult, void* pUserData);
+
 
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
