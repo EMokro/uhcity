@@ -111,6 +111,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_GunFreezeCooldown = 0;
 	m_ExternalHeal = 0;
 	m_LastHooked = -1;
+	m_LastAtkID = -1;
+	m_LastAtkIDTimer = 0;
 
 	if (GetPlayer()->m_AccData.m_EndlessHook)
 		m_Core.m_EndlessHook = true;
@@ -1652,7 +1654,6 @@ void CCharacter::HandleCity()
 			GameServer()->SendTuningParams(m_pPlayer->GetCID());
 		}
 	}
-		
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_NORMAL_GRAVITY)) {
 		if (m_GravityY != 0.5) {
@@ -1787,6 +1788,13 @@ void CCharacter::HandleCity()
 
 				
 			}
+		}
+
+		if (m_LastAtkIDTimer) {
+			m_LastAtkIDTimer--;
+
+			if (!m_LastAtkIDTimer)
+				m_LastAtkID = -1;
 		}
 
 		if(m_pPlayer->m_AccData.m_UserID)
@@ -2021,11 +2029,15 @@ void CCharacter::Die(int Killer, int Weapon)
 	CCharacter *pKiller = GameServer()->GetPlayerChar(Killer);
 	if(!pKiller)
 		return;
+
 	if(Weapon >= 0 && ((Protected() && !pKiller->m_JailRifle) || (m_pPlayer->m_God && !pKiller->m_JailRifle)))
 		return;
 
 	if (Killer != m_pPlayer->GetCID())
 		pKiller->AddExp(Weapon);
+
+	if ((!GameServer()->ValidID(Killer) || Killer == m_pPlayer->GetCID()) && GameServer()->ValidID(m_LastAtkID))	
+		Killer = m_LastAtkID;
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
@@ -2085,6 +2097,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
+	m_LastAtkID = From;
+	m_LastAtkIDTimer = 20; // 20 sec save
 
 	// create healthmod indicator
 	if(Server()->Tick() < m_DamageTakenTick+25)
