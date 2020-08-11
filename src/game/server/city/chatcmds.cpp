@@ -640,8 +640,15 @@ void CGameContext::ConChatMCBuy(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 
+    if (pSelf->GetPlayerChar(pResult->GetClientID()));
+
+    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(pResult->GetClientID())->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
+        return;
+    }
+
     if (pResult->NumArguments() != 1) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /mcbuy <amount>");
+        
         return;
     }
 
@@ -665,6 +672,10 @@ void CGameContext::ConChatMCHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
     int ID = pResult->GetClientID();
+    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(ID)->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
+        return;
+    }
 
     pSelf->SendChatTarget(ID, "~~ Money Collector Help ~~");
     pSelf->SendChatTarget(ID, "The Money Collector collects 4% of the farmed income on the server.");
