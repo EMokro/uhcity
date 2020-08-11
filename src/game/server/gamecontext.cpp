@@ -290,10 +290,13 @@ void CGameContext::SendWeaponPickup(int ClientID, int Weapon)
 
 void CGameContext::SendBroadcast(const char *pText, int ClientID)
 {
-	m_LastBroadcast = time_get();
-	CNetMsg_Sv_Broadcast Msg;
-	Msg.m_pMessage = pText;
-	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+	if (m_LastBroadcast < Server()->Tick() - 50) {
+		dbg_msg("debug", "sending broadcast");
+		CNetMsg_Sv_Broadcast Msg;
+		Msg.m_pMessage = pText;
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+		m_LastBroadcast = Server()->Tick();
+	}
 }
 
 //
@@ -576,27 +579,6 @@ void CGameContext::OnTick()
 				SendVoteStatus(-1, Total, Yes, No);
 			}
 		}
-	}
-
-	// City
-	if(time_get() > m_LastBroadcast + time_freq()*9)
-	{
-		if(!str_comp_nocase("$Money", g_Config.m_SvBroadcast))
-		{
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				CCharacter *pChar = GetPlayerChar(i);
-
-				if(pChar)
-				{
-					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "Money: %i TC", pChar->GetPlayer()->m_AccData.m_Money);
-					SendBroadcast(aBuf, i);
-				}
-			}
-		}
-		else
-			SendBroadcast(g_Config.m_SvBroadcast, -1);
 	}
 
 #ifdef CONF_DEBUG

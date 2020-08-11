@@ -146,7 +146,6 @@ public:
 	int m_RaceTime;
 	bool m_FreezeEnd;
 	int64 m_FreezeTick;
-	int64 m_LastBroadcast;
 	int64 m_BuyTick;
 	int64 m_SpawnProtection;
 	vec2 m_HammerPos1;

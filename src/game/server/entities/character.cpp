@@ -296,7 +296,6 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 					*Upgrade += 1;
 					m_pPlayer->m_AccData.m_Money -= Price;
 					str_format(aBuf, sizeof(aBuf), "%s (%d/%d)", Name, *Upgrade, Max);
-					m_LastBroadcast = Server()->Tick();
 
 					if(m_pPlayer->m_AccData.m_UserID)
 						m_pPlayer->m_pAccount->Apply();
@@ -313,27 +312,22 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 				GameServer()->FormatInt(Price, numBuf[0]);
 				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
-				m_LastBroadcast = Server()->Tick();
+
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
 		else
 		{
 			str_format(aBuf, sizeof(aBuf), "Maximum '%s' (%d/%d)", Name, *Upgrade, Max);
-			m_LastBroadcast = Server()->Tick();
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
 	else if(Click == 2)
 	{
-		if(Server()->Tick()-m_LastBroadcast>50)
-		{
-			GameServer()->FormatInt(Price, numBuf[0]);
-			GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
-			m_LastBroadcast = Server()->Tick();
-			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
-			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
-		}
+		GameServer()->FormatInt(Price, numBuf[0]);
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
+		str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
+		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
 
@@ -358,8 +352,6 @@ int CCharacter::MouseEvent(vec2 Pos)
 		return 2;
 	}
 	
-	//m_LastBroadcast = 0;
-
 	return 0;
 }
 
