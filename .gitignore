@@ -22,3 +22,6 @@ src/game/generated/server_data.cpp
 src/game/generated/protocol.h
 src/game/generated/protocol.cpp
 src/game/generated/nethash.cpp
+moneycollector.data
+teeworlds_srv
+teeworlds_srv_d

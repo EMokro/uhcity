@@ -297,7 +297,6 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 					*Upgrade += 1;
 					m_pPlayer->m_AccData.m_Money -= Price;
 					str_format(aBuf, sizeof(aBuf), "%s (%d/%d)", Name, *Upgrade, Max);
-					m_LastBroadcast = Server()->Tick();
 
 					if(m_pPlayer->m_AccData.m_UserID)
 						m_pPlayer->m_pAccount->Apply();
@@ -314,27 +313,22 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 				GameServer()->FormatInt(Price, numBuf[0]);
 				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
-				m_LastBroadcast = Server()->Tick();
+
 				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
 		else
 		{
 			str_format(aBuf, sizeof(aBuf), "Maximum '%s' (%d/%d)", Name, *Upgrade, Max);
-			m_LastBroadcast = Server()->Tick();
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
 	else if(Click == 2)
 	{
-		if(Server()->Tick()-m_LastBroadcast>50)
-		{
-			GameServer()->FormatInt(Price, numBuf[0]);
-			GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
-			m_LastBroadcast = Server()->Tick();
-			str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
-			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
-		}
+		GameServer()->FormatInt(Price, numBuf[0]);
+		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
+		str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
+		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
 
@@ -359,8 +353,6 @@ int CCharacter::MouseEvent(vec2 Pos)
 		return 2;
 	}
 	
-	//m_LastBroadcast = 0;
-
 	return 0;
 }
 
@@ -1398,6 +1390,7 @@ void CCharacter::Booster()
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+					GameServer()->MoneyCollector()->m_Money += Money * 0.04;
 
 					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
@@ -1578,6 +1571,16 @@ void CCharacter::HandleCity()
 		m_GameZone = false;
 	}
 
+	if (GameServer()->Collision()->IsTile(m_Pos, TILE_MONEYCOLLECTOR)) {
+		char aBuf[256], numBuf[2][32];
+		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Price, numBuf[0]);
+		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Money, numBuf[1]);
+		str_format(aBuf, sizeof aBuf, "~ Money Collector ~\nHolder: %s\nPrice: %s$\nPot: %s$\n/mchelp",
+			GameServer()->MoneyCollector()->m_aHolderName,
+			numBuf[0], numBuf[1]);
+		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+	}
+
 	if (m_InRace) {
 		char aBuf[128];
 		int diff = (Server()->Tick() - m_RaceTime) * 2;
@@ -1617,6 +1620,9 @@ void CCharacter::HandleCity()
 
 		int Reward = 500000 - diff*50;
 		m_pPlayer->m_AccData.m_Money += Reward;
+
+		if (Reward > 0)
+			GameServer()->MoneyCollector()->m_Money += Reward * 0.04;
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 
@@ -1726,8 +1732,6 @@ void CCharacter::HandleCity()
 		char progressBuf[128];
 		
 		int barWidth = 40;
-		Money = GameServer()->Collision()->TileMoney(m_Pos.x, m_Pos.y);
-		ExpPoints = Money * 10;
 		
 		if(Money && ExpPoints)
 		{
@@ -1767,6 +1771,7 @@ void CCharacter::HandleCity()
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
+			GameServer()->MoneyCollector()->m_Money += Money * 0.04;
 
 			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
 
