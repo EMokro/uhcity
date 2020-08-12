@@ -2188,7 +2188,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 }
 
 void CCharacter::SendBroadcast(const char *pText, int ClientID) {
-	if (m_LastBroadcast < (Server()->Tick() - Server()->TickSpeed())) {
+	if (m_LastBroadcast <= (Server()->Tick() - Server()->TickSpeed())) {
 		GameServer()->SendBroadcast(pText, ClientID);
 		m_LastBroadcast = Server()->Tick();
 	}

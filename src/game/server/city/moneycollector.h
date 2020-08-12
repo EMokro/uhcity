@@ -22,7 +22,7 @@ class CMoneyCollector {
         void Buy(int ClientID, long long unsigned Amount);
         void Collect(int ClientID);
 
-        void AddMoney(long long unsigned Money) { m_Money = Money; Apply(); }
+        void AddMoney(long long unsigned Money);
 
         long long unsigned m_Price;
         long long unsigned m_Money;

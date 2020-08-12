@@ -25,6 +25,11 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
     }
 }
 
+void CMoneyCollector::AddMoney(long long unsigned Money) {
+    m_Money = Money;
+    Apply();
+}
+
 void CMoneyCollector::Tick() {
     if (!(Server()->Tick() % (Server()->TickSpeed() * 360))) { // every hour
         m_Money *= 1.5;
