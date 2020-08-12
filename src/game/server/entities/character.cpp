@@ -2097,7 +2097,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
 	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
-		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10); // Add every 10 lvl 1 dmg to others
+		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 	if (GameServer()->ValidID(From)) {
@@ -2216,13 +2216,17 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 
 void CCharacter::Snap(int SnappingClient)
 {
+	int FakeID = m_pPlayer->GetCID();
+	if (!Server()->Translate(FakeID, SnappingClient))
+		return;
+
 	if(NetworkClipped(SnappingClient))
 		return;
 
 	if(m_Invisible && !Server()->IsAuthed(SnappingClient) && SnappingClient != m_pPlayer->GetCID())
 		return;
 
-	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
+	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, FakeID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
 
@@ -2245,6 +2249,12 @@ void CCharacter::Snap(int SnappingClient)
 	{
 		m_EmoteType = m_Emote;
 		m_EmoteStop = -1;
+	}
+
+	if (pCharacter->m_HookedPlayer != -1)
+	{
+		if (!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
+			pCharacter->m_HookedPlayer = -1;
 	}
 
 	pCharacter->m_Emote = m_EmoteType;
@@ -2274,6 +2284,4 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
-
-			
 }
