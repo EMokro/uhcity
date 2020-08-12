@@ -306,7 +306,6 @@ public:
 	NETADDR addr;
 	NETSOCKET Socket;
 	int m_aaExtIDs[2][MAX_CLIENTS];
-	int64 m_LastBroadcast;
 	int m_TeleNR[MAX_CLIENTS];
 	int m_TeleNum;
 	int m_NoDmgIDs[MAX_CLIENTS][MAX_CLIENTS];

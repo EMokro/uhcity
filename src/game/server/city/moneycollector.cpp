@@ -29,6 +29,7 @@ void CMoneyCollector::Tick() {
     if (!(Server()->Tick() % (Server()->TickSpeed() * 360))) { // every hour
         m_Money *= 1.5;
         m_Price -= m_Price * 0.01;
+        Apply();
     }
 }
 

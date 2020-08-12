@@ -308,7 +308,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 					GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
 					str_format(aBuf, sizeof(aBuf), "Money: %s$", numBuf[0]);
-					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+					SendBroadcast(aBuf, m_pPlayer->GetCID());
 				}
 			}
 			else
@@ -317,13 +317,13 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
 
-				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+				SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
 		else
 		{
 			str_format(aBuf, sizeof(aBuf), "Maximum '%s' (%d/%d)", Name, *Upgrade, Max);
-			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+			SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
 	else if(Click == 2)
@@ -331,7 +331,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 		GameServer()->FormatInt(Price, numBuf[0]);
 		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
 		str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
-		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+		SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
 
@@ -1247,22 +1247,22 @@ void CCharacter::Booster()
 	// Rankzones
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_POLICE) && Server()->AuthLvl(m_pPlayer->GetCID()) < 1)
 	{
-		GameServer()->SendBroadcast("Policezone - Acces denied", m_pPlayer->GetCID());
+		SendBroadcast("Policezone - Acces denied", m_pPlayer->GetCID());
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_DONOR) && !m_pPlayer->m_AccData.m_Donor && Server()->AuthLvl(m_pPlayer->GetCID()) < 2)
 	{
-		GameServer()->SendBroadcast("Donorzone - Acces denied", m_pPlayer->GetCID());
+		SendBroadcast("Donorzone - Acces denied", m_pPlayer->GetCID());
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_ADMIN) && Server()->AuthLvl(m_pPlayer->GetCID()) < 2)
 	{
-		GameServer()->SendBroadcast("Adminzone - Acces denied", m_pPlayer->GetCID());
+		SendBroadcast("Adminzone - Acces denied", m_pPlayer->GetCID());
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_VIP) && !m_pPlayer->m_AccData.m_VIP && Server()->AuthLvl(m_pPlayer->GetCID()) < 2)
 	{
-		GameServer()->SendBroadcast("VIPzone - Acces denied", m_pPlayer->GetCID());
+		SendBroadcast("VIPzone - Acces denied", m_pPlayer->GetCID());
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 	//Water zeugs :D
@@ -1322,7 +1322,7 @@ void CCharacter::Booster()
 	{
 		if(!m_pPlayer->m_Insta)
 		{
-			GameServer()->SendBroadcast("Entered insta zone (/instagib to quit)", m_pPlayer->GetCID());
+			SendBroadcast("Entered insta zone (/instagib to quit)", m_pPlayer->GetCID());
 			m_pPlayer->m_Insta = true;
 			//m_ActiveWeapon = WEAPON_RIFLE;
 			SetWeapon(WEAPON_RIFLE);
@@ -1334,7 +1334,7 @@ void CCharacter::Booster()
 	{
 		if(m_pPlayer->m_Insta)
 		{
-			GameServer()->SendBroadcast("Left insta zone", m_pPlayer->GetCID());
+			SendBroadcast("Left insta zone", m_pPlayer->GetCID());
 			m_pPlayer->m_Insta = false;
 			m_ActiveWeapon = WEAPON_GUN;
 		}
@@ -1393,9 +1393,9 @@ void CCharacter::Booster()
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-					GameServer()->MoneyCollector()->m_Money += Money * 0.04;
+					GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
 
-					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+					SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 					if ( m_pPlayer->m_AccData.m_ExpPoints >= NeededExp)
 					{
@@ -1414,7 +1414,7 @@ void CCharacter::Booster()
 		}
 		else
 		{
-			GameServer()->SendBroadcast("Donor Money zone - Acces denied", m_pPlayer->GetCID());
+			SendBroadcast("Donor Money zone - Acces denied", m_pPlayer->GetCID());
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
 	
@@ -1436,13 +1436,13 @@ void CCharacter::Booster()
 
 					GetPlayer()->m_AccData.m_Money -= m_LifeCost;
 					str_format(aBuf, sizeof(aBuf), "Money: %d$ | -%d$\nHealth: %d\nArmor: %d", m_pPlayer->m_AccData.m_Money, m_LifeCost, m_Health, m_Armor);
-					GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+					SendBroadcast(aBuf, m_pPlayer->GetCID());
 				}
 			
 			else
 			{
 				str_format(aBuf, sizeof(aBuf), "You need %d TC",m_LifeCost);
-				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+				SendBroadcast(aBuf, m_pPlayer->GetCID());
 			}
 		}
 	}
@@ -1524,7 +1524,7 @@ void CCharacter::Transfer(int Value)
 			
 			if(GameServer()->Collision()->CheckPoint(SnapPos))
 			{
-				GameServer()->SendBroadcast("The wall doesn't need money...", m_pPlayer->GetCID());
+				SendBroadcast("The wall doesn't need money...", m_pPlayer->GetCID());
 				return;
 			}
 		}*/
@@ -1536,7 +1536,7 @@ void CCharacter::Transfer(int Value)
 		GameServer()->FormatInt(Value, numBuf[1]);
 
 		str_format(aBuf, sizeof(aBuf), "Your money (%s$) | -%s$", numBuf[0], numBuf[1]);
-		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+		SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
 
@@ -1546,7 +1546,7 @@ void CCharacter::HandleCity()
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
 	{
-		GameServer()->SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
+		SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
 		if (!m_Protected) {
 			m_Protected = true;
 			m_Core.m_Protected = true;
@@ -1555,7 +1555,7 @@ void CCharacter::HandleCity()
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_KILL) && m_Protected)
 	{
-		GameServer()->SendBroadcast("Protected zone left", m_pPlayer->GetCID());
+		SendBroadcast("Protected zone left", m_pPlayer->GetCID());
 		if (m_Protected) {
 			m_Protected = false;
 			m_Core.m_Protected = false;
@@ -1565,12 +1565,12 @@ void CCharacter::HandleCity()
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_START) && !m_GameZone)
 	{
-		GameServer()->SendBroadcast("Gamezone entered", m_pPlayer->GetCID());
+		SendBroadcast("Gamezone entered", m_pPlayer->GetCID());
 		m_GameZone = true;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_END) && m_GameZone)
 	{
-		GameServer()->SendBroadcast("Gamezone left", m_pPlayer->GetCID());
+		SendBroadcast("Gamezone left", m_pPlayer->GetCID());
 		m_GameZone = false;
 	}
 
@@ -1581,7 +1581,7 @@ void CCharacter::HandleCity()
 		str_format(aBuf, sizeof aBuf, "~ Money Collector ~\nHolder: %s\nPrice: %s$\nPot: %s$\n/mchelp",
 			GameServer()->MoneyCollector()->m_aHolderName,
 			numBuf[0], numBuf[1]);
-		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+		SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 
 	if (m_InRace) {
@@ -1597,7 +1597,7 @@ void CCharacter::HandleCity()
 		else 
 			str_format(aBuf, sizeof aBuf, "%d : %d.%d sec", min, sec, mili);
 
-		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+		SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_RACE_START)) {
@@ -1625,7 +1625,7 @@ void CCharacter::HandleCity()
 		m_pPlayer->m_AccData.m_Money += Reward;
 
 		if (Reward > 0)
-			GameServer()->MoneyCollector()->m_Money += Reward * 0.04;
+			GameServer()->MoneyCollector()->AddMoney(Reward * 0.04);
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 
@@ -1646,7 +1646,7 @@ void CCharacter::HandleCity()
 	Booster();
 
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_TRAINER)) {
-		GameServer()->SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
+		SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY)) {
@@ -1672,7 +1672,7 @@ void CCharacter::HandleCity()
 
 	if(m_Invisible && m_pPlayer->m_Score > 20)
 	{
-		GameServer()->SendBroadcast("Invisibility disabled, Score > 20", m_pPlayer->GetCID());
+		SendBroadcast("Invisibility disabled, Score > 20", m_pPlayer->GetCID());
 		m_Invisible = 0;
 	}
 
@@ -1686,7 +1686,7 @@ void CCharacter::HandleCity()
 			GameServer()->SendTuningParams(GetPlayer()->GetCID());
 		}
 		
-		GameServer()->SendBroadcast("AFK Zone", m_pPlayer->GetCID());
+		SendBroadcast("AFK Zone", m_pPlayer->GetCID());
 	} else {
 		if (GetPlayer()->m_Afk) {
 			m_Core.m_Afk = false;
@@ -1773,9 +1773,9 @@ void CCharacter::HandleCity()
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-			GameServer()->MoneyCollector()->m_Money += Money * 0.04;
+			GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
 
-			GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+			SendBroadcast(aBuf, m_pPlayer->GetCID());
 
 			if ( m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
 			{
@@ -1826,7 +1826,7 @@ void CCharacter::Tick()
 	{
 		char Buf[128];
 		str_format(Buf, sizeof(Buf), "You were moved to %s due to team balancing", GameServer()->m_pController->GetTeamName(m_pPlayer->GetTeam()));
-		GameServer()->SendBroadcast(Buf, m_pPlayer->GetCID());
+		SendBroadcast(Buf, m_pPlayer->GetCID());
 
 		m_pPlayer->m_ForceBalanced = false;
 	}
@@ -2185,6 +2185,15 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
 
 	return true;
+}
+
+void CCharacter::SendBroadcast(const char *pText, int ClientID) {
+	if (m_LastBroadcast < (Server()->Tick() - Server()->TickSpeed())) {
+		dbg_msg("debug", "broad1");
+		GameServer()->SendBroadcast(pText, ClientID);
+		m_LastBroadcast = Server()->Tick();
+		dbg_msg("debug", "broad2");
+	}
 }
 
 void CCharacter::AddExp(int Weapon, int Amount) {

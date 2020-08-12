@@ -22,6 +22,8 @@ class CMoneyCollector {
         void Buy(int ClientID, long long unsigned Amount);
         void Collect(int ClientID);
 
+        void AddMoney(long long unsigned Money) { m_Money = Money; Apply(); }
+
         long long unsigned m_Price;
         long long unsigned m_Money;
         char m_aHolderName[256];

@@ -95,6 +95,7 @@ public:
 	void Unfreeze();
 	void Transfer(int Value);
 	void AddGravAura();
+	void SendBroadcast(const char *pText, int ClientID);
 	bool Protected();
 	unsigned long long calcExp(int level);
 	//KlickFoots Water zeugs 
@@ -131,6 +132,7 @@ public:
 	int m_Walls;
 	int m_Plasma;
 	int m_Frozen;
+	int64 m_LastBroadcast;
 	int m_Emote;
 	int m_EmoteType;
 	int m_EmoteStop;
