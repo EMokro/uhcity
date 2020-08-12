@@ -292,11 +292,9 @@ void CGameContext::SendWeaponPickup(int ClientID, int Weapon)
 
 void CGameContext::SendBroadcast(const char *pText, int ClientID)
 {
-	dbg_msg("debug", "broad");
 	CNetMsg_Sv_Broadcast Msg;
 	Msg.m_pMessage = pText;
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-	dbg_msg("debug", "broad");
 }
 
 //
