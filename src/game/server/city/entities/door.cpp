@@ -238,14 +238,6 @@ void CDoor::Tick()
 					return;
 
 				pHit->m_Core.m_Vel += -normalize(At - pHit->m_Pos) * 3;
-
-				/*if (!(Hit->ActiveWeapon() == WEAPON_NINJA && (Hit->m_Input.m_Fire & 1) == 1)) {
-					Hit->m_Core.m_Pos = Hit->m_DesiredPos;
-					Hit->m_Core.m_Vel = vec2(0, 0);
-				}
-				else {
-					Hit->Die(Hit->GetPlayer()->GetCID(), WEAPON_GAME);
-				}*/
 			}
 		}
 	}

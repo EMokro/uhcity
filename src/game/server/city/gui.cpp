@@ -76,6 +76,7 @@ CGui::CGui(CGameWorld *pGameWorld, int Owner)
 	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 1));
 	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 2));
 	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 3));
+	group.push_back(new CNinja(GameWorld(), m_Owner, m_Pos, 4));
 
 	m_aShop.push_back(group);
 	group.clear();

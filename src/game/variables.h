@@ -40,6 +40,7 @@ MACRO_CONFIG_LONGLONG(EuPortal, eu_portal, 500000000, 0, 1000000, CFGFLAG_SERVER
 MACRO_CONFIG_INT(EuNinjaPermanent, eu_ninja_permanent, 5000000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja permanent")
 MACRO_CONFIG_INT(EuNinjaStart, eu_ninja_start, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja start")
 MACRO_CONFIG_INT(EuNinjaSwitch, eu_ninja_switch, 100000, 0, 1000000, CFGFLAG_SERVER, "Price - Ninja switch")
+MACRO_CONFIG_LONGLONG(EuNinjaFly, eu_ninja_fly, 1000000, 0, 900000000000, CFGFLAG_SERVER, "Price - Ninja fly")
 
 MACRO_CONFIG_LONGLONG(EuHookEndless, eu_hook_endless, 500000, 0, 900000000000, CFGFLAG_SERVER, "Price - Endlesshook")
 MACRO_CONFIG_LONGLONG(EuHookHeal, eu_hook_heal, 50000000, 0, 900000000000, CFGFLAG_SERVER, "Price - Healhook")

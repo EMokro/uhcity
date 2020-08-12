@@ -59,6 +59,9 @@ void CNinja::Tick()
 	case 3:
 		pOwner->Buy("Ninja switch", &pOwner->GetPlayer()->m_AccData.m_NinjaSwitch, g_Config.m_EuNinjaSwitch, Click, 1);
 		break;
+	case 4:
+		pOwner->Buy("Ninja Fly", &pOwner->GetPlayer()->m_AccData.m_NinjaFly, g_Config.m_EuNinjaFly, Click, 1);
+		break;
 	}
 }
 
@@ -67,13 +70,6 @@ void CNinja::Snap(int SnappingClient)
 {
 	if(SnappingClient != m_Owner || NetworkClipped(SnappingClient, m_Pos) || !m_Visible)
 		return;
-	if(Server()->Tick()%5 == 0)
-		m_StartTick = Server()->Tick();
-
-	vec2 Positions[3];
-	Positions[0] = vec2(m_Pos.x - 32, m_Pos.y - 16);
-	Positions[1] = vec2(m_Pos.x + 32, m_Pos.y - 16);
-	Positions[2] = vec2(m_Pos.x, m_Pos.y + 16);
 
 	if(m_Type == 1)//Permanent
 	{
@@ -86,7 +82,6 @@ void CNinja::Snap(int SnappingClient)
 		pP->m_Y = (int)m_Pos.y;
 		pP->m_Type = POWERUP_NINJA;
 		pP->m_Subtype = WEAPON_NINJA;
-			
 	}
 	else if(m_Type == 2)// Start
 	{
@@ -110,8 +105,7 @@ void CNinja::Snap(int SnappingClient)
 			}
 		}
 		
-	}
-	else if(m_Type == 3)// Switch
+	} else if(m_Type == 3) // Switch
 	{
 		CNetObj_Pickup *pP[6];
 
@@ -139,6 +133,29 @@ void CNinja::Snap(int SnappingClient)
 
 		}
 
+	} else if(m_Type == 4) { // fly
+		CNetObj_Pickup *pP[3];
+		int LifeTime = 25;
+
+		if (m_StartTick + LifeTime * 3 < Server()->Tick()) {
+			m_StartTick = Server()->Tick();
+		}	
+			
+			
+		for (int i = 0; i < 3; i++) {
+			if (Server()->Tick() < m_StartTick + LifeTime * (i+1) && Server()->Tick() > m_StartTick + LifeTime * i) {
+
+				pP[i] = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_ID, sizeof(CNetObj_Pickup)));
+
+				if(!pP[i])
+					return;
+
+				pP[i]->m_X = (int)m_Pos.x + (40*i - 40);
+				pP[i]->m_Y = (int)m_Pos.y;
+				pP[i]->m_Type = POWERUP_NINJA;
+				pP[i]->m_Subtype = WEAPON_NINJA;
+			}
+		}
 	}
 
 	/*
