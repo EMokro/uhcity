@@ -290,7 +290,7 @@ void CGameContext::SendWeaponPickup(int ClientID, int Weapon)
 
 void CGameContext::SendBroadcast(const char *pText, int ClientID)
 {
-	if (m_LastBroadcast < Server()->Tick() - 50) {
+	if (m_LastBroadcast <= Server()->Tick() - Server()->TickSpeed()) {
 		CNetMsg_Sv_Broadcast Msg;
 		Msg.m_pMessage = pText;
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
