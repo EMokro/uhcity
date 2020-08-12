@@ -482,6 +482,7 @@ void CGameContext::OnTick()
 	//if(world.paused) // make sure that the game object always updates
 	m_pController->Tick();
 	m_pGameEvent->Tick();
+	m_pMoneyCollector->Tick();
 
 	// City
 	if(!addr.ip[0])
