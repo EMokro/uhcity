@@ -268,6 +268,7 @@ public:
 		static void ConChatFly(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHealHook(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBoostHook(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatNinjaFly(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPushAura(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPullAura(IConsole::IResult* pResult, void* pUserData);
 

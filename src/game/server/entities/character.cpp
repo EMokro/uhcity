@@ -557,6 +557,12 @@ void CCharacter::FireWeapon()
 
 	vec2 ProjStartPos = m_Pos+Direction*m_ProximityRadius*0.75f;
 
+	if (m_ActiveWeapon == WEAPON_NINJA) {
+		if (m_pPlayer->m_NinjaFly) {
+			m_ReloadTimer = 0;
+		}
+	}
+
 	// City
 	if(m_Protected && m_ActiveWeapon != WEAPON_NINJA && m_ActiveWeapon != WEAPON_RIFLE && !m_GameZone)
 		return;
