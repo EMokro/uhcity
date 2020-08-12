@@ -26,7 +26,7 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
 }
 
 void CMoneyCollector::AddMoney(long long unsigned Money) {
-    m_Money = Money;
+    m_Money += Money;
     Apply();
 }
 
