@@ -251,6 +251,7 @@ public:
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatInfo(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDonor(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDonorCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatVip(IConsole::IResult* pResult, void* pUserData);
