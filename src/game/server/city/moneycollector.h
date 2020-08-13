@@ -13,7 +13,6 @@ class CMoneyCollector {
         CGameContext *GameServer() const { return m_pGameServer; }
 
         void Apply();
-        
         int m_HolderID;
     public:
         CMoneyCollector(CGameContext *pGameServer);
@@ -26,6 +25,8 @@ class CMoneyCollector {
 
         long long unsigned m_Price;
         long long unsigned m_Money;
+        int m_UpdateTimer;
+        float m_CollectPercentage;
         char m_aHolderName[256];
 };
 

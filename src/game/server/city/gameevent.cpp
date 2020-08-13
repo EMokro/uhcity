@@ -54,6 +54,9 @@ void CGameEvent::Create(int Type, int Duration) {
     case EVENT_MONEYEXP:
         MoneyExp((rand() % 3) + 2);
         break;
+    case EVENT_RISINGMC:
+        RisingMC();
+        break;
     default:
         break;
     }
@@ -83,6 +86,12 @@ void CGameEvent::EventInfo(int ClientID) {
             str_format(aBuf, sizeof aBuf, "Exp: x%d", m_Multiplier);
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
             return;
+        case EVENT_RISINGMC:
+            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "~~~~~ RISING MC ~~~~~");
+            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "The Moneycollectors pot will rise");
+            str_format(aBuf, sizeof aBuf, "Duration: %d minutes %d seconds", m_Timer/60, m_Timer%60);
+            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+            return;
         }
     } else {
         switch (m_CurrentEvent)
@@ -100,6 +109,12 @@ void CGameEvent::EventInfo(int ClientID) {
             str_format(aBuf, sizeof aBuf, "Exp: x%d", m_Multiplier);
             GameServer()->SendChatTarget(ClientID, aBuf);
             return;
+        case EVENT_RISINGMC:
+            GameServer()->SendChatTarget(ClientID, "~~~~~ RISING MC ~~~~~");
+            GameServer()->SendChatTarget(ClientID, "The Moneycollectors pot will rise");
+            str_format(aBuf, sizeof aBuf, "Duration: %d minutes %d seconds", m_Timer/60, m_Timer%60);
+            GameServer()->SendChatTarget(ClientID, aBuf);
+            return;
         default:
             GameServer()->SendChatTarget(ClientID, "There is no event :(");
         }
@@ -108,6 +123,8 @@ void CGameEvent::EventInfo(int ClientID) {
 
 void CGameEvent::Reset() {
     m_Multiplier = 1;
+    GameServer()->MoneyCollector()->m_UpdateTimer = 3600;
+    GameServer()->MoneyCollector()->m_CollectPercentage = 0.04;
 }
 
 void CGameEvent::Abort() {
@@ -125,6 +142,9 @@ void CGameEvent::GetEventStr(int ID, char *Out, int Size) {
         break;
     case EVENT_MONEYEXP:
         str_format(Out, Size, "Money&Exp");
+        break;
+    case EVENT_RISINGMC:
+        str_format(Out, Size, "RisngMC");
         break;
     default:
         str_format(Out, Size, "Unknown");
@@ -162,4 +182,8 @@ void CGameEvent::Bounty() {
 
 void CGameEvent::MoneyExp(int Amount) {
     m_Multiplier = Amount;
+}
+
+void CGameEvent::RisingMC() {
+    GameServer()->MoneyCollector()->m_CollectPercentage = 1.5;
 }

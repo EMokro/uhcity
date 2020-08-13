@@ -1399,7 +1399,7 @@ void CCharacter::Booster()
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-					GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
+					GameServer()->MoneyCollector()->AddMoney(Money);
 
 					SendBroadcast(aBuf, m_pPlayer->GetCID());
 
@@ -1631,7 +1631,7 @@ void CCharacter::HandleCity()
 		m_pPlayer->m_AccData.m_Money += Reward;
 
 		if (Reward > 0)
-			GameServer()->MoneyCollector()->AddMoney(Reward * 0.04);
+			GameServer()->MoneyCollector()->AddMoney(Reward);
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 
@@ -1783,7 +1783,7 @@ void CCharacter::HandleCity()
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-			GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
+			GameServer()->MoneyCollector()->AddMoney(Money);
 
 			SendBroadcast(aBuf, m_pPlayer->GetCID());
 

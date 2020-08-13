@@ -10,6 +10,8 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
     m_Money = 0;
     m_Price = 0;
     m_HolderID = 0;
+    m_UpdateTimer = 3600;
+    m_CollectPercentage = 0.04;
     str_copy(m_aHolderName, "", sizeof m_aHolderName);
 
     FILE *pFile = fopen("moneycollector.data", "r");
@@ -26,12 +28,12 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
 }
 
 void CMoneyCollector::AddMoney(long long unsigned Money) {
-    m_Money += Money;
+    m_Money += Money * m_CollectPercentage;
     Apply();
 }
 
 void CMoneyCollector::Tick() {
-    if (!(Server()->Tick() % (Server()->TickSpeed() * 3600))) { // every hour
+    if (!(Server()->Tick() % (Server()->TickSpeed() * m_UpdateTimer))) { // every hour
         m_Money *= 1.5;
         m_Price -= m_Price * 0.01;
         Apply();
