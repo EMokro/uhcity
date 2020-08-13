@@ -838,6 +838,8 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "/cmdlist 1 -- see more commands");
     } else if (ID == 1) {
         pSelf->SendChatTarget(pP->GetCID(), "---------- COMMAND LIST ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/ids -- Display all IDs");
+        pSelf->SendChatTarget(pP->GetCID(), "/event -- Gives the current event infos");
         pSelf->SendChatTarget(pP->GetCID(), "/setbounty -- Put a bounty on someone");
         pSelf->SendChatTarget(pP->GetCID(), "/checkbounty -- Check if a player has a bounty");
         pSelf->SendChatTarget(pP->GetCID(), "/bountylist -- Get a list of all bounties");
@@ -853,13 +855,23 @@ void CGameContext::ConChatHelp(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     
     pSelf->SendChatTarget(pP->GetCID(), "---------- HELP ----------");
-    pSelf->SendChatTarget(pP->GetCID(), "This mod is currently in early access.");
     pSelf->SendChatTarget(pP->GetCID(), "You need to register enter the game.");
-    pSelf->SendChatTarget(pP->GetCID(), "    /register <username> <password>");
+    pSelf->SendChatTarget(pP->GetCID(), "-- /register <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you already have an account you can login with");
-    pSelf->SendChatTarget(pP->GetCID(), "    /login <username> <password>");
+    pSelf->SendChatTarget(pP->GetCID(), "-- /login <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you have any questions you can always ask a team member.");
     pSelf->SendChatTarget(pP->GetCID(), "Join our discord to contact us https://discord.gg/Rstb8ge");
+}
+
+void CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    
+    pSelf->SendChatTarget(pP->GetCID(), "---------- INFO ----------");
+    pSelf->SendChatTarget(pP->GetCID(), "UH|City is made by UrinStone.");
+    pSelf->SendChatTarget(pP->GetCID(), "Join our Discord to be always informed about the latest updates.");
+    pSelf->SendChatTarget(pP->GetCID(), "If you forget your password or wish to donate, please ONLY contact UrinStone#8404 on Discord.");
 }
 
 void CGameContext::ConChatWriteStats(IConsole::IResult *pResult, void *pUserData)
@@ -889,6 +901,7 @@ void CGameContext::ConChatRules(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- Don't insult other players");
     pSelf->SendChatTarget(pP->GetCID(), "- Don't Spam");
     pSelf->SendChatTarget(pP->GetCID(), "- Don't Funvote");
+    pSelf->SendChatTarget(pP->GetCID(), "- Don't place unfair lights");
     pSelf->SendChatTarget(pP->GetCID(), "- Respect the Police");
     pSelf->SendChatTarget(pP->GetCID(), "You will be punished if you disregard the rules");
 }
@@ -900,7 +913,7 @@ void CGameContext::ConChatDonor(IConsole::IResult *pResult, void *pUserData)
     
     pSelf->SendChatTarget(pP->GetCID(), "---------- DONOR ----------");
     pSelf->SendChatTarget(pP->GetCID(), "Donor costs 10€");
-    pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone to donate");
+    pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone#8404 at discord");
     pSelf->SendChatTarget(pP->GetCID(), "Donor provides following features:");
     pSelf->SendChatTarget(pP->GetCID(), "- x5 Money and Exp");
     pSelf->SendChatTarget(pP->GetCID(), "- The nice crown");
@@ -1102,7 +1115,14 @@ void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
     pSelf->SendChatTarget(pP->GetCID(), "- grenade");
     pSelf->SendChatTarget(pP->GetCID(), "- rifle");
-}   
+}
+
+void CGameContext::ConChatEvent(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    
+    pSelf->GameEvent()->EventInfo(pResult->GetClientID());
+}
 
 // items
 void CGameContext::ConChatWalls(IConsole::IResult *pResult, void *pUserData)

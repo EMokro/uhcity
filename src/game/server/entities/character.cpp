@@ -1362,6 +1362,7 @@ void CCharacter::Booster()
 					double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 					int pos = barWidth * progress;
 					int percent = floor(progress * 100);
+					int Multiplier = 1;
 
 					progressBuf[0] = '[';
 					for (int i = 0; i < barWidth; ++i) {
@@ -1376,20 +1377,25 @@ void CCharacter::Booster()
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 					GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-					if (m_pPlayer->m_AccData.m_Donor) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x6\nExp: %sep | +%sep x6\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (m_pPlayer->m_AccData.m_Donor)
+						Multiplier = 6;
+					else if (m_pPlayer->m_AccData.m_VIP)
+						Multiplier = 3;
 
-						Money *= 6;
-						ExpPoints *= 6;
-					}
-					else if (m_pPlayer->m_AccData.m_VIP) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (GameServer()->GameEvent()->m_Multiplier > 1)
+						Multiplier += GameServer()->GameEvent()->m_Multiplier;
+					
 
-						Money *= 3;
-						ExpPoints *= 3;
-					}
-					else 
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (Multiplier > 1) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x%d\nExp: %sep | +%sep x%d\n%s %i%%",
+							numBuf[0], numBuf[1], Multiplier, numBuf[2], numBuf[3], Multiplier, progressBuf, percent);
+
+						Money *= Multiplier;
+						ExpPoints *= Multiplier;
+					} else
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%",
+							numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+						
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
@@ -1742,6 +1748,7 @@ void CCharacter::HandleCity()
 			double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 			int pos = barWidth * progress;
 			int percent = floor(progress * 100);
+			int Multiplier = 1;
 
 			progressBuf[0] = '[';
 			for (int i = 0; i < barWidth; ++i) {
@@ -1756,20 +1763,23 @@ void CCharacter::HandleCity()
 			GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 			GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-			if (m_pPlayer->m_AccData.m_Donor) {
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x5\nExp: %sep | +%sep x5\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+			if (m_pPlayer->m_AccData.m_Donor)
+				Multiplier = 6;
+			else if (m_pPlayer->m_AccData.m_VIP)
+				Multiplier = 3;
 
-				Money *= 5;
-				ExpPoints *= 5;
-			}
-			else if (m_pPlayer->m_AccData.m_VIP) {
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+			if (GameServer()->GameEvent()->m_Multiplier > 1)
+				Multiplier += GameServer()->GameEvent()->m_Multiplier;
+			
+			if (Multiplier > 1) {
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x%d\nExp: %sep | +%sep x%d\n%s %i%%",
+					numBuf[0], numBuf[1], Multiplier, numBuf[2], numBuf[3], Multiplier, progressBuf, percent);
 
-				Money *= 3;
-				ExpPoints *= 3;
-			}
-			else 
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+				Money *= Multiplier;
+				ExpPoints *= Multiplier;
+			} else
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%",
+					numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;

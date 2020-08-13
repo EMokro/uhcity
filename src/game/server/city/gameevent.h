@@ -12,8 +12,12 @@ class CGameEvent {
         IServer *Server() const;
         CGameContext *GameServer() const { return m_pGameServer; }
 
+        // Resets all Event effekts
+        void Reset();
+
         // Events
         void Bounty();
+        void MoneyExp(int Amount);
 
         bool m_Escape;
         bool m_SilentEscape;
@@ -24,14 +28,17 @@ class CGameEvent {
         
         void Tick();
         void Create(int Type, int Duration);
+        void EventInfo(int ClientID = -1);
         void Abort();
         void GetEventStr(int ID, char *Out, int Size);
 
         int m_Timer;
         int m_CurrentEvent;
+        int m_Multiplier;
 
         enum {
             EVENT_BOUNTY = 0,
+            EVENT_MONEYEXP,
 
             AMOUNT_EVENT
         };

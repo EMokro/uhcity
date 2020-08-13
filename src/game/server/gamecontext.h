@@ -260,6 +260,7 @@ public:
 		static void ConChatCoach(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatIDs(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatEvent(IConsole::IResult* pResult, void* pUserData);
 
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
