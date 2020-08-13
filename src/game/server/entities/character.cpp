@@ -1764,7 +1764,7 @@ void CCharacter::HandleCity()
 			GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
 			if (m_pPlayer->m_AccData.m_Donor)
-				Multiplier = 6;
+				Multiplier = 5;
 			else if (m_pPlayer->m_AccData.m_VIP)
 				Multiplier = 3;
 

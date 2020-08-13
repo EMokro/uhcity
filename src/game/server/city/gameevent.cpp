@@ -46,6 +46,8 @@ void CGameEvent::Tick() {
 void CGameEvent::Create(int Type, int Duration) {
     char aEvent[32], aBuf[256];
 
+    Reset(); // make sure we always have only one event effect
+
     switch (Type)
     {
     case EVENT_BOUNTY:
@@ -123,7 +125,6 @@ void CGameEvent::EventInfo(int ClientID) {
 
 void CGameEvent::Reset() {
     m_Multiplier = 1;
-    GameServer()->MoneyCollector()->m_UpdateTimer = 3600;
     GameServer()->MoneyCollector()->m_CollectPercentage = 0.04;
 }
 
