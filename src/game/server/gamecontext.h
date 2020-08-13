@@ -142,6 +142,7 @@ public:
 
 	// network
 	void SendChatTarget(int To, const char *pText);
+	void SendPrivate(int ChatterClientID, int To, const char *pText, int SpamProtectionClientID = -1);
 	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
@@ -163,6 +164,7 @@ public:
 	virtual void OnPostSnap();
 
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
+	virtual void ProcessPrivateMsg(const char* Msg, int ClientID);
 
 	virtual void OnClientConnected(int ClientID);
 	virtual void OnClientEnter(int ClientID);
