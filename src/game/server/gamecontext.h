@@ -235,6 +235,8 @@ public:
 		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPM(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatSetPM(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatTrain(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);

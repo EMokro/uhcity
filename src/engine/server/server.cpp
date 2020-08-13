@@ -474,6 +474,19 @@ bool CServer::ClientIngame(int ClientID)
 	return ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CServer::CClient::STATE_INGAME;
 }
 
+int CServer::ClientIdByName(const char* Name) {
+	int ID = -1;
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (ClientIngame(i)) {
+			if (!str_comp(Name, ClientName(i))) {
+				ID = i;
+				break;
+			}
+		}
+	}
+	return ID;
+}
+
 int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 {
 	return SendMsgEx(pMsg, Flags, ClientID, false);

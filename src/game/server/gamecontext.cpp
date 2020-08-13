@@ -783,6 +783,13 @@ int CGameContext::string_length(char* pointer)
 }
 
 void CGameContext::ProcessPrivateMsg(const char* Msg, int ClientID) {
+
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
+	{
+		if(ProcessSpamProtection(ClientID))
+			return;
+	}
+
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 	char* ToName = new char[512];
 	int To = -1;
@@ -814,14 +821,9 @@ void CGameContext::ProcessPrivateMsg(const char* Msg, int ClientID) {
 		ToName[i] = Msg[i];
 	}
 
-	for (int i = 0; i < MAX_CLIENTS; i++) {
-		if (Server()->ClientIngame(i)) {
-			if (!str_comp(ToName, Server()->ClientName(i))) {
-				To = i;
-				break;
-			}
-		}
-	}
+	To = Server()->ClientIdByName(ToName);
+
+	To = To == -1 ? pPlayer->m_PmID : To;
 
 	if (To == -1) {
 		SendChatTarget(ClientID, "This chat is only for private messages.");

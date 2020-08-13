@@ -33,6 +33,7 @@ public:
 	virtual const char *ClientName(int ClientID) = 0;
 	virtual const char *ClientClan(int ClientID) = 0;
 	virtual int ClientCountry(int ClientID) = 0;
+	virtual int ClientIdByName(const char* Name) = 0;
 	virtual bool ClientIngame(int ClientID) = 0;
 	virtual int GetClientInfo(int ClientID, CClientInfo *pInfo) = 0;
 	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;

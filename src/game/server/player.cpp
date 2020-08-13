@@ -20,7 +20,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-
+	m_PmID = -1;
+	
 	// 64 clients
 	int* pIdMap = Server()->GetIdMap(m_ClientID);
 	for (int i = 1; i < VANILLA_MAX_CLIENTS; i++)

@@ -391,6 +391,82 @@ void CGameContext::ConChatTransfer(IConsole::IResult *pResult, void *pUserData)
     pChr->Transfer(Money);
 }
 
+void CGameContext::ConChatPM(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+
+    if (pResult->NumArguments() != 2) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /pm <name> <message>");
+        return;
+    }
+
+    const char* Victim = pResult->GetString(0);
+    const char* Msg = pResult->GetString(1);
+    int ID = pSelf->Server()->ClientIdByName(Victim);
+
+    if (ID == -1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "No such user");
+        return;
+    }
+
+    if (pP->GetCID() == ID) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't pm yourself");
+        return;
+    }
+
+    if (!pSelf->ValidID(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "Out of range");
+        return;
+    }
+
+    if (!pSelf->Server()->ClientIngame(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "No such player");
+        return;
+    }
+
+    pSelf->SendPrivate(pResult->GetClientID(), ID, Msg);
+}
+
+void CGameContext::ConChatSetPM(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+
+    if (pResult->NumArguments() != 1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /setpm <name>");
+        return;
+    }
+
+    const char* Victim = pResult->GetString(0);
+    int ID = pSelf->Server()->ClientIdByName(Victim);
+    char aBuf[256];
+
+    if (ID == -1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "No such user");
+        return;
+    }
+
+    if (pP->GetCID() == ID) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't set yourself as pm partner");
+        return;
+    }
+
+    if (!pSelf->ValidID(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "Out of range");
+        return;
+    }
+
+    if (!pSelf->Server()->ClientIngame(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "No such player");
+        return;
+    }
+
+    pP->m_PmID = ID;
+    str_format(aBuf, sizeof aBuf, "%s is now your pm partner", Victim);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
 void CGameContext::ConChatDisabledmg(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
