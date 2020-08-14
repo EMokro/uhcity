@@ -44,7 +44,7 @@ void CGameEvent::Tick() {
 }
 
 void CGameEvent::Create(int Type, int Duration) {
-    char aEvent[32], aBuf[256];
+    char aEvent[32];
 
     Reset(); // make sure we always have only one event effect
 

@@ -631,7 +631,7 @@ void IGameController::Tick()
 						{
 							// move player to spectator
 							// GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
-							if (!GameServer()->m_apPlayers[i]->m_Afk)
+							if (!GameServer()->m_apPlayers[i]->m_Afk && !GameServer()->m_apPlayers[i]->m_AccData.m_Donor)
 								GameServer()->m_apPlayers[i]->SendAfk();
 						}
 						break;
@@ -654,6 +654,9 @@ void IGameController::Tick()
 							Server()->Kick(i, "Kicked for inactivity");
 						}
 					}
+				} else if(Server()->Tick() > GameServer()->m_apPlayers[i]->m_LastActionTick + g_Config.m_SvInactiveKickTimeDonor*Server()->TickSpeed()*60) {
+					if (!GameServer()->m_apPlayers[i]->m_Afk && GameServer()->m_apPlayers[i]->m_AccData.m_Donor)
+								GameServer()->m_apPlayers[i]->SendAfk();
 				} else if (!GameServer()->m_apPlayers[i]->m_LastActionTick)
 					GameServer()->m_apPlayers[i]->m_Afk = false;
 			}
