@@ -13,18 +13,17 @@ CPortal::CPortal(CGameWorld *pGameWorld, int Owner, vec2 Pos1, vec2 Pos2)
     m_Timer = 25;
     m_LifeTime = 3000; // 1min
 
-	// for(int i = 0; i < 2; i++)
-	// 	m_IDs[i] = Server()->SnapNewID();
-
 	GameWorld()->InsertEntity(this);
 }
 
 void CPortal::Reset()
 {
+    CCharacter *pChr = GameServer()->GetPlayerChar(m_Owner);
+    if (pChr) {
+        pChr->m_PortalPos[0] = vec2(0, 0);
+        pChr->m_PortalPos[1] = vec2(0, 0);
+    }
 	GameServer()->m_World.DestroyEntity(this);
-
-	// for(int i = 0; i < 2; i++)
-	// 	Server()->SnapFreeID(m_IDs[i]);
 }
 
 void CPortal::Tick()

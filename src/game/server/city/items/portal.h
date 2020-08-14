@@ -17,6 +17,7 @@ public:
 
     vec2 m_Pos1;
     vec2 m_Pos2;
+	bool m_Active;
 
 private:
 	int m_IDs[2];
