@@ -33,13 +33,17 @@ void CGravAura::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if(!pOwner)
-		Reset();
+	if(!pOwner) {
+        Reset();
+        return;
+    }
 
     m_LifeTime--;
 
-    if (m_LifeTime <= 0)
+    if (m_LifeTime <= 0) {
         Reset();
+        return;
+    }
 
     for (int i = 0; i < MAX_CLIENTS; i++) {
 
@@ -71,8 +75,11 @@ void CGravAura::Snap(int SnappingClient)
     if (!pChr)
         return;
 
+    CNetObj_Projectile *pObj[MAX_PROJECTILS];
     for(int i = 0; i < MAX_PROJECTILS; i++)
     {
+        pObj[i] = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
+
         vec2 TempPos;
         if (m_Mode > 0) {
             TempPos = pChr->m_Pos + 
@@ -84,6 +91,9 @@ void CGravAura::Snap(int SnappingClient)
                 ((((m_LifeTime - 3000) + m_StartPos[i]) % g_Config.m_SvGravAuraRadius) + g_Config.m_SvGravAuraRadius);
         }
         
-        new CProjectile(GameWorld(), WEAPON_HAMMER,	m_Owner, TempPos, vec2(0, 0), 1, 1, 0, 0, -1, 0);
+        pObj[i]->m_X = m_Pos.x + TempPos.x;
+		pObj[i]->m_Y = m_Pos.y + TempPos.y;
+		pObj[i]->m_Type = WEAPON_HAMMER;
+		pObj[i]->m_StartTick = Server()->Tick();
     }
 }

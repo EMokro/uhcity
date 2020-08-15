@@ -1705,7 +1705,8 @@ void CCharacter::HandleCity()
 		if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
 			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
 
-			if (!pChr) return;
+			if (!pChr)
+				return;
 
 			if (m_LastHooked != m_Core.m_HookedPlayer) {
 				pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
@@ -1721,8 +1722,13 @@ void CCharacter::HandleCity()
 	} else {
 		
 		if (GameServer()->ValidID(m_LastHooked)) {
-			if (GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal)
-				GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
+			CCharacter *pChr = GameServer()->m_apPlayers[m_LastHooked]->GetCharacter();
+
+			if (!pChr)
+				return;
+
+			if (pChr->m_ExternalHeal)
+				pChr->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
 
 			m_LastHooked = -1;
 		}
