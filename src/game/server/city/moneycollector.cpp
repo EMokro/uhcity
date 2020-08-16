@@ -25,6 +25,8 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
         );
         fclose(pFile);
     }
+
+    m_Money >= 10000000000 ? 10000000000 : 0;
 }
 
 void CMoneyCollector::AddMoney(long long unsigned Money) {
@@ -34,7 +36,7 @@ void CMoneyCollector::AddMoney(long long unsigned Money) {
 
 void CMoneyCollector::Tick() {
     if (!(Server()->Tick() % (Server()->TickSpeed() * m_UpdateTimer))) { // every hour
-        m_Money *= 1.5;
+        m_Money =  m_Money >= 10000000000 ? 10000000000 : 0;
         m_Price -= m_Price * 0.01;
         Apply();
     }
