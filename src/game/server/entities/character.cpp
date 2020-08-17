@@ -917,6 +917,9 @@ void CCharacter::FireWeapon()
 			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
 				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/30) + 1;
 
+			if (LvlSpeed > (float)g_Config.m_SvWLvlSpeedMax)
+				LvlSpeed = (float)g_Config.m_SvWLvlSpeedMax;
+
 			if (m_ActiveWeapon == WEAPON_GUN)
 				LvlSpeed /= 2;
 
@@ -2109,11 +2112,16 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(m_pPlayer->m_AccData.m_NoSelfDMG && From == m_pPlayer->GetCID())
 		return false;
 
+	int LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
+
+	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
+		LvlDmg = g_Config.m_SvWLvlDmgMax;
+
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
 	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
-		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // Add every 10 lvl 1 dmg to others
+		Dmg += LvlDmg; // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 	if (GameServer()->ValidID(From)) {

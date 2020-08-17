@@ -10,6 +10,11 @@ MACRO_CONFIG_INT(SvFastDownload, sv_fast_download, 1, 0, 1, CFGFLAG_SERVER, "Ena
 
 MACRO_CONFIG_INT(SvDoorType, sv_door_type, 0, 0, 2, CFGFLAG_SERVER, "Type of laser doors. 0 = collision, 1 = unhookable, 2 = death")
 
+// weaponlvl
+MACRO_CONFIG_INT(SvWLvlDmgMax, sv_wlvl_dmg_max, 10, 0, 25, CFGFLAG_SERVER, "Max damage added by weapon lvl")
+MACRO_CONFIG_INT(SvWLvlSpeedMax, sv_wlvl_speed_max, 10, 0, 20, CFGFLAG_SERVER, "Max atk speed gained by weapon lvl")
+
+
 // events
 MACRO_CONFIG_INT(SvEventTimerMin, sv_event_timer_min, 600, 0, 0, CFGFLAG_SERVER, "The minimum time between random events in seconds")
 MACRO_CONFIG_INT(SvEventTimerMax, sv_event_timer_max, 1200, 0, 0, CFGFLAG_SERVER, "The maximum time between random events in seconds")
