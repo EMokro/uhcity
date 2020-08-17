@@ -546,12 +546,17 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
 
     const char *Weapon = pResult->GetString(0);
     int ID = pSelf->GetWIDByStr(Weapon);
-    int Amount = pResult->NumArguments() == 2 ? pResult->GetInteger(1) : 1;
+    int Amount = pResult->NumArguments() == 2 ? pResult->GetLongLong(1) : 1;
     char aBuf[256], numBuf[2][32];
 
     if (ID < 0) {
         str_format(aBuf, sizeof aBuf, "'%s' does not exist", Weapon);
         pSelf->SendChatTarget(pP->GetCID(), aBuf);
+        return;
+    }
+
+    if (Amount > 100) {
+        pSelf->SendChatTarget(pP->GetCID(), "You cant train more than 100ep at once");
         return;
     }
 

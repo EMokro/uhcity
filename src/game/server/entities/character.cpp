@@ -2210,7 +2210,7 @@ void CCharacter::SendBroadcast(const char *pText, int ClientID) {
 	}
 }
 
-void CCharacter::AddExp(int Weapon, int Amount) {
+void CCharacter::AddExp(int Weapon, long long unsigned Amount) {
 	char aBuf[256];
 	char WeaponBuf[128];
 
