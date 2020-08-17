@@ -271,11 +271,17 @@ int CRegister::RegisterProcessPacket(CNetChunk *pPacket)
 	else if(pPacket->m_DataSize == sizeof(SERVERBROWSE_FWERROR) &&
 		mem_comp(pPacket->m_pData, SERVERBROWSE_FWERROR, sizeof(SERVERBROWSE_FWERROR)) == 0)
 	{
-		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "ERROR: the master server reports that clients can not connect to this server.");
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "ERROR: configure your firewall/nat to let through udp on port %d.", g_Config.m_SvPort);
-		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", aBuf);
-		RegisterNewState(REGISTERSTATE_ERROR);
+		if (g_Config.m_Debug)
+		{
+			// debug only to avoid console spam
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "ERROR: the master server reports that clients can not connect to this server.");
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "ERROR: configure your firewall/nat to let through udp on port %d.", g_Config.m_SvPort);
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", aBuf);
+		}
+
+		// packet is useless, don't set new state to avoid register exploit
+		// RegisterNewState(REGISTERSTATE_ERROR);
 		return 1;
 	}
 	else if(pPacket->m_DataSize == sizeof(SERVERBROWSE_COUNT)+2 &&
