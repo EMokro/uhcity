@@ -368,7 +368,7 @@ int CServer::Init()
 		m_aClients[i].m_aName[0] = 0;
 		m_aClients[i].m_aClan[0] = 0;
 		m_aClients[i].m_Country = -1;
-		m_aClients[i].m_Client64 = false;
+		m_aClients[i].m_Client = CLIENT_VANILLA;
 		m_aClients[i].m_Snapshots.Init();
 	}
 
@@ -413,7 +413,7 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 	{
 		pInfo->m_pName = m_aClients[ClientID].m_aName;
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
-		pInfo->m_Client64 = m_aClients[ClientID].m_Client64;
+		pInfo->m_Client = m_aClients[ClientID].m_Client;
 		return 1;
 	}
 	return 0;
@@ -680,7 +680,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	pThis->m_aClients[ClientID].m_Authed = AUTHED_NO;
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
 	pThis->m_aClients[ClientID].m_pRconCmdToSend = 0;
-	pThis->m_aClients[ClientID].m_Client64 = false;
+	pThis->m_aClients[ClientID].m_Client = CLIENT_VANILLA;
 	pThis->m_aClients[ClientID].Reset();
 	return 0;
 }
@@ -968,8 +968,10 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			if (Unpacker.Error() == 0)
 			{
 				// oldschool 64 clients support
-				if ((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && !str_comp(pCmd, "crashmeplx"))
-					SetClient64(ClientID);
+				if (!str_comp(pCmd, "using_client k-client"))
+					SetClient(ClientID, CLIENT_KCLIENT);
+				else if (!str_comp(pCmd, "crashmeplx"))
+					SetClient(ClientID, CLIENT_CUSTOM);
 				else if (m_aClients[ClientID].m_Authed)
 				{
 					char aBuf[256];
@@ -1686,8 +1688,9 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 			Addr = pServer->m_NetServer.ClientAddr(i);
 			net_addr_str(&Addr, aAddrStr, sizeof(aAddrStr));
 			if(pServer->m_aClients[i].m_State == CClient::STATE_INGAME)
-				str_format(aBuf, sizeof(aBuf), "id=%d addr=%s name='%s' score=%d AccountID=%d", i, aAddrStr,
-					pServer->m_aClients[i].m_aName, pServer->m_aClients[i].m_Score,pServer->m_aClients[i].m_AccID);
+				str_format(aBuf, sizeof(aBuf), "id=%d addr=%s name='%s' score=%d AccountID=%d Client='%s'", i, aAddrStr,
+					pServer->m_aClients[i].m_aName, pServer->m_aClients[i].m_Score,pServer->m_aClients[i].m_AccID,
+					pServer->m_aClients[i].m_Client == CLIENT_DDNET ? "DDNet" : pServer->m_aClients[i].m_Client == CLIENT_KCLIENT ? "K-Client" : pServer->m_aClients[i].m_Client == CLIENT_CUSTOM ? "Custom" : "Vanilla");
 			else
 				str_format(aBuf, sizeof(aBuf), "id=%d addr=%s connecting", i, aAddrStr);
 			pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
@@ -1935,7 +1938,11 @@ int* CServer::GetIdMap(int ClientID)
 	return (int*)(m_aIdMap + VANILLA_MAX_CLIENTS * ClientID);
 }
 
-void CServer::SetClient64(int ClientID)
+void CServer::SetClient(int ClientID, int Client)
 {
-	m_aClients[ClientID].m_Client64 = 1;
+	if (Client < 0 || Client >= NUM_CLIENT_TYPES)
+		return;
+
+	dbg_msg("server", "%d is using %s and supports 64p", ClientID, Client == CLIENT_DDNET ? "DDNet" : Client == CLIENT_KCLIENT ? "K-Client" : Client == CLIENT_CUSTOM ? "Custom" : "Vanilla");
+	m_aClients[ClientID].m_Client = Client;
 }

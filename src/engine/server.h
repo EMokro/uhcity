@@ -24,7 +24,16 @@ public:
 		const char *m_pName;
 		int m_Latency;
 
-		bool m_Client64;
+		int m_Client;
+	};
+
+	enum
+	{
+		CLIENT_VANILLA = 0,
+		CLIENT_DDNET,
+		CLIENT_KCLIENT,
+		CLIENT_CUSTOM, // some custom client with 64p which we don't know
+		NUM_CLIENT_TYPES,
 	};
 
 	int Tick() const { return m_CurrentGameTick; }
@@ -113,7 +122,7 @@ public:
 	{
 		CClientInfo Info;
 		GetClientInfo(ClientID, &Info);
-		if (Info.m_Client64)
+		if (Info.m_Client != CLIENT_VANILLA)
 			return true;
 
 		int* pMap = GetIdMap(ClientID);
@@ -135,7 +144,7 @@ public:
 	{
 		CClientInfo Info;
 		GetClientInfo(ClientID, &Info);
-		if (Info.m_Client64)
+		if (Info.m_Client != CLIENT_VANILLA)
 			return true;
 
 		int* pMap = GetIdMap(ClientID);
@@ -174,7 +183,7 @@ public:
 
 	// 64 clients
 	virtual int* GetIdMap(int ClientID) = 0;
-	virtual void SetClient64(int ClientID) = 0;
+	virtual void SetClient(int ClientID, int Client) = 0;
 	virtual bool IsClient64(int ClientID) = 0;
 
 	virtual void DemoRecorder_HandleAutoStart() = 0;
