@@ -588,21 +588,21 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     char aBuf[128], numBuf[32];
     int ListID = !pResult->NumArguments() ? 0 : pResult->GetInteger(0);
-    int aSize = 0;
+    int Size = 0;
 
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (pSelf->BountyList(i) == -1)
             continue;
 
-        aSize++;
+        Size++;
     }
 
-    if (!aSize) {
+    if (!Size) {
         pSelf->SendChatTarget(pP->GetCID(), "There are no bounties to hunt");
         return;
     }
 
-    if (ListID * 6 > aSize) {
+    if (ListID * 6 > Size) {
         pSelf->SendChatTarget(pP->GetCID(), "There are no bounties here");
         return;
     }
@@ -613,9 +613,14 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
     }
 
     pSelf->SendChatTarget(pP->GetCID(), "~~~~~~ BOUNTY LIST ~~~~~~");
-    for (int i = ListID * 6; (i < ListID * 6 + 6 && i < aSize); i++) {
+    for (int i = ListID * 6; (i < ListID * 6 + 6 && i < Size); i++) {
         pSelf->FormatInt(pSelf->m_apPlayers[pSelf->BountyList(i)]->m_AccData.m_Bounty, numBuf);
         str_format(aBuf, sizeof aBuf, "'%s': %s$", pSelf->Server()->ClientName(pSelf->BountyList(i)), numBuf);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+    }
+
+    if (Size > ListID * 6 + 6) {
+        str_format(aBuf, sizeof aBuf, "/bountylist %d", ListID+1);
         pSelf->SendChatTarget(pP->GetCID(), aBuf);
     }
 }
@@ -652,6 +657,8 @@ void CGameContext::ConChatCheckbounty(IConsole::IResult *pResult, void *pUserDat
     pSelf->FormatInt(pTarget->m_AccData.m_Bounty, numBuf);
     str_format(aBuf, sizeof aBuf, "%s has a bounty of %s$", pSelf->Server()->ClientName(Victim), numBuf);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
+
+    
 }
 
 void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
@@ -722,15 +729,13 @@ void CGameContext::ConChatMCBuy(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 
-    if (pSelf->GetPlayerChar(pResult->GetClientID()));
-
-    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(pResult->GetClientID())->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
+    if (pResult->NumArguments() != 1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Usage: /mcbuy <amount>");
         return;
     }
 
-    if (pResult->NumArguments() != 1) {
-        
+    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(pResult->GetClientID())->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
         return;
     }
 
@@ -754,10 +759,6 @@ void CGameContext::ConChatMCHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
     int ID = pResult->GetClientID();
-    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(ID)->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
-        return;
-    }
 
     pSelf->SendChatTarget(ID, "~~ Money Collector Help ~~");
     pSelf->SendChatTarget(ID, "The Money Collector collects 4% of the farmed income on the server.");
