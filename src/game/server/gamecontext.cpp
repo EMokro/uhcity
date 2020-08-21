@@ -1317,9 +1317,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		pPlayer->m_LastKill = Server()->Tick();
 		pPlayer->KillCharacter(WEAPON_SELF);
 	}
-	else if (MsgID == NETMSGTYPE_CL_ISDDNET || MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	else if (MsgID == NETMSGTYPE_CL_ISDDNET)
 	{
-		Server()->SetClient64(ClientID);
+		Server()->SetClient(ClientID, IServer::CLIENT_DDNET);
+	}
+	else if (MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	{
+		Server()->SetClient(ClientID, IServer::CLIENT_CUSTOM);
 	}
 }
 
