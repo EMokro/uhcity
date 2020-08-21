@@ -2112,7 +2112,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(m_pPlayer->m_AccData.m_NoSelfDMG && From == m_pPlayer->GetCID())
 		return false;
 
-	int LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
+	int LvlDmg;
+	// not sure why it crashes
+	if (GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] && GameServer()->ValidID(From) && (Weapon >= WEAPON_HAMMER && Weapon < WEAPON_NINJA))
+		LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // <-- causing crash
 
 	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
 		LvlDmg = g_Config.m_SvWLvlDmgMax;
