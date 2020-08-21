@@ -170,6 +170,7 @@ public:
 		int m_NinjaStart;
 		int m_NinjaSwitch;
 		int m_NinjaFly;
+		int m_NinjaBomber;
 
 		int m_EndlessHook;
 		int m_HealHook;
@@ -184,6 +185,7 @@ public:
 	bool m_Insta;
 	bool m_Afk;
 	bool m_NinjaFly;
+	int m_RainbowColor;
 	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;

@@ -51,16 +51,19 @@ void CNinja::Tick()
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Ninja permanent", &pOwner->GetPlayer()->m_AccData.m_NinjaPermanent, g_Config.m_EuNinjaPermanent, Click, 1);
+		pOwner->Buy("Ninja Permanent", &pOwner->GetPlayer()->m_AccData.m_NinjaPermanent, g_Config.m_EuNinjaPermanent, Click, 1);
 		break;
 	case 2:
-		pOwner->Buy("Ninja at start", &pOwner->GetPlayer()->m_AccData.m_NinjaStart, g_Config.m_EuNinjaStart, Click, 1);
+		pOwner->Buy("Ninja at Start", &pOwner->GetPlayer()->m_AccData.m_NinjaStart, g_Config.m_EuNinjaStart, Click, 1);
 		break;
 	case 3:
-		pOwner->Buy("Ninja switch", &pOwner->GetPlayer()->m_AccData.m_NinjaSwitch, g_Config.m_EuNinjaSwitch, Click, 1);
+		pOwner->Buy("Ninja Switch", &pOwner->GetPlayer()->m_AccData.m_NinjaSwitch, g_Config.m_EuNinjaSwitch, Click, 1);
 		break;
 	case 4:
 		pOwner->Buy("Ninja Fly", &pOwner->GetPlayer()->m_AccData.m_NinjaFly, g_Config.m_EuNinjaFly, Click, 1);
+		break;
+	case 5:
+		pOwner->Buy("Ninja Bomber", &pOwner->GetPlayer()->m_AccData.m_NinjaBomber, g_Config.m_EuNinjaBomber, Click, 1);
 		break;
 	}
 }
@@ -156,72 +159,33 @@ void CNinja::Snap(int SnappingClient)
 				pP[i]->m_Subtype = WEAPON_NINJA;
 			}
 		}
-	}
+	} else if(m_Type == 5) { // fly
+		CNetObj_Pickup *pP;
+		CNetObj_Projectile *pProj;
 
-	/*
-	CNetObj_Pickup *pP[2];
+		if(Server()->Tick()%20 == 0)
+			m_StartTick = Server()->Tick();
 
-	for(int i = 0; i < 2; i++)
-	{
-		pP[i] = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+		pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[0], sizeof(CNetObj_Pickup)));
 
-		if(!pP[i])
+		if(!pP)
 			return;
 
-		pP[i]->m_X = (int)m_Pos.x - 25 + 5*i;
-		pP[i]->m_Y = (int)m_Pos.y + 5*i;
-		pP[i]->m_Type = i;
-		pP[i]->m_Subtype = 0;
-	
+		pP->m_X = (int)m_Pos.x;
+		pP->m_Y = (int)m_Pos.y;
+		pP->m_Type = POWERUP_NINJA;
+		pP->m_Subtype = WEAPON_NINJA;
+
+		pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[1], sizeof(CNetObj_Projectile)));
+
+		if(!pProj)
+			return;
+
+		pProj->m_X = (int)m_Pos.x - 32;
+		pProj->m_Y = (int)m_Pos.y;
+		pProj->m_VelX = (int)0;
+		pProj->m_VelY = (int)10;
+		pProj->m_StartTick = m_StartTick;
+		pProj->m_Type = WEAPON_GRENADE;
 	}
-
-	vec2 Positions[6];
-	Positions[0] = vec2(m_Pos.x - 45, m_Pos.y);
-	Positions[1] = vec2(m_Pos.x + 45, m_Pos.y);
-
-	
-	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
-
-	if(pOwner)
-	{
-		if(pOwner->GetPlayer()->m_AccData.m_AllWeapons)
-		{
-
-		}
-	}
-	
-	*/
 }
-
-//http://hugelol.org/lol/61730
-//http://hugelol.org/lol/61768
-//http://hugelol.org/lol/61756
-//http://hugelol.org/lol/61674
-//http://hugelol.org/lol/61400
-//http://hugelol.org/lol/61255
-//http://hugelol.org/lol/61311
-//http://hugelol.org/lol/60946
-//http://hugelol.org/lol/60690
-//http://hugelol.org/lol/60684
-//http://hugelol.org/lol/60497
-//http://hugelol.org/lol/60681
-//http://hugelol.org/lol/60519
-//http://hugelol.org/lol/59592
-//http://hugelol.org/lol/59527
-//http://hugelol.org/lol/59429
-//http://hugelol.org/lol/59112
-//http://hugelol.org/lol/59184
-//http://hugelol.org/lol/59105
-//http://hugelol.org/lol/58769
-//http://hugelol.org/lol/58701
-//http://hugelol.org/lol/58459
-//http://hugelol.org/lol/58230
-//http://hugelol.org/lol/57971
-//http://hugelol.org/lol/57724
-//http://hugelol.org/lol/57788
-//http://hugelol.org/lol/57700
-//http://hugelol.org/lol/57590
-//http://hugelol.org/lol/57461
-//http://hugelol.org/lol/57523
-//http://hugelol.org/lol/57529
-//http://hugelol.org/lol/57481
