@@ -2229,6 +2229,8 @@ void CCharacter::AddExp(int Weapon, long long unsigned Amount) {
 
 	m_pPlayer->m_AccData.m_ExpWeapon[Weapon] += Amount;
 
+	if (Weapon == WEAPON_NINJA)
+		return;
 	
 	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 
