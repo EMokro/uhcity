@@ -513,7 +513,7 @@ void CCharacter::ChangeUpgrade(int Weapon, int Value)
 
 void CCharacter::FireWeapon()
 {
-	if(m_ReloadTimer != 0)
+	if(m_ReloadTimer != 0 )
 		return;
 
 	DoWeaponSwitch();
@@ -556,6 +556,12 @@ void CCharacter::FireWeapon()
 	}
 
 	vec2 ProjStartPos = m_Pos+Direction*m_ProximityRadius*0.75f;
+
+	if (m_ActiveWeapon == WEAPON_NINJA) {
+		if (m_pPlayer->m_NinjaFly) {
+			m_ReloadTimer = 0;
+		}
+	}
 
 	// City
 	if(m_Protected && m_ActiveWeapon != WEAPON_NINJA && m_ActiveWeapon != WEAPON_RIFLE && !m_GameZone)
@@ -925,6 +931,9 @@ void CCharacter::FireWeapon()
 
 			m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay 
 				/ LvlSpeed * Server()->TickSpeed() / 1000;
+
+			if (m_ActiveWeapon == WEAPON_NINJA && m_pPlayer->m_NinjaFly)
+				m_ReloadTimer = 5;
 			
 		}
 		else
