@@ -170,6 +170,7 @@ public:
 		int m_NinjaStart;
 		int m_NinjaSwitch;
 		int m_NinjaFly;
+		int m_NinjaBomber;
 
 		int m_EndlessHook;
 		int m_HealHook;
@@ -183,14 +184,19 @@ public:
 	bool m_God;
 	bool m_Insta;
 	bool m_Afk;
-	bool m_NinjaFly;
+	
+	int m_RainbowColor;
 	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;
 	int m_ChatScore;
 	int m_PmID;
 	char m_aRank[64];
-			
+
+	// items
+	bool m_NinjaFly;
+	bool m_NinjaBomber;
+
 	//Klickfoots scheiß
 	int m_ReleaseCarousel;
 	int m_Crown;

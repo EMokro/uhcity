@@ -235,6 +235,8 @@ void CAccount::Login(char *Username, char *Password)
 	m_pPlayer->m_AccData.m_NinjaSwitch = user["items"]["ninja"]["ninjaswitch"].GetInt();
 	if (user["items"]["ninja"].HasMember("fly"))
 		m_pPlayer->m_AccData.m_NinjaFly = user["items"]["ninja"]["fly"].GetInt();
+	if (user["items"]["ninja"].HasMember("bomber"))
+		m_pPlayer->m_AccData.m_NinjaBomber = user["items"]["ninja"]["bomber"].GetInt();
 
 	if (user["items"].HasMember("hook")) {
 		if (user["items"]["hook"].HasMember("endless"))
@@ -492,7 +494,9 @@ void CAccount::Register(char *Username, char *Password)
     writer.Key("ninjaswitch");
     writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
 	writer.Key("fly");
-    writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
+    writer.Int(m_pPlayer->m_AccData.m_NinjaFly);
+	writer.Key("bomber");
+    writer.Int(m_pPlayer->m_AccData.m_NinjaBomber);
     writer.EndObject();
 
 	writer.Key("hook");
@@ -696,7 +700,9 @@ void CAccount::Apply()
     writer.Key("ninjaswitch");
     writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
 	writer.Key("fly");
-    writer.Int(m_pPlayer->m_AccData.m_NinjaSwitch);
+    writer.Int(m_pPlayer->m_AccData.m_NinjaFly);
+	writer.Key("bomber");
+    writer.Int(m_pPlayer->m_AccData.m_NinjaBomber);
     writer.EndObject();
 
 	writer.Key("hook");
@@ -786,6 +792,7 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_NinjaStart = 0;
 	m_pPlayer->m_AccData.m_NinjaSwitch = 0;
 	m_pPlayer->m_AccData.m_NinjaFly = 0;
+	m_pPlayer->m_AccData.m_NinjaBomber = 0;
 
 	m_pPlayer->m_AccData.m_HealHook = 0;
 	m_pPlayer->m_AccData.m_BoostHook = 0;

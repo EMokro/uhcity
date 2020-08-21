@@ -70,7 +70,7 @@ CONSOLE_COMMAND("fly", "", CFGFLAG_CHAT, ConChatFly, this, "")
 CONSOLE_COMMAND("hhook", "", CFGFLAG_CHAT, ConChatHealHook, this, "")
 CONSOLE_COMMAND("bhook", "", CFGFLAG_CHAT, ConChatBoostHook, this, "")
 CONSOLE_COMMAND("nfly", "", CFGFLAG_CHAT, ConChatNinjaFly, this, "")
-
+CONSOLE_COMMAND("nbomber", "", CFGFLAG_CHAT, ConChatNinjaBomber, this, "")
 
 CONSOLE_COMMAND("pushaura", "", CFGFLAG_CHAT, ConChatPushAura, this, "")
 CONSOLE_COMMAND("pullaura", "", CFGFLAG_CHAT, ConChatPullAura, this, "")
