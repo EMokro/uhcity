@@ -184,7 +184,7 @@ public:
 	bool m_God;
 	bool m_Insta;
 	bool m_Afk;
-	bool m_NinjaFly;
+	
 	int m_RainbowColor;
 	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
@@ -192,7 +192,11 @@ public:
 	int m_ChatScore;
 	int m_PmID;
 	char m_aRank[64];
-			
+
+	// items
+	bool m_NinjaFly;
+	bool m_NinjaBomber;
+
 	//Klickfoots scheiß
 	int m_ReleaseCarousel;
 	int m_Crown;

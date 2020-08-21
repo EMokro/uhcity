@@ -1430,3 +1430,26 @@ void CGameContext::ConChatNinjaFly(IConsole::IResult *pResult, void *pUserData)
     str_format(aBuf, sizeof aBuf, "%s Ninjafly", pP->m_NinjaFly ? "Enabled" : "Disabled");
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
 }
+
+void CGameContext::ConChatNinjaBomber(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!pChr)
+        return;
+
+    if (pP->m_Insta || pChr->m_GameZone)
+        return;
+
+    if (!pP->m_AccData.m_NinjaBomber) {
+        pSelf->SendChatTarget(pP->GetCID(), "Buy Ninjabomber first!");
+        return;
+    }
+
+    pP->m_NinjaBomber ^= true;
+    str_format(aBuf, sizeof aBuf, "%s Ninjabomber", pP->m_NinjaBomber ? "Enabled" : "Disabled");
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}

@@ -247,7 +247,6 @@ public:
 		static void ConChatMCHelp(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatMCCmds(IConsole::IResult* pResult, void* pUserData);
 
-
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
@@ -263,7 +262,6 @@ public:
 		static void ConChatIDs(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEvent(IConsole::IResult* pResult, void* pUserData);
 
-
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHammerkill(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPortal(IConsole::IResult* pResult, void* pUserData);
@@ -275,6 +273,7 @@ public:
 		static void ConChatHealHook(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBoostHook(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatNinjaFly(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatNinjaBomber(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPushAura(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPullAura(IConsole::IResult* pResult, void* pUserData);
 
