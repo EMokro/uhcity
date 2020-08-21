@@ -13,7 +13,8 @@ MACRO_CONFIG_INT(SvDoorType, sv_door_type, 0, 0, 2, CFGFLAG_SERVER, "Type of las
 // weaponlvl
 MACRO_CONFIG_INT(SvWLvlDmgMax, sv_wlvl_dmg_max, 10, 0, 25, CFGFLAG_SERVER, "Max damage added by weapon lvl")
 MACRO_CONFIG_INT(SvWLvlSpeedMax, sv_wlvl_speed_max, 10, 0, 20, CFGFLAG_SERVER, "Max atk speed gained by weapon lvl")
-
+MACRO_CONFIG_INT(SvWLvlMax, sv_wlvl_max, 500, 0, 1000, CFGFLAG_SERVER, "Max weapon lvl")
+MACRO_CONFIG_INT(SvExpPrice, sv_exp_price, 1000000, 0, 50000000, CFGFLAG_SERVER, "The price one exp costs")
 
 // events
 MACRO_CONFIG_INT(SvEventTimerMin, sv_event_timer_min, 600, 0, 0, CFGFLAG_SERVER, "The minimum time between random events in seconds")
@@ -24,8 +25,9 @@ MACRO_CONFIG_INT(SvEventDurationMax, sv_event_duration_min, 240, 0, 0, CFGFLAG_S
 MACRO_CONFIG_INT(SvEventBountyMin, sv_event_bounty_min, 100000, 1000, 0, CFGFLAG_SERVER, "The minimum bounty amount")
 MACRO_CONFIG_INT(SvEventBountyMax, sv_event_bounty_max, 500000, 1000, 100000000, CFGFLAG_SERVER, "The maximum bounty amount")
 
-// coach
-MACRO_CONFIG_INT(SvExpPrice, sv_exp_price, 1000000, 0, 50000000, CFGFLAG_SERVER, "The price one exp costs")
+// moneycollector
+MACRO_CONFIG_LONGLONG(SvMcPotMax, sv_mc_pot_max, 10000000000, 0, 1000000000000, CFGFLAG_SERVER, "The maximum amount the pot can contain")
+
 
 // items
 MACRO_CONFIG_INT(SvBoostHookStr, sv_boost_hook_str, 50, 1, 1000000, CFGFLAG_SERVER, "Strength of boosthook")

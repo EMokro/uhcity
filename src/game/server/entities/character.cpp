@@ -2231,12 +2231,18 @@ void CCharacter::AddExp(int Weapon, long long unsigned Amount) {
 
 	if (Weapon == WEAPON_NINJA)
 		return;
+
+	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= (unsigned)g_Config.m_SvWLvlMax)
+		return;
 	
 	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 
 		while (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 			m_pPlayer->m_AccData.m_ExpWeapon[Weapon] -= m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
 			m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+
+			if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= (unsigned)g_Config.m_SvWLvlMax)
+				break;
 		}
 
 		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);

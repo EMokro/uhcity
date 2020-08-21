@@ -29,6 +29,10 @@ CMoneyCollector::CMoneyCollector(CGameContext *pGameServer) {
 
 void CMoneyCollector::AddMoney(long long unsigned Money) {
     m_Money += Money * m_CollectPercentage;
+
+    if (m_Money > g_Config.m_SvMcPotMax)
+        m_Money = g_Config.m_SvMcPotMax;
+
     Apply();
 }
 
@@ -37,7 +41,9 @@ void CMoneyCollector::Tick() {
         m_Money *= 1.5;
         m_Price -= m_Price * 0.01;
 
-        clamp(m_Money, (unsigned long long)0, (unsigned long long)10000000000);
+        if (m_Money > g_Config.m_SvMcPotMax)
+            m_Money = g_Config.m_SvMcPotMax;
+
         Apply();
     }
 }

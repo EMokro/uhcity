@@ -556,12 +556,17 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
     }
 
     if (Amount > 100) {
-        pSelf->SendChatTarget(pP->GetCID(), "You cant train more than 100ep at once");
+        pSelf->SendChatTarget(pP->GetCID(), "You can't train more than 100ep at once");
         return;
     }
 
     if (Amount < 0) {
         pSelf->SendChatTarget(pP->GetCID(), "Bad boy...");
+        return;
+    }
+
+    if (pP->m_AccData.m_ExpWeapon[ID] >= (unsigned)g_Config.m_SvWLvlMax) {
+        pSelf->SendChatTarget(pP->GetCID(), "You already reached the max level");
         return;
     }
 
