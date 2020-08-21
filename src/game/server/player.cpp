@@ -422,7 +422,7 @@ void CPlayer::FakeSnap(int SnappingClient)
 	IServer::CClientInfo Info;
 
 	Server()->GetClientInfo(SnappingClient, &Info);
-	if (Info.m_Client64)
+	if (Info.m_Client != IServer::CLIENT_VANILLA)
 		return;
 
 	int FakeID = VANILLA_MAX_CLIENTS - 1;
