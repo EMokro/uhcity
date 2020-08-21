@@ -25,7 +25,7 @@ CONSOLE_COMMAND("set_armor", "vi", CFGFLAG_SERVER, ConSetArmor, this, "set_armor
 CONSOLE_COMMAND("set_client_name", "vi", CFGFLAG_SERVER, ConSetClientName, this, "set_client_name id value")
 CONSOLE_COMMAND("set_client_gravity_y", "vi", CFGFLAG_SERVER, ConSetClientGravityY, this, "set_client_gravity_y id value")
 CONSOLE_COMMAND("set_client_gravity_x", "vi", CFGFLAG_SERVER, ConSetClientGravityX, this, "set_client_gravity_x id value")
-CONSOLE_COMMAND("event_start", "vi", CFGFLAG_SERVER, ConStartEvent, this, "event_start <id> <time> | 0 - Bounty")
+CONSOLE_COMMAND("event_start", "vi", CFGFLAG_SERVER, ConStartEvent, this, "event_start <id> <time> | 0 - Bounty | 1 - Money&Exp | 2 - RisingMC")
 CONSOLE_COMMAND("event_abort", "", CFGFLAG_SERVER, ConAbortEvent, this, "aborts the current event")
 CONSOLE_COMMAND("event_timer", "", CFGFLAG_SERVER, ConEventTimer, this, "time till next event or till event end in seconds")
 CONSOLE_COMMAND("set_bounty", "vi", CFGFLAG_SERVER, ConSetBounty, this, "set_bounty <id> <amount>")

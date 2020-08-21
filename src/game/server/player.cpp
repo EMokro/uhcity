@@ -20,7 +20,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-
+	m_PmID = -1;
+	
 	// 64 clients
 	int* pIdMap = Server()->GetIdMap(m_ClientID);
 	for (int i = 1; i < VANILLA_MAX_CLIENTS; i++)
@@ -421,7 +422,7 @@ void CPlayer::FakeSnap(int SnappingClient)
 	IServer::CClientInfo Info;
 
 	Server()->GetClientInfo(SnappingClient, &Info);
-	if (Info.m_Client64)
+	if (Info.m_Client != IServer::CLIENT_VANILLA)
 		return;
 
 	int FakeID = VANILLA_MAX_CLIENTS - 1;

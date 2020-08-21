@@ -110,7 +110,7 @@ public:
 
 		void Reset();
 
-		bool m_Client64; // 64 clients
+		int m_Client; // 64 clients
 
 		int m_NextMapChunk;
 	};
@@ -184,6 +184,7 @@ public:
 	const char *ClientClan(int ClientID);
 	int ClientCountry(int ClientID);
 	bool ClientIngame(int ClientID);
+	int ClientIdByName(const char* Name);
 
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID);
 	int SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System);
@@ -242,8 +243,8 @@ public:
 
 	// 64 clients
 	virtual int* GetIdMap(int ClientID);
-	virtual void SetClient64(int ClientID);
-	virtual bool IsClient64(int ClientID) { return m_aClients[ClientID].m_Client64; }
+	virtual void SetClient(int ClientID, int Client);
+	virtual bool IsClient64(int ClientID) { return m_aClients[ClientID].m_Client != CLIENT_VANILLA; }
 };
 
 #endif

@@ -179,7 +179,6 @@ public:
 		int m_PullAura;
 	} m_AccData;
 
-	int m_RainbowColor;
 	bool m_Rainbow;
 	bool m_God;
 	bool m_Insta;
@@ -188,8 +187,9 @@ public:
 	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
 	int m_Authed;
-	char m_aRank[64];
 	int m_ChatScore;
+	int m_PmID;
+	char m_aRank[64];
 			
 	//Klickfoots scheiß
 	int m_ReleaseCarousel;

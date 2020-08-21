@@ -13,18 +13,17 @@ CPortal::CPortal(CGameWorld *pGameWorld, int Owner, vec2 Pos1, vec2 Pos2)
     m_Timer = 25;
     m_LifeTime = 3000; // 1min
 
-	// for(int i = 0; i < 2; i++)
-	// 	m_IDs[i] = Server()->SnapNewID();
-
 	GameWorld()->InsertEntity(this);
 }
 
 void CPortal::Reset()
 {
+    CCharacter *pChr = GameServer()->GetPlayerChar(m_Owner);
+    if (pChr) {
+        pChr->m_PortalPos[0] = vec2(0, 0);
+        pChr->m_PortalPos[1] = vec2(0, 0);
+    }
 	GameServer()->m_World.DestroyEntity(this);
-
-	// for(int i = 0; i < 2; i++)
-	// 	Server()->SnapFreeID(m_IDs[i]);
 }
 
 void CPortal::Tick()
@@ -41,15 +40,11 @@ void CPortal::Tick()
 
     if (m_Timer < 1) {
         CCharacter* pChr1 = GameWorld()->ClosestCharacter(m_Pos1, 32, NULL);
-
-        if (!pChr1)
-            return;
-
         if (pChr1) {
             pChr1->m_Core.m_Pos = m_Pos2;
             m_Timer = 25;
         }
-            
+
         CCharacter* pChr2 = GameWorld()->ClosestCharacter(m_Pos2, 32, NULL);
         if (pChr2) {
             pChr2->m_Core.m_Pos = m_Pos1;
@@ -73,7 +68,6 @@ void CPortal::Snap(int SnappingClient)
     if (!m_Pos1 || !m_Pos2) {
         return;
     }
-        
 
 	CNetEvent_Spawn *pObj[2];
 

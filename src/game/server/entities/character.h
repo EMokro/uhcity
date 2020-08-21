@@ -58,7 +58,7 @@ public:
 	void FireWeapon();
 
 	void Die(int Killer, int Weapon);
-	void AddExp(int Weapon, int Amount = 1);
+	void AddExp(int Weapon, long long unsigned Amount = 1);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);

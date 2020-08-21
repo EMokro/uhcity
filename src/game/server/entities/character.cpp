@@ -923,6 +923,9 @@ void CCharacter::FireWeapon()
 			if (m_ActiveWeapon >= 0 && m_ActiveWeapon <= WEAPON_RIFLE)
 				LvlSpeed = (m_pPlayer->m_AccData.m_LvlWeapon[m_ActiveWeapon]/30) + 1;
 
+			if (LvlSpeed > (float)g_Config.m_SvWLvlSpeedMax)
+				LvlSpeed = (float)g_Config.m_SvWLvlSpeedMax;
+
 			if (m_ActiveWeapon == WEAPON_GUN)
 				LvlSpeed /= 2;
 
@@ -1371,6 +1374,7 @@ void CCharacter::Booster()
 					double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 					int pos = barWidth * progress;
 					int percent = floor(progress * 100);
+					int Multiplier = 1;
 
 					progressBuf[0] = '[';
 					for (int i = 0; i < barWidth; ++i) {
@@ -1385,24 +1389,29 @@ void CCharacter::Booster()
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 					GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-					if (m_pPlayer->m_AccData.m_Donor) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x6\nExp: %sep | +%sep x6\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (m_pPlayer->m_AccData.m_Donor)
+						Multiplier = 6;
+					else if (m_pPlayer->m_AccData.m_VIP)
+						Multiplier = 3;
 
-						Money *= 6;
-						ExpPoints *= 6;
-					}
-					else if (m_pPlayer->m_AccData.m_VIP) {
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (GameServer()->GameEvent()->m_Multiplier > 1)
+						Multiplier += GameServer()->GameEvent()->m_Multiplier;
+					
 
-						Money *= 3;
-						ExpPoints *= 3;
-					}
-					else 
-						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+					if (Multiplier > 1) {
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x%d\nExp: %sep | +%sep x%d\n%s %i%%",
+							numBuf[0], numBuf[1], Multiplier, numBuf[2], numBuf[3], Multiplier, progressBuf, percent);
+
+						Money *= Multiplier;
+						ExpPoints *= Multiplier;
+					} else
+						str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%",
+							numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+						
 
 					m_pPlayer->m_AccData.m_Money += Money;
 					m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-					GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
+					GameServer()->MoneyCollector()->AddMoney(Money);
 
 					SendBroadcast(aBuf, m_pPlayer->GetCID());
 
@@ -1634,7 +1643,7 @@ void CCharacter::HandleCity()
 		m_pPlayer->m_AccData.m_Money += Reward;
 
 		if (Reward > 0)
-			GameServer()->MoneyCollector()->AddMoney(Reward * 0.04);
+			GameServer()->MoneyCollector()->AddMoney(Reward);
 
 		GameServer()->SendChat(-1, GameServer()->CHAT_ALL, aBuf);
 
@@ -1708,7 +1717,8 @@ void CCharacter::HandleCity()
 		if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
 			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
 
-			if (!pChr) return;
+			if (!pChr)
+				return;
 
 			if (m_LastHooked != m_Core.m_HookedPlayer) {
 				pChr->m_ExternalHeal += m_pPlayer->m_AccData.m_HealHook;
@@ -1724,8 +1734,13 @@ void CCharacter::HandleCity()
 	} else {
 		
 		if (GameServer()->ValidID(m_LastHooked)) {
-			if (GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal)
-				GameServer()->m_apPlayers[m_LastHooked]->GetCharacter()->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
+			CCharacter *pChr = GameServer()->m_apPlayers[m_LastHooked]->GetCharacter();
+
+			if (!pChr)
+				return;
+
+			if (pChr->m_ExternalHeal)
+				pChr->m_ExternalHeal -= m_pPlayer->m_AccData.m_HealHook;
 
 			m_LastHooked = -1;
 		}
@@ -1751,6 +1766,7 @@ void CCharacter::HandleCity()
 			double progress = (double)m_pPlayer->m_AccData.m_ExpPoints / (double)NeededExp;
 			int pos = barWidth * progress;
 			int percent = floor(progress * 100);
+			int Multiplier = 1;
 
 			progressBuf[0] = '[';
 			for (int i = 0; i < barWidth; ++i) {
@@ -1765,24 +1781,27 @@ void CCharacter::HandleCity()
 			GameServer()->FormatInt(m_pPlayer->m_AccData.m_ExpPoints, numBuf[2]);
 			GameServer()->FormatInt(ExpPoints, numBuf[3]);
 
-			if (m_pPlayer->m_AccData.m_Donor) {
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x5\nExp: %sep | +%sep x5\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+			if (m_pPlayer->m_AccData.m_Donor)
+				Multiplier = 5;
+			else if (m_pPlayer->m_AccData.m_VIP)
+				Multiplier = 3;
 
-				Money *= 5;
-				ExpPoints *= 5;
-			}
-			else if (m_pPlayer->m_AccData.m_VIP) {
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x3\nExp: %sep | +%sep x3\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+			if (GameServer()->GameEvent()->m_Multiplier > 1)
+				Multiplier += GameServer()->GameEvent()->m_Multiplier;
+			
+			if (Multiplier > 1) {
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$ x%d\nExp: %sep | +%sep x%d\n%s %i%%",
+					numBuf[0], numBuf[1], Multiplier, numBuf[2], numBuf[3], Multiplier, progressBuf, percent);
 
-				Money *= 3;
-				ExpPoints *= 3;
-			}
-			else 
-				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%", numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
+				Money *= Multiplier;
+				ExpPoints *= Multiplier;
+			} else
+				str_format(aBuf, sizeof(aBuf), "Money: %s$ | +%s$\nExp: %sep | +%sep\n%s %i%%",
+					numBuf[0], numBuf[1], numBuf[2], numBuf[3], progressBuf, percent);
 
 			m_pPlayer->m_AccData.m_Money += Money;
 			m_pPlayer->m_AccData.m_ExpPoints += ExpPoints;
-			GameServer()->MoneyCollector()->AddMoney(Money * 0.04);
+			GameServer()->MoneyCollector()->AddMoney(Money);
 
 			SendBroadcast(aBuf, m_pPlayer->GetCID());
 
@@ -2102,11 +2121,19 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(m_pPlayer->m_AccData.m_NoSelfDMG && From == m_pPlayer->GetCID())
 		return false;
 
+	int LvlDmg;
+	// not sure why it crashes
+	if (GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] && GameServer()->ValidID(From) && (Weapon >= WEAPON_HAMMER && Weapon < WEAPON_NINJA))
+		LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // <-- causing crash
+
+	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
+		LvlDmg = g_Config.m_SvWLvlDmgMax;
+
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 		Dmg = max(1, Dmg/2);
 	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
-		Dmg += floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0); // Add every 10 lvl 1 dmg to others
+		Dmg += LvlDmg; // Add every 10 lvl 1 dmg to others
 
 	m_DamageTaken++;
 	if (GameServer()->ValidID(From)) {
@@ -2203,7 +2230,7 @@ void CCharacter::SendBroadcast(const char *pText, int ClientID) {
 	}
 }
 
-void CCharacter::AddExp(int Weapon, int Amount) {
+void CCharacter::AddExp(int Weapon, long long unsigned Amount) {
 	char aBuf[256];
 	char WeaponBuf[128];
 
@@ -2211,12 +2238,20 @@ void CCharacter::AddExp(int Weapon, int Amount) {
 
 	m_pPlayer->m_AccData.m_ExpWeapon[Weapon] += Amount;
 
+	if (Weapon == WEAPON_NINJA)
+		return;
+
+	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= (unsigned)g_Config.m_SvWLvlMax)
+		return;
 	
 	if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 
 		while (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= m_pPlayer->m_AccData.m_LvlWeapon[Weapon]) {
 			m_pPlayer->m_AccData.m_ExpWeapon[Weapon] -= m_pPlayer->m_AccData.m_LvlWeapon[Weapon];
 			m_pPlayer->m_AccData.m_LvlWeapon[Weapon]++;
+
+			if (m_pPlayer->m_AccData.m_ExpWeapon[Weapon] >= (unsigned)g_Config.m_SvWLvlMax)
+				break;
 		}
 
 		str_format(aBuf, sizeof aBuf, "%s level up!", WeaponBuf);

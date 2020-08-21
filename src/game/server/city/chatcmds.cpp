@@ -391,6 +391,82 @@ void CGameContext::ConChatTransfer(IConsole::IResult *pResult, void *pUserData)
     pChr->Transfer(Money);
 }
 
+void CGameContext::ConChatPM(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+
+    if (pResult->NumArguments() != 2) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /pm <name> <message>");
+        return;
+    }
+
+    const char* Victim = pResult->GetString(0);
+    const char* Msg = pResult->GetString(1);
+    int ID = pSelf->Server()->ClientIdByName(Victim);
+
+    if (ID == -1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "No such user");
+        return;
+    }
+
+    if (pP->GetCID() == ID) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't pm yourself");
+        return;
+    }
+
+    if (!pSelf->ValidID(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "Out of range");
+        return;
+    }
+
+    if (!pSelf->Server()->ClientIngame(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "No such player");
+        return;
+    }
+
+    pSelf->SendPrivate(pResult->GetClientID(), ID, Msg);
+}
+
+void CGameContext::ConChatSetPM(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+
+    if (pResult->NumArguments() != 1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "usage: /setpm <name>");
+        return;
+    }
+
+    const char* Victim = pResult->GetString(0);
+    int ID = pSelf->Server()->ClientIdByName(Victim);
+    char aBuf[256];
+
+    if (ID == -1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "No such user");
+        return;
+    }
+
+    if (pP->GetCID() == ID) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't set yourself as pm partner");
+        return;
+    }
+
+    if (!pSelf->ValidID(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "Out of range");
+        return;
+    }
+
+    if (!pSelf->Server()->ClientIngame(ID)) {
+        pSelf->SendChatTarget(pP->GetCID(), "No such player");
+        return;
+    }
+
+    pP->m_PmID = ID;
+    str_format(aBuf, sizeof aBuf, "%s is now your pm partner", Victim);
+    pSelf->SendChatTarget(pP->GetCID(), aBuf);
+}
+
 void CGameContext::ConChatDisabledmg(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
@@ -470,7 +546,7 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
 
     const char *Weapon = pResult->GetString(0);
     int ID = pSelf->GetWIDByStr(Weapon);
-    int Amount = pResult->NumArguments() == 2 ? pResult->GetInteger(1) : 1;
+    int Amount = pResult->NumArguments() == 2 ? pResult->GetLongLong(1) : 1;
     char aBuf[256], numBuf[2][32];
 
     if (ID < 0) {
@@ -479,8 +555,18 @@ void CGameContext::ConChatTrain(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
+    if (Amount > 100) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't train more than 100ep at once");
+        return;
+    }
+
     if (Amount < 0) {
         pSelf->SendChatTarget(pP->GetCID(), "Bad boy...");
+        return;
+    }
+
+    if (pP->m_AccData.m_ExpWeapon[ID] >= (unsigned)g_Config.m_SvWLvlMax) {
+        pSelf->SendChatTarget(pP->GetCID(), "You already reached the max level");
         return;
     }
 
@@ -507,21 +593,21 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     char aBuf[128], numBuf[32];
     int ListID = !pResult->NumArguments() ? 0 : pResult->GetInteger(0);
-    int aSize = 0;
+    int Size = 0;
 
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (pSelf->BountyList(i) == -1)
             continue;
 
-        aSize++;
+        Size++;
     }
 
-    if (!aSize) {
+    if (!Size) {
         pSelf->SendChatTarget(pP->GetCID(), "There are no bounties to hunt");
         return;
     }
 
-    if (ListID * 6 > aSize) {
+    if (ListID * 6 > Size) {
         pSelf->SendChatTarget(pP->GetCID(), "There are no bounties here");
         return;
     }
@@ -532,9 +618,14 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
     }
 
     pSelf->SendChatTarget(pP->GetCID(), "~~~~~~ BOUNTY LIST ~~~~~~");
-    for (int i = ListID * 6; (i < ListID * 6 + 6 && i < aSize); i++) {
+    for (int i = ListID * 6; (i < ListID * 6 + 6 && i < Size); i++) {
         pSelf->FormatInt(pSelf->m_apPlayers[pSelf->BountyList(i)]->m_AccData.m_Bounty, numBuf);
         str_format(aBuf, sizeof aBuf, "'%s': %s$", pSelf->Server()->ClientName(pSelf->BountyList(i)), numBuf);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
+    }
+
+    if (Size > ListID * 6 + 6) {
+        str_format(aBuf, sizeof aBuf, "/bountylist %d", ListID+1);
         pSelf->SendChatTarget(pP->GetCID(), aBuf);
     }
 }
@@ -571,6 +662,8 @@ void CGameContext::ConChatCheckbounty(IConsole::IResult *pResult, void *pUserDat
     pSelf->FormatInt(pTarget->m_AccData.m_Bounty, numBuf);
     str_format(aBuf, sizeof aBuf, "%s has a bounty of %s$", pSelf->Server()->ClientName(Victim), numBuf);
     pSelf->SendChatTarget(pP->GetCID(), aBuf);
+
+    
 }
 
 void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
@@ -641,15 +734,13 @@ void CGameContext::ConChatMCBuy(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 
-    if (pSelf->GetPlayerChar(pResult->GetClientID()));
-
-    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(pResult->GetClientID())->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
+    if (pResult->NumArguments() != 1) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "Usage: /mcbuy <amount>");
         return;
     }
 
-    if (pResult->NumArguments() != 1) {
-        
+    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(pResult->GetClientID())->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
+        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
         return;
     }
 
@@ -673,10 +764,6 @@ void CGameContext::ConChatMCHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
     int ID = pResult->GetClientID();
-    if (!pSelf->Collision()->IsTile(pSelf->GetPlayerChar(ID)->m_Core.m_Pos, TILE_MONEYCOLLECTOR)) {
-        pSelf->SendChatTarget(pResult->GetClientID(), "You need to be inside the Moneycollector");
-        return;
-    }
 
     pSelf->SendChatTarget(ID, "~~ Money Collector Help ~~");
     pSelf->SendChatTarget(ID, "The Money Collector collects 4% of the farmed income on the server.");
@@ -762,6 +849,8 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(pP->GetCID(), "/cmdlist 1 -- see more commands");
     } else if (ID == 1) {
         pSelf->SendChatTarget(pP->GetCID(), "---------- COMMAND LIST ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/ids -- Display all IDs");
+        pSelf->SendChatTarget(pP->GetCID(), "/event -- Gives the current event infos");
         pSelf->SendChatTarget(pP->GetCID(), "/setbounty -- Put a bounty on someone");
         pSelf->SendChatTarget(pP->GetCID(), "/checkbounty -- Check if a player has a bounty");
         pSelf->SendChatTarget(pP->GetCID(), "/bountylist -- Get a list of all bounties");
@@ -777,13 +866,23 @@ void CGameContext::ConChatHelp(IConsole::IResult *pResult, void *pUserData)
     CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
     
     pSelf->SendChatTarget(pP->GetCID(), "---------- HELP ----------");
-    pSelf->SendChatTarget(pP->GetCID(), "This mod is currently in early access.");
     pSelf->SendChatTarget(pP->GetCID(), "You need to register enter the game.");
-    pSelf->SendChatTarget(pP->GetCID(), "    /register <username> <password>");
+    pSelf->SendChatTarget(pP->GetCID(), "-- /register <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you already have an account you can login with");
-    pSelf->SendChatTarget(pP->GetCID(), "    /login <username> <password>");
+    pSelf->SendChatTarget(pP->GetCID(), "-- /login <username> <password>");
     pSelf->SendChatTarget(pP->GetCID(), "If you have any questions you can always ask a team member.");
     pSelf->SendChatTarget(pP->GetCID(), "Join our discord to contact us https://discord.gg/Rstb8ge");
+}
+
+void CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    
+    pSelf->SendChatTarget(pP->GetCID(), "---------- INFO ----------");
+    pSelf->SendChatTarget(pP->GetCID(), "UH|City is made by UrinStone.");
+    pSelf->SendChatTarget(pP->GetCID(), "Join our Discord to be always informed about the latest updates.");
+    pSelf->SendChatTarget(pP->GetCID(), "If you forget your password or wish to donate, please ONLY contact UrinStone#8404 on Discord.");
 }
 
 void CGameContext::ConChatWriteStats(IConsole::IResult *pResult, void *pUserData)
@@ -813,6 +912,7 @@ void CGameContext::ConChatRules(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- Don't insult other players");
     pSelf->SendChatTarget(pP->GetCID(), "- Don't Spam");
     pSelf->SendChatTarget(pP->GetCID(), "- Don't Funvote");
+    pSelf->SendChatTarget(pP->GetCID(), "- Don't place unfair lights");
     pSelf->SendChatTarget(pP->GetCID(), "- Respect the Police");
     pSelf->SendChatTarget(pP->GetCID(), "You will be punished if you disregard the rules");
 }
@@ -824,7 +924,7 @@ void CGameContext::ConChatDonor(IConsole::IResult *pResult, void *pUserData)
     
     pSelf->SendChatTarget(pP->GetCID(), "---------- DONOR ----------");
     pSelf->SendChatTarget(pP->GetCID(), "Donor costs 10€");
-    pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone to donate");
+    pSelf->SendChatTarget(pP->GetCID(), "Contact UrinStone#8404 at discord");
     pSelf->SendChatTarget(pP->GetCID(), "Donor provides following features:");
     pSelf->SendChatTarget(pP->GetCID(), "- x5 Money and Exp");
     pSelf->SendChatTarget(pP->GetCID(), "- The nice crown");
@@ -1026,7 +1126,14 @@ void CGameContext::ConChatCoach(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- shotgun");
     pSelf->SendChatTarget(pP->GetCID(), "- grenade");
     pSelf->SendChatTarget(pP->GetCID(), "- rifle");
-}   
+}
+
+void CGameContext::ConChatEvent(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    
+    pSelf->GameEvent()->EventInfo(pResult->GetClientID());
+}
 
 // items
 void CGameContext::ConChatWalls(IConsole::IResult *pResult, void *pUserData)

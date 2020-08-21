@@ -231,6 +231,39 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, To);
 }
 
+void CGameContext::SendPrivate(int From, int To, const char *pText, int SpamProtectionClientID)
+{
+	if(SpamProtectionClientID >= 0 && SpamProtectionClientID < MAX_CLIENTS)
+	{
+		if(ProcessSpamProtection(SpamProtectionClientID))
+			return;
+	}
+
+	int Team = 1;
+	char aBuf[256];
+
+	if(From >= 0 && From < MAX_CLIENTS)
+		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", From, Team, Server()->ClientName(From), pText);
+	else
+		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
+	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "teamchat", aBuf);
+
+	CNetMsg_Sv_Chat Msg;
+	Msg.m_Team = 1;
+	Msg.m_ClientID = From;
+	Msg.m_pMessage = pText;
+
+	// pack one for the recording only
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+
+	// send to the clients
+	if(m_apPlayers[To]) {
+		if (To != From)
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, From);
+
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, To);
+	}
+}
 
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, int SpamProtectionClientID)
 {
@@ -482,6 +515,7 @@ void CGameContext::OnTick()
 	//if(world.paused) // make sure that the game object always updates
 	m_pController->Tick();
 	m_pGameEvent->Tick();
+	m_pMoneyCollector->Tick();
 
 	// City
 	if(!addr.ip[0])
@@ -748,6 +782,59 @@ int CGameContext::string_length(char* pointer)
 	return c;
 }
 
+void CGameContext::ProcessPrivateMsg(const char* Msg, int ClientID) {
+
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
+	{
+		if(ProcessSpamProtection(ClientID))
+			return;
+	}
+
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	char* ToName = new char[512];
+	int To = -1;
+
+	if (!pPlayer->m_AccData.m_UserID)
+		return;
+
+	if (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() > Server()->Tick() * 10)
+		return;
+
+	pPlayer->m_LastChat = Server()->Tick();
+
+	// check for invalid chars
+	unsigned char *pMessage = (unsigned char *)Msg;
+	while (*pMessage)
+	{
+		if(*pMessage < 32)
+			*pMessage = ' ';
+		pMessage++;
+	}
+
+	for (int i = 0; i < str_length(Msg); i++)
+	{
+		if (Msg[i] == ':') {
+			ToName[i] = '\0';
+			break;
+		}
+		
+		ToName[i] = Msg[i];
+	}
+
+	To = Server()->ClientIdByName(ToName);
+
+	To = To == -1 ? pPlayer->m_PmID : To;
+
+	if (To == -1) {
+		SendChatTarget(ClientID, "This chat is only for private messages.");
+		SendChatTarget(ClientID, "Usage: <nickname>: Your Message");
+		return;
+	}
+
+	SendPrivate(ClientID, To, Msg);
+	delete[] ToName;
+}
+
 void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 {
 	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(MsgID, pUnpacker);
@@ -765,8 +852,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	{
 		CNetMsg_Cl_Say *pMsg = (CNetMsg_Cl_Say *)pRawMsg;
 		int Team = pMsg->m_Team;
-		if(Team)
+		if(Team) {
 			Team = pPlayer->GetTeam();
+			ProcessPrivateMsg(pMsg->m_pMessage, ClientID);
+			return;
+		}
 		else
 			Team = CGameContext::CHAT_ALL;
 
@@ -1227,9 +1317,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		pPlayer->m_LastKill = Server()->Tick();
 		pPlayer->KillCharacter(WEAPON_SELF);
 	}
-	else if (MsgID == NETMSGTYPE_CL_ISDDNET || MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	else if (MsgID == NETMSGTYPE_CL_ISDDNET)
 	{
-		Server()->SetClient64(ClientID);
+		Server()->SetClient(ClientID, IServer::CLIENT_DDNET);
+	}
+	else if (MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	{
+		Server()->SetClient(ClientID, IServer::CLIENT_CUSTOM);
 	}
 }
 

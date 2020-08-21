@@ -159,15 +159,15 @@ void CAccount::Login(char *Username, char *Password)
 		if (user["level"].HasMember("normal"))
 			m_pPlayer->m_AccData.m_Level = user["level"]["normal"].GetInt();
 		if (user["level"].HasMember("hammer"))
-			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER] = user["level"]["hammer"].GetInt();
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER] = user["level"]["hammer"].GetInt() > 500 ? 500 : m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER] = user["level"]["hammer"].GetInt();
 		if (user["level"].HasMember("gun"))
-			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN] = user["level"]["gun"].GetInt();
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN] = user["level"]["gun"].GetInt() > 500 ? 500 : m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN] = user["level"]["gun"].GetInt();
 		if (user["level"].HasMember("shotgun"))
-			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN] = user["level"]["shotgun"].GetInt();
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN] = user["level"]["shotgun"].GetInt() > 500 ? 500 : m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN] = user["level"]["shotgun"].GetInt();
 		if (user["level"].HasMember("grenade"))
-			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE] = user["level"]["grenade"].GetInt();
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE] = user["level"]["grenade"].GetInt() > 500 ? 500 : m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE] = user["level"]["grenade"].GetInt();
 		if (user["level"].HasMember("rifle"))
-			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE] = user["level"]["rifle"].GetInt();
+			m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE] = user["level"]["rifle"].GetInt() > 500 ? 500 : m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_RIFLE] = user["level"]["rifle"].GetInt();
 	}
 
 	if (user.HasMember("exp")) {
@@ -576,7 +576,7 @@ void CAccount::Apply()
     writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_HAMMER]);
     writer.Key("gun");
     writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GUN]);
-	writer.Key("shotung");
+	writer.Key("shotgun");
     writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN]);
 	writer.Key("grenade");
     writer.Int(m_pPlayer->m_AccData.m_LvlWeapon[WEAPON_GRENADE]);

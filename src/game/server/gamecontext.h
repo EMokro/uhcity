@@ -142,6 +142,7 @@ public:
 
 	// network
 	void SendChatTarget(int To, const char *pText);
+	void SendPrivate(int ChatterClientID, int To, const char *pText, int SpamProtectionClientID = -1);
 	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
@@ -163,6 +164,7 @@ public:
 	virtual void OnPostSnap();
 
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
+	virtual void ProcessPrivateMsg(const char* Msg, int ClientID);
 
 	virtual void OnClientConnected(int ClientID);
 	virtual void OnClientEnter(int ClientID);
@@ -233,6 +235,8 @@ public:
 		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatPM(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatSetPM(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatTrain(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatBountylist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCheckbounty(IConsole::IResult* pResult, void* pUserData);
@@ -247,6 +251,7 @@ public:
 		static void ConChatMe(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatCmdlist(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatHelp(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatInfo(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDonor(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDonorCmds(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatVip(IConsole::IResult* pResult, void* pUserData);
@@ -256,6 +261,7 @@ public:
 		static void ConChatCoach(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatWriteStats(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatIDs(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatEvent(IConsole::IResult* pResult, void* pUserData);
 
 
 		static void ConChatWalls(IConsole::IResult* pResult, void* pUserData);
