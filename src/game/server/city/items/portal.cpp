@@ -58,6 +58,10 @@ void CPortal::Tick()
 void CPortal::Snap(int SnappingClient)
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
+    int StartTick = 2;
+
+    if (Server()->Tick() % StartTick != 0)
+        return;
 
 	if(pOwner)
 	{
