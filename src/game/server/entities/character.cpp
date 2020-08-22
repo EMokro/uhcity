@@ -1577,23 +1577,21 @@ void CCharacter::HandleCity()
 {
 	HealthRegeneration();
 
-	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SAVE) && !m_Protected)
+	if(GameServer()->Collision()->IsTile(m_Pos, TILE_PROTECT))
 	{
-		SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
-		if (!m_Protected) {
+		if (!(m_Protected || m_Core.m_Protected)) {
+			SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
 			m_Protected = true;
 			m_Core.m_Protected = true;
 			GameServer()->SendTuningParams(m_pPlayer->GetCID());
 		}
 	}
-	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_KILL) && m_Protected)
+	else if (m_Protected || m_Core.m_Protected)
 	{
 		SendBroadcast("Protected zone left", m_pPlayer->GetCID());
-		if (m_Protected) {
-			m_Protected = false;
-			m_Core.m_Protected = false;
-			GameServer()->SendTuningParams(m_pPlayer->GetCID());
-		}
+		m_Protected = false;
+		m_Core.m_Protected = false;
+		GameServer()->SendTuningParams(m_pPlayer->GetCID());
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_START) && !m_GameZone)
