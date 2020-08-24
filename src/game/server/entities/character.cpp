@@ -96,6 +96,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	{
 		m_Protected = true;
 		m_Core.m_Protected = true;
+		new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 	}
 
 	m_InstaKills = 0;
@@ -125,9 +126,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	new CHealstate(GameWorld(), m_pPlayer->GetCID());
 
 	m_pPlayer->m_Crown = true;
-
-	if(!m_pPlayer->m_Insta)
-		new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 
 	m_GameZone = false;
 	m_IsHammerKilled = false;
@@ -381,6 +379,9 @@ void CCharacter::HandleNinja()
 
 	if(m_Frozen)
 		return;
+
+	if (Protected())
+		m_Ninja.m_CurrentMoveTime = 0;
 
 	// force ninja Weapon
 	SetWeapon(WEAPON_NINJA);
@@ -1584,6 +1585,7 @@ void CCharacter::HandleCity()
 			m_Protected = true;
 			m_Core.m_Protected = true;
 			GameServer()->SendTuningParams(m_pPlayer->GetCID());
+			new CSpawProtect(GameWorld(), m_pPlayer->GetCID());
 		}
 	}
 	else if (m_Protected || m_Core.m_Protected)
