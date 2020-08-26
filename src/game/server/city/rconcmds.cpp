@@ -77,6 +77,8 @@ void CGameContext::ConDonor(IConsole::IResult *pResult, void *pUserData)
 				str_format(aBuf, sizeof aBuf, "'%s' is no longer a Donor.", pSelf->Server()->ClientName(DonorID));
 
 		pSelf->SendChat(-1, CHAT_ALL, aBuf);
+
+		pChr->GetPlayer()->m_pAccount->Apply();
 	}
 }
 
