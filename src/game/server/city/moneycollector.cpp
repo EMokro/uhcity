@@ -46,8 +46,8 @@ void CMoneyCollector::Tick() {
         Apply();
     }
 
-    if (!(Server()->Tick() % (Server()->TickSpeed() * 600)) {
-        m_Price -= m_Price * 0.05
+    if (!(Server()->Tick() % (Server()->TickSpeed() * 600))) {
+        m_Price -= m_Price * 0.05;
         Apply();
     }
 }
