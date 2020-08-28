@@ -769,7 +769,7 @@ void CGameContext::ConChatMCHelp(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(ID, "The Money Collector collects 4% of the farmed income on the server.");
     pSelf->SendChatTarget(ID, "This money ends up in the pot.");
     pSelf->SendChatTarget(ID, "The pot is increased by 50% every hour.");
-    pSelf->SendChatTarget(ID, "The price is reduced by 1% every hour.");
+    pSelf->SendChatTarget(ID, "The price is reduced by 5% every 10 minutes");
     pSelf->SendChatTarget(ID, "The Holder can collect the money from the pot.");
     pSelf->SendChatTarget(ID, "Checkout /mccmds to get more information.");
 }
