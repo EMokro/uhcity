@@ -39,11 +39,15 @@ void CMoneyCollector::AddMoney(long long unsigned Money) {
 void CMoneyCollector::Tick() {
     if (!(Server()->Tick() % (Server()->TickSpeed() * m_UpdateTimer))) { // every hour
         m_Money *= 1.5;
-        m_Price -= m_Price * 0.01;
 
         if (m_Money > g_Config.m_SvMcPotMax)
             m_Money = g_Config.m_SvMcPotMax;
 
+        Apply();
+    }
+
+    if (!(Server()->Tick() % (Server()->TickSpeed() * 600)) {
+        m_Price -= m_Price * 0.05
         Apply();
     }
 }

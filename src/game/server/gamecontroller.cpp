@@ -417,7 +417,6 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 				}
 
-				GameServer()->MoneyCollector()->AddMoney(pVictim->GetPlayer()->m_AccData.m_Bounty);
 				pVictim->GetPlayer()->m_AccData.m_Bounty = 0;
 				pVictim->GetPlayer()->m_pAccount->Apply();
 				GameServer()->RemoveFromBountyList(pVictim->GetPlayer()->GetCID());

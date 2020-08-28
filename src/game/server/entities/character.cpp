@@ -1728,7 +1728,7 @@ void CCharacter::HandleCity()
 		}
 	}
 
-	if (GameServer()->ValidID(m_Core.m_HookedPlayer)) { // hook items
+	if (GameServer()->ValidID(m_Core.m_HookedPlayer) && !(m_GameZone || m_pPlayer->m_Insta)) { // hook items
 		if (m_pPlayer->m_AciveUpgrade[ITEM_HOOK] == UPGRADE_HEALHOOK) {
 			CCharacter *pChr = GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->GetCharacter();
 

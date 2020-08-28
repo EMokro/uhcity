@@ -1028,17 +1028,24 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (!str_comp_nocase(Upgr, "special")) {
-        pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
-        pSelf->SendChatTarget(pP->GetCID(), "/pushaura -- Pushes the other players");
-        pSelf->SendChatTarget(pP->GetCID(), "/pullaura -- Pull the other players");
-        return;
-    }
-
     if (!str_comp_nocase(Upgr, "hook")) {
         pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
         pSelf->SendChatTarget(pP->GetCID(), "/bhook -- Boost other players");
         pSelf->SendChatTarget(pP->GetCID(), "/hhook -- Increases the hooked players healthregen");
+        return;
+    }
+
+    if (!str_comp_nocase(Upgr, "ninja")) {
+        pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/nfly -- Ninja fly");
+        pSelf->SendChatTarget(pP->GetCID(), "/nbomber -- Bomb your enemys away");
+        return;
+    }
+
+    if (!str_comp_nocase(Upgr, "special")) {
+        pSelf->SendChatTarget(pP->GetCID(), "---------- UPGRADE CMDS ----------");
+        pSelf->SendChatTarget(pP->GetCID(), "/pushaura -- Pushes the other players");
+        pSelf->SendChatTarget(pP->GetCID(), "/pullaura -- Pull the other players");
         return;
     }
 
@@ -1050,6 +1057,7 @@ void CGameContext::ConChatUpgrCmds(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(pP->GetCID(), "- rifle");
     pSelf->SendChatTarget(pP->GetCID(), "- jump");
     pSelf->SendChatTarget(pP->GetCID(), "- hook");
+    pSelf->SendChatTarget(pP->GetCID(), "- ninja");
     pSelf->SendChatTarget(pP->GetCID(), "- special");
 }
 
