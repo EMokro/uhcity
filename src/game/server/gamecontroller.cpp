@@ -700,6 +700,8 @@ void IGameController::Tick()
 
 void IGameController::NewMonster(int MonsterID)
 {
+	if(!g_Config.m_EnableMonster)
+		return;
     if(MonsterID >= 0 && MonsterID < 3)
     {
         if(!GameServer()->m_apMonsters[MonsterID])

@@ -1348,6 +1348,11 @@ void CCharacter::Booster()
 	//Insta <3
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_INSTA_START))
 	{
+		if(!g_Config.m_EnableInstagib && m_pPlayer)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Instagib are not allow");
+			Die(-1, WEAPON_GAME);
+		}
 		if(!m_pPlayer->m_Insta)
 		{
 			SendBroadcast("Entered insta zone (/instagib to quit)", m_pPlayer->GetCID());
