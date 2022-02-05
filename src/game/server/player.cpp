@@ -32,6 +32,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Rainbow = false;
 	m_Insta = false;
 	m_Afk = false;
+	m_onMonster = false;
 
 	m_GravAuraCooldown = 0;
 	m_pAccount = new CAccount(this, m_pGameServer);
@@ -118,6 +119,9 @@ void CPlayer::Tick()
 		{
 			if (m_Insta)
 				m_Insta = false;
+
+			if (m_onMonster)
+				m_onMonster = false;
 
 			if (m_AccData.m_Arrested && Server()->Tick() % Server()->TickSpeed() == 0)
 			{
@@ -405,6 +409,9 @@ void CPlayer::TryRespawn()
 	} else if(m_Insta) {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
 			return;
+	} else if(m_Insta) {
+		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_onMonster?4:0))
+			return; 
 	} else {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_AccData.m_Arrested?1:0))
 			return;

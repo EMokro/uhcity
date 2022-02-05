@@ -59,7 +59,7 @@ public:
 
 	void Die(int Killer, int Weapon);
 	void AddExp(int Weapon, long long unsigned Amount = 1);
-	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
+	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster = false);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
 	bool Remove();
@@ -173,6 +173,8 @@ public:
 	int m_Health;
 	int m_Armor;
 
+	// Monster
+	int GetHealth() const { return m_Health; }
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;

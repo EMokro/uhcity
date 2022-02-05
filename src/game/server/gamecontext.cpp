@@ -129,7 +129,7 @@ void CGameContext::CreateHammerHit(vec2 Pos)
 }
 
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, bool FromMonster)
 {
 	// create the event
 	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
@@ -2034,6 +2034,40 @@ bool CGameContext::IsClientPlayer(int ClientID)
 {
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS ? false : true;
 }
+
+CMonster *CGameContext::GetValidMonster(int MonsterID) const
+{
+    if(MonsterID >= MAX_MONSTERS || MonsterID < 0)
+        return 0;
+
+    if(!m_apMonsters[MonsterID])
+        return 0;
+
+    return m_apMonsters[MonsterID];
+}
+
+void CGameContext::OnMonsterDeath(int MonsterID)
+{
+    if(!GetValidMonster(MonsterID))
+        return;
+
+    m_apMonsters[MonsterID]->Destroy();
+
+    delete m_apMonsters[MonsterID];
+    m_apMonsters[MonsterID] = 0;
+}
+
+bool CGameContext::IsValidPlayer(int PlayerID)
+{
+    if(PlayerID >= MAX_CLIENTS || PlayerID < 0)
+        return false;
+
+    if(!m_apPlayers[PlayerID])
+        return false;
+
+    return true;
+}
+
 
 const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() { return GAME_VERSION; }

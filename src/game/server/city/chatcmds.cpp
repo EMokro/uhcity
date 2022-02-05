@@ -93,7 +93,7 @@ void CGameContext::ConChatSave(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -115,7 +115,7 @@ void CGameContext::ConChatLoad(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -137,7 +137,7 @@ void CGameContext::ConChatHome(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -204,7 +204,7 @@ void CGameContext::ConChatUp(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -226,7 +226,7 @@ void CGameContext::ConChatTele(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -248,7 +248,7 @@ void CGameContext::ConChatDown(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -270,7 +270,7 @@ void CGameContext::ConChatLeft(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -292,7 +292,7 @@ void CGameContext::ConChatRight(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
+    if (pP->GetCharacter()->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -353,10 +353,10 @@ void CGameContext::ConChatInstagib(IConsole::IResult *pResult, void *pUserData)
         return;
     }
 
-    if (!pChr)
+    if (!pChr || !pP)
         return;
 
-    if (pChr->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone) {
+    if (pChr->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_onMonster) {
         pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
         return;
     }
@@ -364,6 +364,32 @@ void CGameContext::ConChatInstagib(IConsole::IResult *pResult, void *pUserData)
     pP->m_Insta ^= 1;
     pChr->Die(pP->GetCID(), WEAPON_GAME);
     str_format(aBuf, sizeof(aBuf), "%s %s Instagib", pSelf->Server()->ClientName(pP->GetCID()), pP->m_Insta ? "joined" : "left");
+    pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+}
+
+void CGameContext::ConChatMonster(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+    CPlayer *pP = pSelf->m_apPlayers[pResult->GetClientID()];
+    CCharacter *pChr = pP->GetCharacter();
+    char aBuf[128];
+
+    if (!g_Config.m_EnableMonster) {
+        pSelf->SendChatTarget(pP->GetCID(), "Monster is not enabled");
+        return;
+    }
+
+    if (!pChr || !pP)
+        return;
+
+    if (pChr->m_Frozen || pP->m_AccData.m_Arrested || pChr->m_GameZone || pP->m_Insta) {
+        pSelf->SendChatTarget(pP->GetCID(), "You can't do this at the moment");
+        return;
+    }
+
+    pP->m_onMonster ^= 1;
+    pChr->Die(pP->GetCID(), WEAPON_GAME);
+    str_format(aBuf, sizeof(aBuf), "%s %s Monster", pSelf->Server()->ClientName(pP->GetCID()), pP->m_onMonster ? "joined" : "left");
     pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 }
 

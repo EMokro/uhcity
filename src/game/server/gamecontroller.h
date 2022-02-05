@@ -12,8 +12,8 @@
 */
 class IGameController
 {
-	vec2 m_aaSpawnPoints[4][256];
-	int m_aNumSpawnPoints[4];
+	vec2 m_aaSpawnPoints[5][256];
+	int m_aNumSpawnPoints[5];
 
 	class CGameContext *m_pGameServer;
 	class IServer *m_pServer;
@@ -65,6 +65,12 @@ public:
 
 	bool IsTeamplay() const;
 
+	//Monster
+	vec2 m_aMonsterSpawnPos[64];
+	int m_MonsterSpawnNum;
+	int m_MonsterSpawnCurrentNum;
+	int m_AliveMonsters;
+	void NewMonster(int MonsterID);
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();
 

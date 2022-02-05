@@ -41,6 +41,10 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aNumSpawnPoints[1] = 0;
 	m_aNumSpawnPoints[2] = 0;
 	m_aNumSpawnPoints[3] = 0;
+	m_aNumSpawnPoints[4] = 0;
+
+	m_MonsterSpawnNum = 0;
+	m_MonsterSpawnCurrentNum = 0;
 }
 
 IGameController::~IGameController()
@@ -150,6 +154,8 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
 	else if (Index == ENTITY_AFK)
 		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;
+	else if (Index == ENTITY_MONSTER_PSPAWN)
+		m_aaSpawnPoints[3][m_aNumSpawnPoints[4]++] = Pos;
 	else if(Index == ENTITY_ARMOR_1)
 		Type = POWERUP_ARMOR;
 	else if(Index == ENTITY_HEALTH_1)
@@ -205,6 +211,11 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		new CVip(&GameServer()->m_World, Pos);
 	else if(Index == ENTITY_FLAGSTAND_RED)
 		new CBuyHealth(&GameServer()->m_World, Pos);
+	else if(Index == ENTITY_MONSTER)
+	{
+		m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
+        m_MonsterSpawnNum ++;
+	}
 	else
 		return false;
 
@@ -668,6 +679,39 @@ void IGameController::Tick()
 	}
 
 	DoWincheck();
+
+	//Monster
+	int AliveMonsters = 0;
+    for(int i = 0; i < MAX_MONSTERS; i ++)
+        if(GameServer()->GetValidMonster(i))
+            AliveMonsters ++;
+
+    m_AliveMonsters = AliveMonsters;
+
+	for(int i = 0; i < 3; i ++)
+    {
+        if(!GameServer()->GetValidMonster(i))
+        {
+            NewMonster(i);
+            m_AliveMonsters += 5;
+        }
+    }
+}
+
+void IGameController::NewMonster(int MonsterID)
+{
+    if(MonsterID >= 0 && MonsterID < 3)
+    {
+        if(!GameServer()->m_apMonsters[MonsterID])
+        {
+            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, MonsterID, 5, 5, 2);
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GUN, MonsterID, 5, 5, 2);
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_SHOTGUN, MonsterID, 5, 5, 2);
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GRENADE, MonsterID, 5, 5, 2);
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_LASER, MonsterID, 5, 5, 2);
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_NINJA, MonsterID, 5, 5, 2);
+        }
+    }
 }
 
 bool IGameController::IsTeamplay() const

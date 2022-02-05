@@ -19,6 +19,8 @@
 #include "game/server/city/moneycollector.h"
 #include "game/server/city/items/portal.h"
 
+#include "entities/monster/monster.h"
+
 /*
 	Tick
 		Game Context (CGameContext::tick)
@@ -40,6 +42,9 @@
 			All players (CPlayer::snap)
 
 */
+
+static const int MAX_MONSTERS = 15;
+
 class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
@@ -124,7 +129,7 @@ public:
 
 	// helper functions
 	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount);
-	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage);
+	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, bool FromMonster=false);
 	void CreateHammerHit(vec2 Pos);
 	void CreatePlayerSpawn(vec2 Pos);
 	void CreateDeath(vec2 Pos, int Who);
@@ -232,6 +237,7 @@ public:
 		static void ConChatJailrifle(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatGod(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatInstagib(IConsole::IResult* pResult, void* pUserData);
+		static void ConChatMonster(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatTransfer(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatDisabledmg(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatEnabledmg(IConsole::IResult* pResult, void* pUserData);
@@ -321,6 +327,12 @@ public:
 	CPortal* m_aPortals[MAX_CLIENTS];
 	
 	//int m_TeleID[MAX_CLIENTS];
+
+	CMonster *m_apMonsters[MAX_MONSTERS];
+    CMonster *GetValidMonster(int MonsterID) const;
+	void OnMonsterDeath(int MonsterID);
+	bool IsValidPlayer(int PlayerID);
+
 private:
 	int m_BountyList[MAX_CLIENTS];
 

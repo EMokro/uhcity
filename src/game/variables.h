@@ -52,7 +52,8 @@ MACRO_CONFIG_LONGLONG(EuPullAura, eu_special_pullaura, 1000000000, 0, 9000000000
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 128, "", CFGFLAG_SERVER, "Broadcast message")
 
-MACRO_CONFIG_INT(EnableInstagib, sv_enable_instagib, 0, 0, 1, CFGFLAG_SERVER, "Enable/Disable Instagib")
+MACRO_CONFIG_INT(EnableInstagib, sv_enable_instagib, 1, 0, 1, CFGFLAG_SERVER, "Enable/Disable Instagib")
+MACRO_CONFIG_INT(EnableMonster, sv_enable_monster, 1, 0, 1, CFGFLAG_SERVER, "Enable/Disable Monster")
 MACRO_CONFIG_INT(SvChatDelay, sv_chat_delay, 1, 0, 9999, CFGFLAG_SERVER, "The time in seconds between chat messages")
 MACRO_CONFIG_INT(SvChatPenalty, sv_chat_penalty, 250, 50, 1000, CFGFLAG_SERVER, "chat score will be increased by this on every message, and decremented by 1 on every tick.")
 MACRO_CONFIG_INT(SvChatThreshold, sv_chat_threshold, 1000, 50, 10000 , CFGFLAG_SERVER, "if chats core exceeds this, the player will be muted for sv_spam_mute_duration seconds")
@@ -134,6 +135,10 @@ MACRO_CONFIG_INT(SvVoteSpectateRejoindelay, sv_vote_spectate_rejoindelay, 3, 0, 
 MACRO_CONFIG_INT(SvVoteKick, sv_vote_kick, 1, 0, 1, CFGFLAG_SERVER, "Allow voting to kick players")
 MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SERVER, "Minimum number of players required to start a kick vote")
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick")
+
+//Monster
+MACRO_CONFIG_INT(HardNinja, monster_spawn_ninja, 1, 0, 1, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvDeathAnimation, monster_death_animation, 0, 0, 1, CFGFLAG_SERVER, "")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly

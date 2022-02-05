@@ -2116,7 +2116,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 }
 
-bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
+bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster)
 {
 	if((Protected() && !m_GameZone) || m_pPlayer->m_Insta)
 		return false;
@@ -2138,11 +2138,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	int LvlDmg = 0;
 
-	if (GameServer()->ValidID(From))
+/*	if (GameServer()->ValidID(From))
 		LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
 
 	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
-		LvlDmg = g_Config.m_SvWLvlDmgMax;
+		LvlDmg = g_Config.m_SvWLvlDmgMax;*/
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())

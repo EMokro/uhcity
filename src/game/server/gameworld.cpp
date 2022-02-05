@@ -270,7 +270,7 @@ void CGameWorld::Tick()
 }
 
 // TODO: should be more general
-CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, CEntity *pNotThis)
+CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, CEntity *pNotThis, bool IgnoreCollide)
 {
 	// Find other players
 	float ClosestLen = distance(Pos0, Pos1) * 100.0f;
@@ -299,7 +299,8 @@ CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, v
 	return pClosest;
 }
 
-CCharacter *CGameWorld::ClosestCharacter(vec2 Pos, float Radius, CEntity *pNotThis)
+
+CCharacter *CGameWorld::ClosestCharacter(vec2 Pos, float Radius, CEntity *pNotThis, bool IgnoreCollide)
 {
 	// Find other players
 	float ClosestRange = Radius*2;
@@ -311,12 +312,73 @@ CCharacter *CGameWorld::ClosestCharacter(vec2 Pos, float Radius, CEntity *pNotTh
 		if(p == pNotThis)
 			continue;
 
+        if(!IgnoreCollide)
+        {
+            if(GameServer()->Collision()->IntersectLine2(Pos, p->m_Pos))
+                continue;
+        }
+
 		float Len = distance(Pos, p->m_Pos);
 		if(Len < p->m_ProximityRadius+Radius)
 		{
 			if(Len < ClosestRange)
 			{
 				ClosestRange = Len;
+				pClosest = p;
+			}
+		}
+	}
+
+	return pClosest;
+}
+
+CMonster *CGameWorld::ClosestMonster(vec2 Pos, float Radius, CEntity *pNotThis)
+{
+	// Find other players
+	float ClosestRange = Radius*2;
+	CMonster *pClosest = 0;
+
+	CMonster *p = (CMonster *)GameServer()->m_World.FindFirst(ENTTYPE_MONSTER);
+	for(; p; p = (CMonster *)p->TypeNext())
+ 	{
+		if(p == pNotThis)
+			continue;
+
+		float Len = distance(Pos, p->m_Pos);
+		if(Len < p->m_ProximityRadius+Radius)
+		{
+			if(Len < ClosestRange)
+			{
+				ClosestRange = Len;
+				pClosest = p;
+			}
+		}
+	}
+
+	return pClosest;
+}
+
+CMonster *CGameWorld::IntersectMonster(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, CEntity *pNotThis)
+{
+	// Find other players
+	float ClosestLen = distance(Pos0, Pos1) * 100.0f;
+	CMonster *pClosest = 0;
+
+	CMonster *p = (CMonster *)FindFirst(ENTTYPE_MONSTER);
+	for(; p; p = (CMonster *)p->TypeNext())
+ 	{
+		if(p == pNotThis)
+			continue;
+
+		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		float Len = distance(p->m_Pos, IntersectPos);
+		if(Len < p->m_ProximityRadius+Radius)
+		{
+			Len = distance(Pos0, IntersectPos);
+			if(Len < ClosestLen)
+			{
+				NewPos = IntersectPos;
+				ClosestLen = Len;
 				pClosest = p;
 			}
 		}

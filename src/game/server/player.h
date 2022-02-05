@@ -184,7 +184,8 @@ public:
 	bool m_God;
 	bool m_Insta;
 	bool m_Afk;
-	
+	bool m_onMonster;
+
 	int m_RainbowColor;
 	int m_GravAuraCooldown;
 	int m_AciveUpgrade[ITEM_AMOUNT];
