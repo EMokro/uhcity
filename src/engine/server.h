@@ -8,12 +8,22 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
+enum
+{
+	CHATCATEGORY_DEFAULT=0,
+	CHATCATEGORY_INFO,
+	CHATCATEGORY_JOIN,
+};
+
 class IServer : public IInterface
 {
 	MACRO_INTERFACE("server", 0)
 protected:
 	int m_CurrentGameTick;
 	int m_TickSpeed;
+
+public:
+	class CLocalization* m_pLocalization;
 
 public:
 	/*
@@ -35,6 +45,10 @@ public:
 		CLIENT_CUSTOM, // some custom client with 64p which we don't know
 		NUM_CLIENT_TYPES,
 	};
+
+	virtual ~IServer() {};
+
+	inline class CLocalization* Localization() { return m_pLocalization; }
 
 	int Tick() const { return m_CurrentGameTick; }
 	int TickSpeed() const { return m_TickSpeed; }
@@ -187,6 +201,10 @@ public:
 	virtual bool IsClient64(int ClientID) = 0;
 
 	virtual void DemoRecorder_HandleAutoStart() = 0;
+	
+	// Localization system
+	virtual const char* GetClientLanguage(int ClientID) = 0;
+	virtual void SetClientLanguage(int ClientID, const char* pLanguage) = 0;
 };
 
 class IGameServer : public IInterface
@@ -217,6 +235,12 @@ public:
 	virtual const char *GameType() = 0;
 	virtual const char *Version() = 0;
 	virtual const char *NetVersion() = 0;
+
+	virtual void SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...) = 0;
+	virtual void SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...) = 0;
+	virtual void SendChatTarget(int To, const char* pText) = 0;
+	virtual void SendChatTarget_Localization(int To, int Category, const char* pText, ...) = 0;
+	virtual void SendChatTarget_Localization_P(int To, int Category, int Number, const char* pText, ...) = 0;
 };
 
 extern IGameServer *CreateGameServer();

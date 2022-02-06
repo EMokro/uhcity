@@ -178,8 +178,8 @@ void CGui::Menu()
 	m_Group = pOwner->m_ShopGroup;
 
 	if (m_MsgFlag) {
-		GameServer()->SendChatTarget(pOwner->GetPlayer()->GetCID(), "Welcome to the Shop!");
-		GameServer()->SendChatTarget(pOwner->GetPlayer()->GetCID(), "Type /shop for more informations");
+		GameServer()->SendChatTarget_Localization(pOwner->GetPlayer()->GetCID(), CHATCATEGORY_JOIN, _("Welcome to the Shop!"));
+		GameServer()->SendChatTarget_Localization(pOwner->GetPlayer()->GetCID(), CHATCATEGORY_JOIN, _("Type /shop for more informations"));
 		m_MsgFlag = false;
 	}
 	

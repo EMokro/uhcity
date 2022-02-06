@@ -78,6 +78,10 @@ CONSOLE_COMMAND("nbomber", "", CFGFLAG_CHAT, ConChatNinjaBomber, this, "")
 CONSOLE_COMMAND("pushaura", "", CFGFLAG_CHAT, ConChatPushAura, this, "")
 CONSOLE_COMMAND("pullaura", "", CFGFLAG_CHAT, ConChatPullAura, this, "")
 
+//Language
+CONSOLE_COMMAND("lang", "?s", CFGFLAG_CHAT, ConLanguage, this, "")
+CONSOLE_COMMAND("language", "?s", CFGFLAG_CHAT, ConLanguage, this, "")
+
 
 #undef CONSOLE_COMMAND
 

@@ -29,6 +29,8 @@
 #include "register.h"
 #include "server.h"
 
+#include <city/components/localization.h>
+
 #if defined(CONF_FAMILY_WINDOWS)
 	#define _WIN32_WINNT 0x0501
 	#define WIN32_LEAN_AND_MEAN
@@ -169,6 +171,8 @@ void CServer::CClient::Reset()
 	m_Score = 0;
 	m_AccID = -1;
 	m_NextMapChunk = 0;
+
+	str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
 }
 
 CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
@@ -1876,6 +1880,14 @@ int main(int argc, const char **argv) // ignore_convention
 	IStorage *pStorage = CreateStorage("Teeworlds", argc, argv); // ignore_convention
 	IConfig *pConfig = CreateConfig();
 
+	pServer->m_pLocalization = new CLocalization(pStorage);
+	pServer->m_pLocalization->InitConfig(0, NULL);
+	if(!pServer->m_pLocalization->Init())
+	{
+		dbg_msg("localization", "could not initialize localization");
+		return -1;
+	}
+
 	pServer->InitRegister(&pServer->m_NetServer, pEngineMasterServer, pConsole);
 
 	{
@@ -1921,6 +1933,8 @@ int main(int argc, const char **argv) // ignore_convention
 	dbg_msg("server", "starting...");
 	pServer->Run();
 
+	delete pServer->m_pLocalization;
+
 	// free
 	delete pServer;
 	delete pKernel;
@@ -1945,4 +1959,14 @@ void CServer::SetClient(int ClientID, int Client)
 
 	dbg_msg("server", "%d is using %s and supports 64p", ClientID, Client == CLIENT_DDNET ? "DDNet" : Client == CLIENT_KCLIENT ? "K-Client" : Client == CLIENT_CUSTOM ? "Custom" : "Vanilla");
 	m_aClients[ClientID].m_Client = Client;
+}
+
+const char* CServer::GetClientLanguage(int ClientID)
+{
+	return m_aClients[ClientID].m_aLanguage;
+}
+
+void CServer::SetClientLanguage(int ClientID, const char* pLanguage)
+{
+	str_copy(m_aClients[ClientID].m_aLanguage, pLanguage, sizeof(m_aClients[ClientID].m_aLanguage));
 }

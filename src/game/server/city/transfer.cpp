@@ -59,7 +59,7 @@ void CTransfer::Tick()
 
 		str_format(aBuf, sizeof(aBuf), "You received money from %s", m_OwnerName);
 		
-		GameServer()->SendChatTarget(apEnts[i]->GetPlayer()->GetCID(), aBuf);
+		GameServer()->SendChatTarget_Localization(apEnts[i]->GetPlayer()->GetCID(), CHATCATEGORY_INFO, _("You received money from {str:Owner}"), "Owner", m_OwnerName, NULL);
 		GameServer()->FormatInt(apEnts[i]->GetPlayer()->m_AccData.m_Money, numBuf[0]);
 		GameServer()->FormatInt(m_Value, numBuf[1]);
 		str_format(aBuf, sizeof(aBuf), "%s$ | +%s$", numBuf[0], numBuf[1]);

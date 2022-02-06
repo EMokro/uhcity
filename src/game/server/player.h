@@ -206,6 +206,9 @@ public:
 
 	void FakeSnap(int SnappingClient);
 
+	const char* GetLanguage();
+	void SetLanguage(const char* pLanguage);
+	
 private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
@@ -217,6 +220,8 @@ private:
 	bool m_Spawning;
 	int m_ClientID;
 	int m_Team;
+
+	char m_aLanguage[16];
 };
 
 #endif

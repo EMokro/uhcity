@@ -33,7 +33,7 @@ void CGameEvent::Tick() {
             m_Timer = (rand() % (g_Config.m_SvEventTimerMax - g_Config.m_SvEventTimerMin)) + g_Config.m_SvEventTimerMin;
 
             if (!m_SilentEscape)
-                GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "Event Over!");
+                GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("Event Over!"));
             else
                 m_SilentEscape = false;
         } else
@@ -76,11 +76,11 @@ void CGameEvent::EventInfo(int ClientID) {
         switch (m_CurrentEvent)
         {
         case EVENT_BOUNTY:
-            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "~~~~~ BOUNTY EVENT ~~~~~");
-            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "We accept only dead tees.");
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ BOUNTY EVENT ~~~~~"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("We accept only dead tees."));
             return;
         case EVENT_MONEYEXP:
-            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "~~~~~ MONEY&EXP EVENT ~~~~~");
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ MONEY&EXP EVENT ~~~~~"));
             str_format(aBuf, sizeof aBuf, "Duration: %d minute%s %d seconds", m_Timer/60, (m_Timer/60) == 1 ? "" : "s", m_Timer%60);
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
             str_format(aBuf, sizeof aBuf, "Money: x%d", m_Multiplier);
@@ -89,8 +89,8 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
             return;
         case EVENT_RISINGMC:
-            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "~~~~~ RISING MC ~~~~~");
-            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "The Moneycollectors pot will rise");
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ RISING MC ~~~~~"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("The Moneycollectors pot will rise"));
             str_format(aBuf, sizeof aBuf, "Duration: %d minutes %d seconds", m_Timer/60, m_Timer%60);
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
             return;
@@ -99,11 +99,11 @@ void CGameEvent::EventInfo(int ClientID) {
         switch (m_CurrentEvent)
         {
         case EVENT_BOUNTY:
-            GameServer()->SendChatTarget(ClientID, "~~~~~ BOUNTY EVENT ~~~~~");
-            GameServer()->SendChatTarget(ClientID, "We accept only dead tees.");
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ BOUNTY EVENT ~~~~~"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("We accept only dead tees."));
             return;
         case EVENT_MONEYEXP:
-            GameServer()->SendChatTarget(ClientID, "~~~~~ MONEY&EXP EVENT ~~~~~");
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ MONEY&EXP EVENT ~~~~~"));
             str_format(aBuf, sizeof aBuf, "Duration: %d minutes %d seconds", m_Timer/60, m_Timer%60);
             GameServer()->SendChatTarget(ClientID, aBuf);
             str_format(aBuf, sizeof aBuf, "Money: x%d", m_Multiplier);
@@ -112,13 +112,13 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChatTarget(ClientID, aBuf);
             return;
         case EVENT_RISINGMC:
-            GameServer()->SendChatTarget(ClientID, "~~~~~ RISING MC ~~~~~");
-            GameServer()->SendChatTarget(ClientID, "The Moneycollectors pot will rise");
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ RISING MC ~~~~~"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("The Moneycollectors pot will rise"));
             str_format(aBuf, sizeof aBuf, "Duration: %d minutes %d seconds", m_Timer/60, m_Timer%60);
             GameServer()->SendChatTarget(ClientID, aBuf);
             return;
         default:
-            GameServer()->SendChatTarget(ClientID, "There is no event :(");
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("There is no event :("));
         }
     }
 }
@@ -174,7 +174,7 @@ void CGameEvent::Bounty() {
         GameServer()->m_apPlayers[i]->m_AccData.m_Bounty += Amount;
         GameServer()->FormatInt(Amount, numBuf);
         str_format(aBuf, sizeof aBuf, "You got a bounty of %s$", numBuf);
-        GameServer()->SendChatTarget(i, aBuf);
+        GameServer()->SendChatTarget_Localization(i, CHATCATEGORY_INFO, _("You got a bounty of {str:m}$"), "m", numBuf, NULL);
     }
 
     m_Escape = true;

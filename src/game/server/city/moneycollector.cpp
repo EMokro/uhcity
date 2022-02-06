@@ -63,12 +63,12 @@ void CMoneyCollector::Collect(int ClientID) {
         return;
 
     if (pP->m_AccData.m_UserID != m_HolderID) {
-        GameServer()->SendChatTarget(ClientID, "Only the holder can collect this money");
+        GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Only the holder can collect this money"));
         return;
     }
 
     if (!m_Money) {
-        GameServer()->SendChatTarget(ClientID, "There is nothing to collect :(");
+        GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("There is nothing to collect :("));
         return;
     }
 
@@ -77,7 +77,7 @@ void CMoneyCollector::Collect(int ClientID) {
     m_Money = 0;
 
     str_format(aBuf, sizeof aBuf, "You collected %s$", numBuf);
-    GameServer()->SendChatTarget(ClientID, aBuf);
+    GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("You collected {str:m}$"), "m", numBuf, NULL);
     Apply();
 }
 
@@ -92,7 +92,7 @@ void CMoneyCollector::Buy(int ClientID, long long unsigned Amount) {
         return;
 
     if (Amount <= m_Price) {
-        GameServer()->SendChatTarget(ClientID, "You must pay more than the indicated price");
+        GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("You must pay more than the indicated price"));
         return;
     }
 
@@ -109,7 +109,7 @@ void CMoneyCollector::Buy(int ClientID, long long unsigned Amount) {
 
     GameServer()->FormatInt(Amount, numBuf);
     str_format(aBuf, sizeof aBuf, "%s is the new holder of the Moneycollector with a value of %s$", Server()->ClientName(ClientID), numBuf);
-    GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+    GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("{str:n} is the new holder of the Moneycollector with a value of {str:m}$"), "n", Server()->ClientName(ClientID), "m", numBuf, NULL);
 
     Apply();
 }

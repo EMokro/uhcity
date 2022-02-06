@@ -1,0 +1,565 @@
+{
+    "translation":
+    [
+        {
+            "key": "",
+            "value": "{str:Player} 测试 "
+        },
+        {
+            "key": "Available languages: {str:ListOfLanguage}",
+            "value": ""
+        },
+        {
+            "key": "usage: /setbounty <id> <amount>",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        },
+        {
+            "key": "",
+            "value": ""
+        }
+    ]
+}

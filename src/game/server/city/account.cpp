@@ -92,7 +92,7 @@ void CAccount::Login(char *Username, char *Password)
 		return;
 	}
 
-	assert(AccD.IsObject());
+	tl_assert(AccD.IsObject());
 	Value::ConstMemberIterator itr;
 
 	if (AccD["user"].HasMember("accdata")) {
@@ -1052,7 +1052,7 @@ void CAccount::SetAuth(char *Username, int lvl) {
 		return;
 	}
 
-	assert(AccD.IsObject());
+	tl_assert(AccD.IsObject());
 
 	AccD["user"]["auth"]["authlvl"].SetInt(lvl);
 

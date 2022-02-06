@@ -42,6 +42,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 
 	if(m_AccData.m_UserID)
 		m_pAccount->Apply();
+
+	SetLanguage(Server()->GetClientLanguage(ClientID));
 }
 
 CPlayer::~CPlayer()
@@ -60,7 +62,7 @@ void CPlayer::Tick()
 
 	Server()->SetClientScore(m_ClientID, m_Score);
 	Server()->SetClientAccID(m_ClientID, m_AccData.m_UserID);
-
+	Server()->SetClientLanguage(m_ClientID, m_aLanguage);
 
 	if(Server()->Tick()%50 == 0)
 	{
@@ -441,4 +443,14 @@ void CPlayer::FakeSnap(int SnappingClient)
 	StrToInts(&pClientInfo->m_Name0, 4, " ");
 	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
 	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+}
+
+const char* CPlayer::GetLanguage()
+{
+	return m_aLanguage;
+}
+
+void CPlayer::SetLanguage(const char* pLanguage)
+{
+	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
 }

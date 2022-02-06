@@ -330,6 +330,148 @@ void CGameContext::SendBroadcast(const char *pText, int ClientID)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
+void CGameContext::SendChatTarget_Localization(int To, int Category, const char* pText, ...)
+{
+	int Start = (To < 0 ? 0 : To);
+	int End = (To < 0 ? MAX_CLIENTS : To+1);
+	
+	CNetMsg_Sv_Chat Msg;
+	Msg.m_Team = 0;
+	Msg.m_ClientID = -1;
+	
+	dynamic_string Buffer;
+	
+	va_list VarArgs;
+	va_start(VarArgs, pText);
+	
+	for(int i = Start; i < End; i++)
+	{
+		if(m_apPlayers[i])
+		{
+			Buffer.clear();
+			switch(Category)
+			{
+				case CHATCATEGORY_INFO:
+					Buffer.append("| ");
+					break;
+				case CHATCATEGORY_JOIN:
+					Buffer.append("★ | ");
+					break;
+			}
+			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
+			
+			Msg.m_pMessage = Buffer.buffer();
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+		}
+	}
+	
+	va_end(VarArgs);
+}
+
+void CGameContext::SendChatTarget_Localization_P(int To, int Category, int Number, const char* pText, ...)
+{
+	int Start = (To < 0 ? 0 : To);
+	int End = (To < 0 ? MAX_CLIENTS : To+1);
+	
+	CNetMsg_Sv_Chat Msg;
+	Msg.m_Team = 0;
+	Msg.m_ClientID = -1;
+	
+	dynamic_string Buffer;
+	
+	va_list VarArgs;
+	va_start(VarArgs, pText);
+	
+	for(int i = Start; i < End; i++)
+	{
+		if(m_apPlayers[i])
+		{
+			Buffer.clear();
+			switch(Category)
+			{
+				case CHATCATEGORY_INFO:
+					Buffer.append("| ");
+					break;
+				case CHATCATEGORY_JOIN:
+					Buffer.append("★ | ");
+					break;
+			}
+			Server()->Localization()->Format_VLP(Buffer, m_apPlayers[i]->GetLanguage(), Number, pText, VarArgs);
+			
+			Msg.m_pMessage = Buffer.buffer();
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+		}
+	}
+	
+	va_end(VarArgs);
+}
+
+void CGameContext::AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan)
+{
+	if(LifeSpan > 0)
+	{
+		if(m_BroadcastStates[ClientID].m_TimedPriority > Priority)
+			return;
+			
+		str_copy(m_BroadcastStates[ClientID].m_TimedMessage, pText, sizeof(m_BroadcastStates[ClientID].m_TimedMessage));
+		m_BroadcastStates[ClientID].m_LifeSpanTick = LifeSpan;
+		m_BroadcastStates[ClientID].m_TimedPriority = Priority;
+	}
+	else
+	{
+		if(m_BroadcastStates[ClientID].m_Priority > Priority)
+			return;
+			
+		str_copy(m_BroadcastStates[ClientID].m_NextMessage, pText, sizeof(m_BroadcastStates[ClientID].m_NextMessage));
+		m_BroadcastStates[ClientID].m_Priority = Priority;
+	}
+}
+
+void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...)
+{
+	int Start = (To < 0 ? 0 : To);
+	int End = (To < 0 ? MAX_CLIENTS : To+1);
+	
+	dynamic_string Buffer;
+	
+	va_list VarArgs;
+	va_start(VarArgs, pText);
+	
+	for(int i = Start; i < End; i++)
+	{
+		if(m_apPlayers[i])
+		{
+			Buffer.clear();
+			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
+			AddBroadcast(i, Buffer.buffer(), Priority, LifeSpan);
+		}
+	}
+	
+	va_end(VarArgs);
+}
+
+void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...)
+{
+	int Start = (To < 0 ? 0 : To);
+	int End = (To < 0 ? MAX_CLIENTS : To+1);
+	
+	dynamic_string Buffer;
+	
+	va_list VarArgs;
+	va_start(VarArgs, pText);
+	
+	for(int i = Start; i < End; i++)
+	{
+		if(m_apPlayers[i])
+		{
+			Server()->Localization()->Format_VLP(Buffer, m_apPlayers[i]->GetLanguage(), Number, pText, VarArgs);
+			AddBroadcast(i, Buffer.buffer(), Priority, LifeSpan);
+		}
+	}
+	
+	va_end(VarArgs);
+}
+
 //
 void CGameContext::StartVote(const char *pDesc, const char *pCommand, const char *pReason)
 {
@@ -661,6 +803,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	SendChatTarget(ClientID, "Welcome on UH|City");
 	SendChatTarget(ClientID, "Made by NoHack2Win & Urinstone");
 	SendChatTarget(ClientID, "use /help for some help");
+	SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("{str:Player} Test"), "Player", Server()->ClientName(ClientID), NULL);
 
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
@@ -1860,6 +2003,15 @@ void CGameContext::OnConsoleInit()
 	#include "game/server/city/chatcmds.h"
 	#define CONSOLE_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
 	#include "game/server/city/rconcmds.h"
+}
+
+void CGameContext::SetClientLanguage(int ClientID, const char *pLanguage)
+{
+	Server()->SetClientLanguage(ClientID, pLanguage);
+	if(m_apPlayers[ClientID])
+	{
+		m_apPlayers[ClientID]->SetLanguage(pLanguage);
+	}
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)

@@ -155,6 +155,13 @@ function build(settings)
 			settings.link.frameworks:Add("AppKit")
 		else
 			settings.link.libs:Add("pthread")
+
+			-- add ICU for linux
+			if ExecuteSilent("pkg-config icu-uc icu-i18n") == 0 then
+			end
+
+			settings.cc.flags:Add("`pkg-config --cflags icu-uc icu-i18n`")
+			settings.link.flags:Add("`pkg-config --libs icu-uc icu-i18n`")
 		end
 	elseif family == "windows" then
 		settings.link.libs:Add("gdi32")
@@ -179,6 +186,7 @@ function build(settings)
 	-- build the small libraries
 	wavpack = Compile(settings, Collect("src/engine/external/wavpack/*.c"))
 	pnglite = Compile(settings, Collect("src/engine/external/pnglite/*.c"))
+	json = Compile(settings, "src/engine/external/json-parser/json.c")
 
 	-- build game components
 	engine_settings = settings:Copy()
@@ -213,6 +221,7 @@ function build(settings)
 	engine = Compile(engine_settings, Collect("src/engine/shared/*.cpp", "src/base/*.c"))
 	client = Compile(client_settings, Collect("src/engine/client/*.cpp"))
 	server = Compile(server_settings, Collect("src/engine/server/*.cpp"))
+	city = Compile(server_settings, Collect("src/city/*.cpp", "src/city/components/*.cpp", "src/city/system/*.cpp"))
 
 	versionserver = Compile(settings, Collect("src/versionsrv/*.cpp"))
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
@@ -243,7 +252,7 @@ function build(settings)
 		client_link_other, client_osxlaunch)
 
 	server_exe = Link(server_settings, "teeworlds_srv", engine, server,
-		game_shared, game_server, zlib, server_link_other)
+		game_shared, game_server, zlib, server_link_other, city, json)
 
 	serverlaunch = {}
 	if platform == "macosx" then

@@ -20,6 +20,7 @@
 #include "game/server/city/items/portal.h"
 
 #include "entities/monster/monster.h"
+#include <city/components/localization.h>
 
 /*
 	Tick
@@ -152,6 +153,13 @@ public:
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
 	void SendBroadcast(const char *pText, int ClientID);
+	virtual void SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...);
+	virtual void SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...);
+	
+	virtual void SendChatTarget_Localization(int To, int Category, const char* pText, ...);
+	virtual void SendChatTarget_Localization_P(int To, int Category, int Number, const char* pText, ...);
+	void AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan);
+	void SetClientLanguage(int ClientID, const char *pLanguage);
 
 
 	//
@@ -282,6 +290,22 @@ public:
 		static void ConChatNinjaBomber(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPushAura(IConsole::IResult* pResult, void* pUserData);
 		static void ConChatPullAura(IConsole::IResult* pResult, void* pUserData);
+		static void ConLanguage(IConsole::IResult *pResult, void *pUserData);
+
+		class CBroadcastState
+		{
+			public:
+				int m_NoChangeTick;
+				char m_PrevMessage[1024];
+		
+				int m_Priority;
+				char m_NextMessage[1024];
+
+				int m_LifeSpanTick;
+				int m_TimedPriority;
+				char m_TimedMessage[1024];
+		};
+		CBroadcastState m_BroadcastStates[MAX_CLIENTS];
 
 	public: //Ende :D
 

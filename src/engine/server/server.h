@@ -113,6 +113,8 @@ public:
 		int m_Client; // 64 clients
 
 		int m_NextMapChunk;
+
+		char m_aLanguage[16]; // NICE
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
@@ -245,6 +247,9 @@ public:
 	virtual int* GetIdMap(int ClientID);
 	virtual void SetClient(int ClientID, int Client);
 	virtual bool IsClient64(int ClientID) { return m_aClients[ClientID].m_Client != CLIENT_VANILLA; }
+
+	virtual const char* GetClientLanguage(int ClientID);
+	virtual void SetClientLanguage(int ClientID, const char* pLanguage);
 };
 
 #endif
