@@ -1485,7 +1485,7 @@ void CCharacter::Booster()
 			
 			else
 			{
-				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("You need {int:cost} TC"), "cost", m_LifeCost, NULL);
+				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("You need {int:cost} TC"), "cost", &m_LifeCost, NULL);
 			}
 		}
 	}
