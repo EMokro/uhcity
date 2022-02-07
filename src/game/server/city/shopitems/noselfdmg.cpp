@@ -46,9 +46,11 @@ void CNoSelfDMG::Tick()
 		m_LastClick = 0;
 		return;
 	}
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("No self damage"));
 	
-	pOwner->Buy("No self damage", &pOwner->GetPlayer()->m_AccData.m_NoSelfDMG, g_Config.m_EuNoSelfDMG, Click, 1);
-		
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NoSelfDMG, g_Config.m_EuNoSelfDMG, Click, 1);
 }
 
 

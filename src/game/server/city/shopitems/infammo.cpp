@@ -47,8 +47,12 @@ void CInfAmmo::Tick()
 		m_LastClick = 0;
 		return;
 	}
-	
-	pOwner->Buy("Infinity ammo", &pOwner->GetPlayer()->m_AccData.m_InfinityAmmo, g_Config.m_EuInfAmmo, Click, 1);
+
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Infinity ammo"));
+
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_InfinityAmmo, g_Config.m_EuInfAmmo, Click, 1);
 }
 
 

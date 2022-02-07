@@ -46,8 +46,11 @@ void CHealthRegen::Tick()
 		m_LastClick = 0;
 		return;
 	}
-	
-	pOwner->Buy("Health regeneration", &pOwner->GetPlayer()->m_AccData.m_HealthRegen, g_Config.m_EuHealthRegen, Click, 25);
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Health regeneration"));
+
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_HealthRegen, g_Config.m_EuHealthRegen, Click, 25);
 }
 
 

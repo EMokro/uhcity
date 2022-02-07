@@ -33,8 +33,12 @@ void CVip::Tick()
 			//m_LastClick = 0;
 			continue;
 		}
+
+		const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+		dynamic_string Buffer;
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("VIP"));
 		
-		pOwner->Buy("Vip", &pOwner->GetPlayer()->m_AccData.m_VIP, g_Config.m_EuVIP, Click, 1);
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_VIP, g_Config.m_EuVIP, Click, 1);
 	}
 }
 

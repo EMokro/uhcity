@@ -47,23 +47,31 @@ void CNinja::Tick()
 		m_LastClick = 0;
 		return;
 	}
-	
+
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Ninja Permanent", &pOwner->GetPlayer()->m_AccData.m_NinjaPermanent, g_Config.m_EuNinjaPermanent, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja Permanent"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NinjaPermanent, g_Config.m_EuNinjaPermanent, Click, 1);
 		break;
 	case 2:
-		pOwner->Buy("Ninja at Start", &pOwner->GetPlayer()->m_AccData.m_NinjaStart, g_Config.m_EuNinjaStart, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja at Start"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NinjaStart, g_Config.m_EuNinjaStart, Click, 1);
 		break;
 	case 3:
-		pOwner->Buy("Ninja Switch", &pOwner->GetPlayer()->m_AccData.m_NinjaSwitch, g_Config.m_EuNinjaSwitch, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja Switch"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NinjaSwitch, g_Config.m_EuNinjaSwitch, Click, 1);
 		break;
 	case 4:
-		pOwner->Buy("Ninja Fly", &pOwner->GetPlayer()->m_AccData.m_NinjaFly, g_Config.m_EuNinjaFly, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja fly"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NinjaFly, g_Config.m_EuNinjaFly, Click, 1);
 		break;
 	case 5:
-		pOwner->Buy("Ninja Bomber", &pOwner->GetPlayer()->m_AccData.m_NinjaBomber, g_Config.m_EuNinjaBomber, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja Bomber"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_NinjaBomber, g_Config.m_EuNinjaBomber, Click, 1);
 		break;
 	}
 }

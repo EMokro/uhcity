@@ -53,8 +53,11 @@ void CPushAura::Tick()
 
 	if (m_LifeTime <= 0)
 		m_LifeTime = 3000;
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Pushaura"));
 	
-	pOwner->Buy("Pushaura", &pOwner->GetPlayer()->m_AccData.m_PushAura, g_Config.m_EuPushAura, Click, 1);
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_PushAura, g_Config.m_EuPushAura, Click, 1);
 }
 
 void CPushAura::Snap(int SnappingClient)

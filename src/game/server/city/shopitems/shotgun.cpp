@@ -47,14 +47,19 @@ void CShotgun::Tick()
 		m_LastClick = 0;
 		return;
 	}
+
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
 	
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Shotgun spread", &pOwner->GetPlayer()->m_AccData.m_ShotgunSpread, g_Config.m_EuShotgunSpread, Click, 10);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Shotgun spread"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_ShotgunSpread, g_Config.m_EuShotgunSpread, Click, 10);
 		break;
 	case 2:
-		pOwner->Buy("Shotgun explode", &pOwner->GetPlayer()->m_AccData.m_ShotgunExplode, g_Config.m_EuShotgunExplode, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Shotgun explode"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_ShotgunExplode, g_Config.m_EuShotgunExplode, Click, 1);
 		break;
 	case 3:
 		//pOwner->Buy("Rifle Plasma", &pOwner->GetPlayer()->m_AccData.m_Shotgun, g_Config.m_EuRiflePlasma, Click, 10);

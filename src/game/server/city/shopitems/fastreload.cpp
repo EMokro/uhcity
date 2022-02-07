@@ -47,7 +47,11 @@ void CFastReload::Tick()
 		return;
 	}
 	
-	pOwner->Buy("Fast reload", &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 1);
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Fast reload"));
+
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_FastReload, g_Config.m_EuFastReload, Click, 1);
 }
 
 

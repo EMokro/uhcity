@@ -97,7 +97,7 @@ void CMoneyCollector::Buy(int ClientID, long long unsigned Amount) {
     }
 
     if (pP->m_AccData.m_Money < Amount) {
-        GameServer()->SendChatTarget(ClientID, "You don't have enough money");
+        GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("You don't have enough money"));
         return;
     }
 

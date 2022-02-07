@@ -800,10 +800,9 @@ void CGameContext::OnClientEnter(int ClientID)
 	str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s", Server()->ClientName(ClientID), m_pController->GetTeamName(m_apPlayers[ClientID]->GetTeam()));
 	SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
-	SendChatTarget(ClientID, "Welcome on UH|City");
-	SendChatTarget(ClientID, "Made by NoHack2Win & Urinstone");
-	SendChatTarget(ClientID, "use /help for some help");
-	SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("{str:Player} Test"), "Player", Server()->ClientName(ClientID), NULL);
+	SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Welcome on UH|City"));
+	SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Made by NoHack2Win & Urinstone"));
+	SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("use /help for some help"));
 
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
@@ -1043,7 +1042,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			{
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "Unknown command: '%s'", aCommand[0]);
-				SendChatTarget(ClientID, aBuf);
+				SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Unknown command: '{str:command}'"), "command", aCommand[0], NULL);
 			}
 		}
 		else
@@ -1476,13 +1475,11 @@ void CGameContext::DisableDmg(int Owner, int Target) {
 	if (!m_NoDmgIDs[Owner][Target]) {
 		m_NoDmgIDs[Owner][Target] = 1;
 
-		str_format(aBuf, sizeof aBuf, "You won't hurt %s anymore", Server()->ClientName(Target));
-		SendChatTarget(Owner, aBuf);
-		str_format(aBuf, sizeof aBuf, "'%s' disabled dmg on you", Server()->ClientName(Owner));
-		SendChatTarget(Target, aBuf);
+		SendChatTarget_Localization(Owner, CHATCATEGORY_INFO, _("You won't hurt {str:cn} anymore"), "cn", Server()->ClientName(Target), NULL);
+		SendChatTarget_Localization(Target, CHATCATEGORY_INFO, _("'{str:cn}' disabled dmg on you"), "cn", Server()->ClientName(Owner), NULL);
 	}
 	else 
-		SendChatTarget(Owner, "You already disabled dmg on this player");
+		SendChatTarget_Localization(Owner, CHATCATEGORY_INFO, _("You already disabled dmg on this player"));
 }
 
 void CGameContext::EnableDmg(int Owner, int Target) {
@@ -1491,13 +1488,11 @@ void CGameContext::EnableDmg(int Owner, int Target) {
 	if (m_NoDmgIDs[Owner][Target]) {
 		m_NoDmgIDs[Owner][Target] = 0;
 
-		str_format(aBuf, sizeof aBuf, "You will hurt %s now", Server()->ClientName(Target));
-		SendChatTarget(Owner, aBuf);
-		str_format(aBuf, sizeof aBuf, "'%s' enabled dmg on you", Server()->ClientName(Owner));
-		SendChatTarget(Target, aBuf);
+		SendChatTarget_Localization(Owner, CHATCATEGORY_INFO, _("You will hurt {str:cn} now"), "cn", Server()->ClientName(Target));
+		SendChatTarget_Localization(Target, CHATCATEGORY_INFO, _("'{str:cn}' enable dmg on you"), "cn", Server()->ClientName(Owner), NULL);
 	}
 	else 
-		SendChatTarget(Owner, "You already enabled dmg on this player");
+		SendChatTarget_Localization(Owner, CHATCATEGORY_INFO, _("You already enabled dmg on this player"));
 }
 
 bool CGameContext::HasDmgDisabled(int Owner, int Target) {

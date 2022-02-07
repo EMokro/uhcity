@@ -48,16 +48,22 @@ void CGun::Tick()
 		return;
 	}
 	
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Gun spread", &pOwner->GetPlayer()->m_AccData.m_GunSpread, g_Config.m_EuGunSpread, Click, 5);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Gun spread"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_GunSpread, g_Config.m_EuGunSpread, Click, 5);
 		break;
 	case 2:
-		pOwner->Buy("Gun explode", &pOwner->GetPlayer()->m_AccData.m_GunExplode, g_Config.m_EuGunExplode, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Gun explode"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_GunExplode, g_Config.m_EuGunExplode, Click, 1);
 		break;
 	case 3:
-		pOwner->Buy("Gun freeze", &pOwner->GetPlayer()->m_AccData.m_GunFreeze, g_Config.m_EuGunFreeze, Click, 3);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Gun freeze"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_GunFreeze, g_Config.m_EuGunFreeze, Click, 3);
 		break;
 	}
 }

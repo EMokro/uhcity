@@ -40,9 +40,14 @@ void CBuyHealth::Tick()
 			//m_LastClick = 0;
 			continue;
 		}
-	
-		pOwner->Buy("Health", &pOwner->GetPlayer()->m_AccData.m_Health, g_Config.m_EuHealth, Click, 500);
-		pOwner->Buy("Armor", &pOwner->GetPlayer()->m_AccData.m_Armor, g_Config.m_EuArmor, Click1, 500);
+
+		const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+		dynamic_string Buffer;
+			
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Health"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_Health, g_Config.m_EuHealth, Click, 500);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Armor"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_Armor, g_Config.m_EuArmor, Click1, 500);
 	}
 }
 

@@ -46,8 +46,12 @@ void CInfJumps::Tick()
 		m_LastClick = 0;
 		return;
 	}
+
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Infinity jumps"));
 	
-	pOwner->Buy("Infinity jumps", &pOwner->GetPlayer()->m_AccData.m_InfinityJumps, g_Config.m_EuInfJumps, Click, 2);
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_InfinityJumps, g_Config.m_EuInfJumps, Click, 2);
 }
 
 void CInfJumps::Snap(int SnappingClient)

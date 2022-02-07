@@ -50,17 +50,22 @@ void CHook::Tick()
 		m_LastClick = 0;
 		return;
 	}
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
 
 	switch (m_Type)
 	{
 	case 1:
-		pOwner->Buy("Endless Hook", &pOwner->GetPlayer()->m_AccData.m_EndlessHook, g_Config.m_EuHookEndless, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Endless Hook"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_EndlessHook, g_Config.m_EuHookEndless, Click, 1);
 		break;
 	case 2:
-		pOwner->Buy("Heal Hook", &pOwner->GetPlayer()->m_AccData.m_HealHook, g_Config.m_EuHookHeal, Click, 3);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Heal Hook"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_HealHook, g_Config.m_EuHookHeal, Click, 3);
 		break;
 	case 3:
-		pOwner->Buy("Boost Hook", &pOwner->GetPlayer()->m_AccData.m_BoostHook, g_Config.m_EuHookBoost, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Boost Hook"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_BoostHook, g_Config.m_EuHookBoost, Click, 1);
 		break;
 	}
 }

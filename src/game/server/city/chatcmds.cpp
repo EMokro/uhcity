@@ -332,7 +332,7 @@ void CGameContext::ConChatGod(IConsole::IResult *pResult, void *pUserData)
 
     pP->m_God ^= true;
     str_format(aBuf, sizeof(aBuf), "God %s", pP->m_God ? "enabled" : "disabled");
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _(""), "RD", pP->m_God ? "Enable" : "Disable");
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("God {str:RD}"), "RD", pP->m_God ? "Enable" : "Disable");
 }
 
 // all
@@ -644,7 +644,7 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
 
     if (Size > ListID * 6 + 6) {
         str_format(aBuf, sizeof aBuf, "/bountylist %d", ListID+1);
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _(""));
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/bountylist {int:ID}"), "ID", ListID+1, NULL);
     }
 }
 
@@ -872,6 +872,7 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/checkbounty -- Check if a player has a bounty"));
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/bountylist -- Get a list of all bounties"));
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/writestats -- Writes your weaponlevel down"));
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/lang cn|en -- Change you server language"));
     } else {
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("We don't have so many commands :("));
     }
@@ -1450,7 +1451,7 @@ void CGameContext::ConChatNinjaFly(IConsole::IResult *pResult, void *pUserData)
 
     pP->m_NinjaFly ^= true;
     str_format(aBuf, sizeof aBuf, "%s Ninjafly", pP->m_NinjaFly ? "Enabled" : "disabled");
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("{str:ED} Ninjafly"), "ND", pP->m_NinjaFly ? "Enable" : "Disable", NULL);
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("{str:ED} Ninjafly"), "ED", pP->m_NinjaFly ? "Enable" : "Disable", NULL);
 }
 
 void CGameContext::ConChatNinjaBomber(IConsole::IResult *pResult, void *pUserData)
@@ -1523,7 +1524,9 @@ void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Available languages: {str:ListOfLanguage}"), "ListOfLanguage", BufferList.buffer(), NULL);
 		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "language", Buffer.buffer());
-	}
+
+        pSelf->SendChatTarget(ClientID, Buffer.buffer());
+    }
 	
 	return;
 }

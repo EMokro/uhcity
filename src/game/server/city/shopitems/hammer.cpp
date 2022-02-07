@@ -47,20 +47,27 @@ void CHammer::Tick()
 		m_LastClick = 0;
 		return;
 	}
+
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
 	
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Hammer walls", &pOwner->GetPlayer()->m_AccData.m_HammerWalls, g_Config.m_EuHammerWalls, Click, 5);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Hammer walls"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_HammerWalls, g_Config.m_EuHammerWalls, Click, 5);
 		break;
 	case 2:
-		pOwner->Buy("Hammer shot", &pOwner->GetPlayer()->m_AccData.m_HammerShot, g_Config.m_EuHammerShot, Click, 3);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Hammer shot"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_HammerShot, g_Config.m_EuHammerShot, Click, 3);
 		break;
 	case 3:
-		pOwner->Buy("Hammer kill", &pOwner->GetPlayer()->m_AccData.m_HammerKill, g_Config.m_EuHammerKill, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Hammer kill"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_HammerKill, g_Config.m_EuHammerKill, Click, 1);
 		break;
 	case 4:
-		pOwner->Buy("Portal", &pOwner->GetPlayer()->m_AccData.m_Portal, g_Config.m_EuPortal, Click, 1);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Portal"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_Portal, g_Config.m_EuPortal, Click, 1);
 		break;
 	}
 }
@@ -154,13 +161,14 @@ void CHammer::Snap(int SnappingClient)
 	}
 	else if(m_Type == 4)// portal
 	{
-		CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
+		/*CNetEvent_Spawn* pEvent = (CNetEvent_Spawn*)GameServer()->m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn));
 
 		if(!pEvent)
 			return;
 
 		pEvent->m_X = (int)m_Pos.x;
-		pEvent->m_Y = (int)m_Pos.y;
-
+		pEvent->m_Y = (int)m_Pos.y;*/
+		if(Server()->Tick()%50 == 0)
+			GameServer()->CreatePlayerSpawn(m_Pos);
 	}
 }

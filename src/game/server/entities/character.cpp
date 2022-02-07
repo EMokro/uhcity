@@ -179,7 +179,7 @@ void CCharacter::Tele()
 		float Dist = distance(TelePos, m_Pos);
 
 		if (Dist > 500) {
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Out of Range");
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Out of Range"));
 			return;
 		}
 
@@ -193,7 +193,7 @@ void CCharacter::Tele()
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_ADMIN)
 					|| GameServer()->Collision()->IsTile(TestPos, TILE_DONOR))
 				{
-					GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't teleport there.");
+					GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You can't teleport there."));
 					return;
 				}
 			}
@@ -201,7 +201,7 @@ void CCharacter::Tele()
 
 		if (Protected())
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You can't tele while being protected");
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You can't tele while being protected"));
 			return;
 		}
 	}
@@ -284,6 +284,8 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 {
 	char aBuf[128];
 	char numBuf[2][16];
+	const char* pLanguage = GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
 
 	Price = floor(Price * pow(*Upgrade + 1, 2.0) * pow(*Upgrade + 1, -1.7));
 
@@ -305,22 +307,21 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 					m_BuyTick = Server()->Tick();
 					GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 					GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[0]);
-					str_format(aBuf, sizeof(aBuf), "Money: %s$", numBuf[0]);
-					SendBroadcast(aBuf, m_pPlayer->GetCID());
+					Server()->Localization()->Format_L(Buffer, pLanguage, _("Money: {str:m}$"), "m", numBuf[0], NULL);
+					SendBroadcast(Buffer.buffer(), m_pPlayer->GetCID());
 				}
 			}
 			else
 			{
 				GameServer()->FormatInt(Price, numBuf[0]);
 				GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
-				str_format(aBuf, sizeof(aBuf), "Not enough money\n%s: %s$\nMoney: %s$", Name, numBuf[0], numBuf[1]);
-
-				SendBroadcast(aBuf, m_pPlayer->GetCID());
+				Server()->Localization()->Format_L(Buffer, pLanguage, _("Not enough money\n{str:Name}: {str:nb0}$\nMoney: {str:nb1}$"), "Name", Name, "nb0", numBuf[0], "nb1", numBuf[1], NULL);
+				SendBroadcast(Buffer.buffer(), m_pPlayer->GetCID());
 			}
 		}
 		else
 		{
-			str_format(aBuf, sizeof(aBuf), "Maximum '%s' (%d/%d)", Name, *Upgrade, Max);
+			Server()->Localization()->Format_L(Buffer, pLanguage, _("Maximum '{str:Name}' ({int:Upgr}/{int:Max})"), "Name", Name, "Upgr", *Upgrade, "Max", Max, NULL);
 			SendBroadcast(aBuf, m_pPlayer->GetCID());
 		}
 	}
@@ -328,7 +329,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 	{
 		GameServer()->FormatInt(Price, numBuf[0]);
 		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Money, numBuf[1]);
-		str_format(aBuf, sizeof(aBuf), "%s (%d/%d)\nCost: %s$\nMoney: %s$", Name, *Upgrade, Max, numBuf[0], numBuf[1]);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("{str:Name} ({int:upgr}/{int:max})\nCost: {str:cost}$\nMoney: {str:money}$"), "Name", Name, "upgr", *Upgrade, "max", Max, "cost", numBuf[0], "money", numBuf[1], NULL);
 		SendBroadcast(aBuf, m_pPlayer->GetCID());
 	}
 }
@@ -1444,7 +1445,7 @@ void CCharacter::Booster()
 
 						char aBuf[256];
 						str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
-						GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You leveled up! You are now level: {int:LV}"), "LV", m_pPlayer->m_AccData.m_Level, NULL);
 
 						
 					}
@@ -1480,8 +1481,7 @@ void CCharacter::Booster()
 			
 			else
 			{
-				str_format(aBuf, sizeof(aBuf), "You need %d TC",m_LifeCost);
-				SendBroadcast(aBuf, m_pPlayer->GetCID());
+				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("You need {int:cost} TC"), "cost", m_LifeCost, NULL);
 			}
 		}
 	}
@@ -1527,19 +1527,19 @@ void CCharacter::Transfer(int Value)
 	if(Value <= 0)
 	{
 		if(!Value)
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Ever seen a 0$ bill?");
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Ever seen a 0$ bill?"));
 		else
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Are you trying to cheat money?");
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Are you trying to cheat money?"));
 			
 		return;
 	}
 	else if(m_pPlayer->m_AccData.m_Money < (long long unsigned)Value)
 	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Not enough money.");
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Not enough money."));
 		return;
 	}
 	else if (m_Transfers > 5) {
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Too many transfers");
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Too many transfers"));
 		return;
 	}
 	else
@@ -1548,7 +1548,7 @@ void CCharacter::Transfer(int Value)
 
 		if(GameServer()->Collision()->CheckPoint(SnapPos))
 		{
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "The wall doesn't need money...");
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("The wall doesn't need money..."));
 			return;
 		}
 
@@ -1586,7 +1586,7 @@ void CCharacter::HandleCity()
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_PROTECT))
 	{
 		if (!(m_Protected || m_Core.m_Protected)) {
-			SendBroadcast("Protected zone entered", m_pPlayer->GetCID());
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("Protected zone entered"));
 			m_Protected = true;
 			m_Core.m_Protected = true;
 			GameServer()->SendTuningParams(m_pPlayer->GetCID());
@@ -1595,7 +1595,7 @@ void CCharacter::HandleCity()
 	}
 	else if (m_Protected || m_Core.m_Protected)
 	{
-		SendBroadcast("Protected zone left", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("Protected zone left"));
 		m_Protected = false;
 		m_Core.m_Protected = false;
 		GameServer()->SendTuningParams(m_pPlayer->GetCID());
@@ -1603,12 +1603,12 @@ void CCharacter::HandleCity()
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_START) && !m_GameZone)
 	{
-		SendBroadcast("Gamezone entered", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("Gamezone entered"));
 		m_GameZone = true;
 	}
 	else if(GameServer()->Collision()->IsTile(m_Pos, TILE_GAMEZONE_END) && m_GameZone)
 	{
-		SendBroadcast("Gamezone left", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("Gamezone left"));
 		m_GameZone = false;
 	}
 
@@ -1616,10 +1616,9 @@ void CCharacter::HandleCity()
 		char aBuf[256], numBuf[2][32];
 		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Price, numBuf[0]);
 		GameServer()->FormatInt(GameServer()->MoneyCollector()->m_Money, numBuf[1]);
-		str_format(aBuf, sizeof aBuf, "~ Money Collector ~\nHolder: %s\nPrice: %s$\nPot: %s$\n/mchelp",
-			GameServer()->MoneyCollector()->m_aHolderName,
-			numBuf[0], numBuf[1]);
-		SendBroadcast(aBuf, m_pPlayer->GetCID());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("~ Money Collector ~\nHolder: {str:h}\nPrice: {str:p}$\nPot: {str:po}$\n/mchelp"), 
+		"h", GameServer()->MoneyCollector()->m_aHolderName,
+		"p", numBuf[0], "po", numBuf[1], NULL);
 	}
 
 	if (m_InRace) {
@@ -1684,7 +1683,7 @@ void CCharacter::HandleCity()
 	Booster();
 
 	if (GameServer()->Collision()->IsTile(m_Pos, TILE_TRAINER)) {
-		SendBroadcast("Welcome to the coach!\nWrite /coach for more information", m_pPlayer->GetCID());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), 3, 3, _("Welcome to the coach!\nWrite /coach for more information"));
 	}
 
 	if(GameServer()->Collision()->IsTile(m_Pos, TILE_SPACE_GRAVITY)) {
@@ -1832,8 +1831,7 @@ void CCharacter::HandleCity()
 				m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
 
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "You leveled up! You are now level: %d", m_pPlayer->m_AccData.m_Level);
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You leveled up! You are now level: {int:LV}"), "LV", m_pPlayer->m_AccData.m_Level, NULL);
 			}
 		}
 
@@ -2143,11 +2141,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool From
 
 	int LvlDmg = 0;
 
-/*	if (GameServer()->ValidID(From))
+	if (GameServer()->ValidID(From))
 		LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
 
 	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
-		LvlDmg = g_Config.m_SvWLvlDmgMax;*/
+		LvlDmg = g_Config.m_SvWLvlDmgMax;
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())

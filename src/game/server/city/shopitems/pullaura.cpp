@@ -54,7 +54,10 @@ void CPullAura::Tick()
 	if (m_LifeTime <= 0)
 		m_LifeTime = 3000;
 	
-	pOwner->Buy("Pullaura", &pOwner->GetPlayer()->m_AccData.m_PullAura, g_Config.m_EuPullAura, Click, 1);
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Pullaura"));
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_PullAura, g_Config.m_EuPullAura, Click, 1);
 }
 
 void CPullAura::Snap(int SnappingClient)

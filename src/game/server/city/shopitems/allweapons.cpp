@@ -47,7 +47,10 @@ void CAllWeapons::Tick()
 		return;
 	}
 	
-	pOwner->Buy("All weapons", &pOwner->GetPlayer()->m_AccData.m_AllWeapons, g_Config.m_EuAllWeapons, Click, 1);
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("All weapons"));
+	pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_AllWeapons, g_Config.m_EuAllWeapons, Click, 1);
 }
 
 

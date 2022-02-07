@@ -48,13 +48,18 @@ void CGrenade::Tick()
 		return;
 	}
 	
+	const char* pLanguage = pOwner->GetPlayer()->GetLanguage();
+	dynamic_string Buffer;
+
 	switch(m_Type)
 	{
 	case 1:
-		pOwner->Buy("Grenade spread", &pOwner->GetPlayer()->m_AccData.m_GrenadeSpread, g_Config.m_EuGrenadeSpread, Click, 5);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenade spread"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_GrenadeSpread, g_Config.m_EuGrenadeSpread, Click, 5);
 		break;
 	case 2:
-		pOwner->Buy("Grenade bounce", &pOwner->GetPlayer()->m_AccData.m_GrenadeBounce, g_Config.m_EuGrenadeBounce, Click, 5);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenade bounce"));
+		pOwner->Buy(Buffer.buffer(), &pOwner->GetPlayer()->m_AccData.m_GrenadeBounce, g_Config.m_EuGrenadeBounce, Click, 5);
 		break;
 	case 3:
 		//pOwner->Buy("Rifle Plasma", &pOwner->GetPlayer()->m_AccData.m_Shotgun, g_Config.m_EuRiflePlasma, Click, 10);
