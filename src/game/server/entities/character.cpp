@@ -321,7 +321,7 @@ void CCharacter::Buy(const char *Name, int *Upgrade, long long unsigned Price, i
 		}
 		else
 		{
-			Server()->Localization()->Format_L(Buffer, pLanguage, _("Maximum '{str:Name}' ({int:Upgr}/{int:Max})"), "Name", Name, "Upgr", *Upgrade, "Max", &Max, NULL);
+			Server()->Localization()->Format_L(Buffer, pLanguage, _("Maximum '{str:Name}' ({int:Upgr}/{int:Max})"), "Name", Name, "Upgr", &*Upgrade, "Max", &Max, NULL);
 			SendBroadcast(Buffer.buffer(), m_pPlayer->GetCID());
 		}
 	}
