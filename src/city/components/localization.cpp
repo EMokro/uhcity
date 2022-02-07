@@ -650,21 +650,22 @@ const char* CLocalization::Localize_P(const char* pLanguageCode, int Number, con
 void CLocalization::AppendNumber(dynamic_string& Buffer, int& BufferIter, CLanguage* pLanguage, int Number)
 {
 	UChar aBufUtf16[128];
-	
+
 	UErrorCode Status = U_ZERO_ERROR;
-	unum_format(pLanguage->m_pNumberFormater, Number, aBufUtf16, sizeof(aBufUtf16), NULL, &Status);
+	unum_format(pLanguage->m_pNumberFormater, Number, aBufUtf16, sizeof(aBufUtf16), nullptr, &Status);
+
 	if(U_FAILURE(Status))
 		BufferIter = Buffer.append_at(BufferIter, "_NUMBER_");
 	else
 	{
-		//Update buffer size
-		int SrcLength = u_strlen(aBufUtf16);
-		int NeededSize = UCNV_GET_MAX_BYTES_FOR_STRING(SrcLength, ucnv_getMaxCharSize(m_pUtf8Converter));
-		
+		// update buffer size
+		const int SrcLength = u_strlen(aBufUtf16);
+		const int NeededSize = UCNV_GET_MAX_BYTES_FOR_STRING(SrcLength, ucnv_getMaxCharSize(m_pUtf8Converter));
+
 		while(Buffer.maxsize() - BufferIter <= NeededSize)
 			Buffer.resize_buffer(Buffer.maxsize()*2);
-		
-		int Length = ucnv_fromUChars(m_pUtf8Converter, Buffer.buffer()+BufferIter, Buffer.maxsize() - BufferIter, aBufUtf16, SrcLength, &Status);
+
+		const int Length = ucnv_fromUChars(m_pUtf8Converter, Buffer.buffer()+BufferIter, Buffer.maxsize() - BufferIter, aBufUtf16, SrcLength, &Status);
 		if(U_FAILURE(Status))
 			BufferIter = Buffer.append_at(BufferIter, "_NUMBER_");
 		else
@@ -789,7 +790,17 @@ void CLocalization::Format_V(dynamic_string& Buffer, const char* pLanguageCode, 
 						}
 						else if(str_comp_num("int:", pText+ParamTypeStart, 4) == 0)
 						{
-							int Number = *((const int*) pVarArgValue);
+							int Number = *((int*) pVarArgValue);
+							AppendNumber(Buffer, BufferIter, pLanguage, Number);
+						}
+						else if(str_comp_num("ullint:", pText+ParamTypeStart, 4) == 0)
+						{
+							int Number = *((const unsigned long long int*) pVarArgValue);
+							AppendNumber(Buffer, BufferIter, pLanguage, Number);
+						}
+						else if(str_comp_num("uint:", pText+ParamTypeStart, 4) == 0)
+						{
+							int Number = *((const unsigned int*) pVarArgValue);
 							AppendNumber(Buffer, BufferIter, pLanguage, Number);
 						}
 						else if(str_comp_num("percent:", pText+ParamTypeStart, 4) == 0)

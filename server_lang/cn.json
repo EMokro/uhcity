@@ -327,11 +327,11 @@
         },
         {
             "key": "Exp: {str:exp} / {str:nB}",
-            "value": "经验(EXP): {str:exp} / {str:nB}"
+            "value": "经验值: {str:exp} / {str:nB}"
         },
         {
             "key": "Hammer: {int:h} Gun: {int:g}, Shotgun: {int:sg}, Grenade: {int:gr}, Rifle: {int:r}",
-            "value": "锤子(Hammer): {int:h} 手枪(Gun): {int:g} 散弹枪(Shotgun): {int:sg} 榴弹枪(Grenade): {int:gr} 激光枪(Rifle): {int:r}"
+            "value": "武器等级：锤子: {int:h}, 手枪: {int:g}, 散弹枪: {int:sg}, 榴弹枪: {int:gr}, 激光枪: {int:r}"
         },
         {
             "key": "Money: {str:Money}$",
@@ -339,739 +339,735 @@
         },
         {
             "key": "Bounty: {str:B}$",
-            "value": ""
+            "value": "赏金: {str:B}$"
         },
         {
             "key": "---------- COMMAND LIST ----------",
-            "value": ""
+            "value": "---------- 指令列表！ ----------"
         },
         {
             "key": "/info -- Infos about the server",
-            "value": ""
+            "value": "/info -- 获取此服务器信息"
         },
         {
             "key": "/help -- Help if you are new",
-            "value": ""
+            "value": "/help -- 能够帮助到你"
         },
         {
             "key": "/me -- Account stats",
-            "value": ""
+            "value": "/me -- 显示账号数据"
         },
         {
             "key": "/disabledmg -- Disables damage on someone",
-            "value": ""
+            "value": "/disabledmg -- 令你无法对另一个造成伤害"
         },
         {
             "key": "/enabledmg -- Enables damage on someone",
-            "value": ""
+            "value": "/enabledmg -- 开启对另一个人的伤害"
         },
         {
             "key": "/transfer -- Drops money at your cursors position",
-            "value": ""
+            "value": "/transfer -- 将你的钱丢到指针指的位置"
         },
         {
             "key": "/donor -- Infos about Donor",
-            "value": ""
+            "value": "/donor -- 关于Donor"
         },
         {
             "key": "/vip -- Infos about VIP",
-            "value": ""
+            "value": "/vip -- 关于VIP"
         },
         {
             "key": "/upgrcmds -- Get a list of all Upgrade commands",
-            "value": ""
+            "value": "/upgrcmds -- 获取在商店里购买的物品的使用指令"
         },
         {
             "key": "/instagib -- Play insta",
-            "value": ""
+            "value": "/insta -- 游玩激光献祭"
         },
         {
             "key": "/cmdlist 1 -- see more commands",
-            "value": ""
+            "value": "/cmdlist 1 -- 查看更多指令"
         },
         {
             "key": "/ids -- Display all IDs",
-            "value": ""
+            "value": "/ids -- 显示所有玩家ID"
         },
         {
             "key": "/event -- Gives the current event infos",
-            "value": ""
+            "value": "/event -- 获取当前活动信息"
         },
         {
             "key": "/setbounty -- Put a bounty on someone",
-            "value": ""
+            "value": "/setbounty -- 悬赏某个人"
         },
         {
             "key": "/checkbounty -- Check if a player has a bounty",
-            "value": ""
+            "value": "/checkbounty -- 检查某个玩家是否被悬赏且有奖金"
         },
         {
             "key": "/bountylist -- Get a list of all bounties",
-            "value": ""
+            "value": "/bountylist -- 获取悬赏列表"
         },
         {
             "key": "/writestats -- Writes your weaponlevel down",
-            "value": ""
+            "value": "/writestats -- 把你的武器等级用对话的形式打出来"
         },
         {
             "key": "/lang cn|en -- Change you server language",
-            "value": ""
+            "value": "/lang cn|en -- 选择其中一个语言来切换"
         },
         {
             "key": "We don't have so many commands :(",
-            "value": ""
+            "value": "我们没有更多指令了 D:"
         },
         {
             "key": "---------- HELP ----------",
-            "value": ""
+            "value": "---------- 帮助 ----------"
         },
         {
             "key": "You need to register enter the game.",
-            "value": ""
+            "value": "你需要注册才能进入游戏"
         },
         {
             "key": "-- /register <username> <password>",
-            "value": ""
+            "value": "使用 /register <用户名> <密码>注册账号(不用打<和>)"
         },
         {
             "key": "If you already have an account you can login with",
-            "value": ""
+            "value": "如果你已经有了一个账号"
         },
         {
-            "key": "-- /login <username> <password>",
+            "key": "那么请 /login输入 <用户名> <密码>登录账号(也不用打<和>)",
             "value": ""
         },
         {
             "key": "If you have any questions you can always ask a team member.",
-            "value": ""
+            "value": "如果你有疑问你可以询问制作团队成员"
         },
         {
             "key": "Join our discord to contact us https://discord.gg/Rstb8ge",
-            "value": ""
+            "value": "加入我们的QQ群来联系我们: 834323539"
         },
         {
             "key": "---------- INFO ----------",
-            "value": ""
+            "value": "---------- 关于 ----------"
         },
         {
             "key": "UH|City is made by UrinStone.",
-            "value": ""
+            "value": "UH|City 作者：UrinStone，多语言制作人：FlowerFell-Sans"
         },
         {
             "key": "Join our Discord to be always informed about the latest updates.",
-            "value": ""
+            "value": "加入我们的QQ群来获取最新的更新：834323539"
         },
         {
             "key": "If you forget your password or wish to donate, please ONLY contact UrinStone#8404 on Discord.",
-            "value": ""
+            "value": "如果你忘记了密码或者想要充值，那么请加QQ好友1421709710，其他人无效"
         },
         {
             "key": "---------- RULES ----------",
-            "value": ""
+            "value": "---------- 玩家守则 ----------"
         },
         {
             "key": "- Don't use Bots / Lua scripts",
-            "value": ""
+            "value": "-不能使用Bot / Lua 脚本"
         },
         {
             "key": "- no Multiacc (logging in with multiple accounts)",
-            "value": ""
+            "value": "-禁止多重账号 (同时注册两个账号)"
         },
         {
             "key": "- Don't abuse Bugs!",
-            "value": ""
+            "value": "-不要恶意利用bug！"
         },
         {
             "key": "- Don't insult other players",
-            "value": ""
+            "value": "-不要侮辱别的玩家"
         },
         {
             "key": "- Don't Spam",
-            "value": ""
+            "value": "-不要刷屏！"
         },
         {
             "key": "- Don't Funvote",
-            "value": ""
+            "value": "-不要刷屏！！"
         },
         {
             "key": "- Don't place unfair lights",
-            "value": ""
+            "value": "-不要放置不适宜的激光墙(出生点门口等)"
         },
         {
             "key": "- Respect the Police",
-            "value": ""
+            "value": "如果发现请告知警察"
         },
         {
             "key": "You will be punished if you disregard the rules",
-            "value": ""
+            "value": "如果你违反了规则那么你将收到处罚"
         },
         {
             "key": "---------- DONOR ----------",
-            "value": ""
+            "value": "---------- DONOR! ----------"
         },
         {
             "key": "Donor costs 10€",
-            "value": ""
+            "value": "Donor 价格10元"
         },
         {
             "key": "Contact UrinStone#8404 at discord",
-            "value": ""
+            "value": "加QQ1421709710购买Donor"
         },
         {
             "key": "Donor provides following features:",
-            "value": ""
+            "value": "Donor带来的能力有"
         },
         {
             "key": "- x5 Money and Exp",
-            "value": ""
+            "value": "- 五倍钱和经验值加成"
         },
         {
             "key": "- The nice crown",
-            "value": ""
+            "value": "- GREAT到不行的皇冠"
         },
         {
             "key": "- Rainbow",
-            "value": ""
+            "value": "- 彩虹TEE!"
         },
         {
             "key": "- Your own House",
-            "value": ""
+            "value": "- 你自己的房子！（请联系管理员给你）"
         },
         {
             "key": "- Home teleport",
-            "value": ""
+            "value": "- 随时传送到你的房子里"
         },
         {
             "key": "- Save and load a position",
-            "value": ""
+            "value": "- 保存/读取你的坐标"
         },
         {
             "key": "- Exclusive 1000$ money tiles that give x6 money & exp",
-            "value": ""
+            "value": "- 在1000$每秒的椅子上获得6倍钱和EXP"
         },
         {
             "key": "Checkout /donorcmds for more information.",
-            "value": ""
+            "value": "输入/donorcmds获取更多帮助"
         },
         {
             "key": "---------- DONORCMDS ----------",
-            "value": ""
+            "value": "---------- DONORの指令 ---------"
         },
         {
             "key": " /save -- Saves your position",
-            "value": ""
+            "value": "/save -- 保存你的坐标"
         },
         {
             "key": " /load -- Teleports you to the saved position",
-            "value": ""
+            "value": "/load -- 传送到你保存的坐标"
         },
         {
             "key": " /rainbow -- Gives you rainbow colors",
-            "value": ""
+            "value": "/rainbow -- 彩虹Tee让我Boki了（?）"
         },
         {
             "key": " /crown -- The nice crown",
-            "value": ""
+            "value": "/crown -- GREAT到不行的皇冠"
         },
         {
             "key": " /home -- Teleports you Into your Home",
-            "value": ""
+            "value": "/home -- 传送到你的房子(联系管理元获得房子)"
         },
         {
             "key": "Checkout /donor to get more information.",
-            "value": ""
+            "value": "输入/donor获得信息"
         },
         {
             "key": "---------- IDS ----------",
-            "value": ""
+            "value": "---------- 玩家ID ----------"
         },
         {
             "key": "[{int:id}] {str:CN}",
-            "value": ""
+            "value": "[{int:id}] {str:CN}"
         },
         {
             "key": "/ids {int:page}",
-            "value": ""
+            "value": "/ids {int:page}"
         },
         {
             "key": "---------- VIP ----------",
-            "value": ""
+            "value": "---------- VIP ----------"
         },
         {
             "key": "VIP gives you x3 money and exp.",
-            "value": ""
+            "value": "VIP将获得3倍金钱和EXP"
         },
         {
             "key": "Use movement cmds:",
-            "value": ""
+            "value": "可以使用以下的强制移动指令："
         },
         {
             "key": "- /up",
-            "value": ""
+            "value": "- /up -- 上移"
         },
         {
             "key": "- /down",
-            "value": ""
+            "value": "- /down -- 下移"
         },
         {
             "key": "- /left",
-            "value": ""
+            "value": "- /left -- 左移"
         },
         {
             "key": "- /right",
-            "value": ""
+            "value": "- /right -- 右移"
         },
         {
             "key": "- /tele",
-            "value": ""
+            "value": "- /tele -- 传送到指针所指的位置"
         },
         {
             "key": "---------- UPGRADE CMDS ----------",
-            "value": ""
+            "value": "---------- 特殊物品指令 ----------"
         },
         {
             "key": "/walls -- Laser walls",
-            "value": ""
+            "value": "/walls -- 激光墙"
         },
         {
             "key": "/hammerkill -- Your target can't escape!",
-            "value": ""
+            "value": "/hammerkill -- 你的目标不可能在HK的攻击下活下去"
         },
         {
             "key": "/plasma -- Beat them with your Plasma",
-            "value": ""
+            "value": "/plasma -- 你的等离子体将跟踪敌人直到你死"
         },
         {
             "key": "/portal -- Opens a portal to teleport between two points",
-            "value": ""
+            "value": "/portal -- 在两端打开传送门"
         },
         {
             "key": "/fgun -- Freeze gun",
-            "value": ""
+            "value": "/fgun -- 使用手枪将敌人冰冻"
         },
         {
             "key": "/swap -- Swaps the position with your target",
-            "value": ""
+            "value": "/swap -- 与你的目标交换位置(极其好用！)"
         },
         {
             "key": "/rplasma -- Rifle plasma",
-            "value": ""
+            "value": "/rplasma -- 激光枪发射 《强森の等离子体》"
         },
         {
             "key": "/fly -- Fly",
-            "value": ""
+            "value": "/fly -- 就像在新年穿上新内裤一样飞起来"
         },
         {
             "key": "/bhook -- Boost other players",
-            "value": ""
+            "value": "/bhook -- 钩子产生反作用力！但是无法对自己生效.."
         },
         {
             "key": "/hhook -- Increases the hooked players healthregen",
-            "value": ""
+            "value": "/hhook -- 给你的敌人回血，哈哈哈哈哈"
         },
         {
             "key": "/nfly -- Ninja fly",
-            "value": ""
+            "value": "/nfly -- 忍者起飞！"
         },
         {
             "key": "/nbomber -- Bomb your enemys away",
-            "value": ""
+            "value": "/nbomber -- 破坏环境的道具"
         },
         {
             "key": "/pushaura -- Pushes the other players",
-            "value": ""
+            "value": "/pushaura -- 推开周围的玩家"
         },
         {
             "key": "/pullaura -- Pull the other players",
-            "value": ""
+            "value": "/pullaura -- 将周围的玩家拉过来"
         },
         {
             "key": "Please use '/upgrcmds <item>'",
-            "value": ""
+            "value": "请使用 /upgrcmds <物品名>"
         },
         {
             "key": "You can checkout following items:",
-            "value": ""
+            "value": "你可以查看以下物品"
         },
         {
             "key": "Enter a shop first",
-            "value": ""
+            "value": "请先进入一个商店"
         },
         {
             "key": "Use /shop <item> to see the items you want.",
-            "value": ""
+            "value": "使用/shop <商品类别> 来查看你想要的物品"
         },
         {
             "key": "Example: '/shop hammer' will show all hammer upgrades.",
-            "value": ""
+            "value": "示例：'/shop hammer' 显示所有关于锤子的商品"
         },
         {
             "key": "To switch between pages use f3 or f4.",
-            "value": ""
+            "value": "切换同一类别的商品使用F3或F4"
         },
         {
             "key": "Available menus are:",
-            "value": ""
+            "value": "以下是可以使用的："
         },
         {
             "key": "Visit a coach first",
-            "value": ""
+            "value": "请先前往武器训练馆"
         },
         {
             "key": "One exp costs 1.000.000$.",
-            "value": ""
+            "value": "1EXP消耗100'0000$"
         },
         {
             "key": "Use /train <weapon> ?<amount>.",
-            "value": ""
+            "value": "使用 /train <武器> <数量> 训练武器"
         },
         {
             "key": "Available weapons are:",
-            "value": ""
+            "value": "以下是可以使用的武器:"
         },
         {
             "key": "Buy Walls first!",
-            "value": ""
+            "value": "请先买激光墙!"
         },
         {
             "key": "{str:RD} Walls",
-            "value": ""
+            "value": "激光墙的状态切换了"
         },
         {
             "key": "Buy Plasma first!",
-            "value": ""
+            "value": "请先购买等离子体"
         },
         {
             "key": "{str:plasma} Plasma",
-            "value": ""
+            "value": "扁桃体的状态切换了"
         },
         {
             "key": "Buy Hammerkill first!",
-            "value": ""
+            "value": "请先购买 血の诅咒！"
         },
         {
             "key": "{str:hk} Hammerkill",
-            "value": ""
+            "value": "血の诅咒的状态发生了转变"
         },
         {
             "key": "Buy Gunfreeze first!",
-            "value": ""
+            "value": "请先购买冰冻枪"
         },
         {
             "key": "{str:gf} Gunfreeze",
-            "value": ""
+            "value": "冰冻枪的状态切换了"
         },
         {
             "key": "Buy Rifleplasma first!",
-            "value": ""
+            "value": "请先购买等离子体激光枪"
         },
         {
             "key": "{str:rp} Rifleplasma",
-            "value": ""
+            "value": "等离子体激光枪开启/关闭了"
         },
         {
             "key": "Buy Swap first!",
-            "value": ""
+            "value": "请先购买《换位思考》"
         },
         {
             "key": "{str:ed} Swap",
-            "value": ""
+            "value": "换位思考技能开启/关闭了！"
         },
         {
             "key": "Buy Fly first!",
-            "value": ""
+            "value": "请先购买无限跳跃(2级)！"
         },
         {
             "key": "{str:ed} Fly",
-            "value": ""
+            "value": "飞行状态开启/关闭了"
         },
         {
             "key": "Buy Healhook first!",
-            "value": ""
+            "value": "请先购买意大利钩"
         },
         {
             "key": "{str:ed} Healhook",
-            "value": ""
+            "value": "意大利钩开启/关闭了"
         },
         {
             "key": "Buy Boosthook first!",
-            "value": ""
+            "value": "请先购买反作用力钩！"
         },
         {
             "key": "{str:ed} Boosthook",
-            "value": ""
+            "value": "反作用力钩生效/失效了"
         },
         {
             "key": "Buy Portal first!",
-            "value": ""
+            "value": "请先购买传送门"
         },
         {
             "key": "{str:ed} Portal",
-            "value": ""
+            "value": "传送门开启/关闭了"
         },
         {
             "key": "Buy PushAura first!",
-            "value": ""
+            "value": "请先购买推送磁场"
         },
         {
             "key": "You can use this aura in {int:cd} seconds again",
-            "value": ""
+            "value": "你得在{int:cd}秒后才能再次使用这个磁场"
         },
         {
             "key": "Buy PullAura first!",
-            "value": ""
+            "value": "请先购买拉取磁场"
         },
         {
             "key": "Buy Ninjafly first!",
-            "value": ""
-        },
-        {
-            "key": "Buy PullAura first!",
-            "value": ""
+            "value": "请先购买忍者飞行！"
         },
         {
             "key": "{str:ED} Ninjafly",
-            "value": ""
+            "value": "忍者飞行生效/失效了"
         },
         {
             "key": "Buy Ninjabomber first!",
-            "value": ""
+            "value": "请先购买忍者轰炸机！"
         },
         {
             "key": "{str:ed} Ninjabomber",
-            "value": ""
+            "value": "忍者轰炸机启动/关闭了"
         },
         {
             "key": "Available languages: {str:ListOfLanguage}",
-            "value": ""
+            "value": "当前可以使用的语言：{str:ListOfLanguage}"
         },
         {
             "key": "All weapons",
-            "value": ""
+            "value": "所有武器(自杀后生效)"
         },
         {
             "key": "Gun freeze",
-            "value": ""
+            "value": "冷冻枪"
         },
         {
             "key": "Gun spread",
-            "value": ""
+            "value": "手枪子弹散射"
         },
         {
             "key": "Fast reload",
-            "value": ""
+            "value": "快速填装"
         },
         {
             "key": "Grenade spread",
-            "value": ""
+            "value": "榴弹散射"
         },
         {
             "key": "Grenade bounce",
-            "value": ""
+            "value": "榴弹反弹"
         },
         {
             "key": "Gun explode",
-            "value": ""
+            "value": "手枪爆炸"
         },
         {
             "key": "Hammer walls",
-            "value": ""
+            "value": "激光墙"
         },
         {
             "key": "Hammer shot",
-            "value": ""
+            "value": "等离子体"
         },
         {
             "key": "Hammer kill",
-            "value": ""
+            "value": "血の诅咒"
         },
         {
             "key": "Portal",
-            "value": ""
+            "value": "传送门"
         },
         {
             "key": "Health",
-            "value": ""
+            "value": "血量"
         },
         {
             "key": "Armor",
-            "value": ""
+            "value": "甲"
         },
         {
             "key": "Health regeneration",
-            "value": ""
+            "value": "血量恢复"
         },
         {
             "key": "Endless Hook",
-            "value": ""
+            "value": "无限钩"
         },
         {
             "key": "Heal Hook",
-            "value": ""
+            "value": "意大利钩"
         },
         {
             "key": "Boost Hook",
-            "value": ""
+            "value": "反作用力钩"
         },
         {
             "key": "Infinity ammo",
-            "value": ""
+            "value": "无限子弹"
         },
         {
             "key": "Infinity jumps",
-            "value": ""
+            "value": "无限跳跃"
         },
         {
             "key": "Ninja Permanent",
-            "value": ""
+            "value": "无限忍者"
         },
         {
             "key": "Ninja at Start",
-            "value": ""
+            "value": "出生时获得忍者"
         },
         {
             "key": "Ninja Switch",
-            "value": ""
+            "value": "可从忍者切换到其他武器"
         },
         {
             "key": "Ninja fly",
-            "value": ""
+            "value": "忍者飞行"
         },
         {
             "key": "Ninja Bomber",
-            "value": ""
+            "value": "忍者轰炸机"
         },
         {
             "key": "No self damage",
-            "value": ""
+            "value": "不会对自己造成伤害"
         },
         {
             "key": "Pullaura",
-            "value": ""
+            "value": "拉取磁场"
         },
         {
             "key": "Pushaura",
-            "value": ""
+            "value": "推送磁场"
         },
         {
             "key": "Rifle spread",
-            "value": ""
+            "value": "激光枪散射"
         },
         {
             "key": "Rifle swap",
-            "value": ""
+            "value": "《换位思考》"
         },
         {
             "key": "Rifle plasma",
-            "value": ""
+            "value": "等离子体激光枪"
         },
         {
             "key": "Shotgun spread",
-            "value": ""
+            "value": "散弹枪散射"
         },
         {
             "key": "Shotgun explode",
-            "value": ""
+            "value": "散弹枪子弹爆炸"
         },
         {
             "key": "VIP",
-            "value": ""
+            "value": "VIP"
         },
         {
             "key": "Only the holder can collect this money",
-            "value": ""
+            "value": "只有持股人可以收集Pot里的钱"
         },
         {
             "key": "There is nothing to collect :(",
-            "value": ""
+            "value": "Pot里没有什么可收集的 D:"
         },
         {
             "key": "You collected {str:m}$",
-            "value": ""
+            "value": "你收集到了{str:m}$"
         },
         {
             "key": "You must pay more than the indicated price",
-            "value": ""
+            "value": "你必须付出比当前股票更高的价格(Price)才能购买股票"
         },
         {
             "key": "You don't have enough money",
-            "value": ""
+            "value": "你没有足够的钱"
         },
         {
             "key": "{str:n} is the new holder of the Moneycollector with a value of {str:m}$",
-            "value": ""
+            "value": "{str:n}是当前股票的持有人，他付出了{str:m}$"
         },
         {
             "key": "Money: {str:m}$",
-            "value": ""
+            "value": "钱: {str:m}$"
         },
         {
             "key": "Not enough money\n{str:Name}: {str:nb0}$\nMoney: {str:nb1}$",
-            "value": ""
+            "value": "没有足够的钱\n{str:Name}: {str:nb0}$\n钱: {str:nb1}$"
         },
         {
             "key": "Maximum '{str:Name}' ({int:Upgr}/{int:Max})",
-            "value": ""
+            "value": "最大值 '{str:Name}' ({int:Upgr}/{int:Max})"
         },
         {
             "key": "{str:Name} ({int:upgr}/{int:max})\nCost: {str:cost}$\nMoney: {str:money}$",
-            "value": ""
+            "value": "{str:Name} ({int:upgr}/{int:max})\n耗费: {str:cost}$\n钱: {str:money}$"
         },
         {
             "key": "You leveled up! You are now level: {int:LV}",
-            "value": ""
+            "value": "你的等级提升了！你现在的等级：{int:LV}"
         },
         {
             "key": "You need {int:cost} TC",
-            "value": ""
+            "value": "你需要至少{int:cost}$"
         },
         {
             "key": "Ever seen a 0$ bill?",
-            "value": ""
+            "value": "？"
         },
         {
             "key": "Are you trying to cheat money?",
-            "value": ""
+            "value": "？"
         },
         {
             "key": "Not enough money.",
-            "value": ""
+            "value": "穷鬼"
         },
         {
             "key": "Too many transfers",
-            "value": ""
+            "value": "太多的钱袋了"
         },
         {
             "key": "The wall doesn't need money...",
-            "value": ""
+            "value": "墙壁不需要钱"
         },
         {
             "key": "Protected zone entered",
-            "value": ""
+            "value": "进入保护区域"
         },
         {
             "key": "Protected zone left",
-            "value": ""
+            "value": "离开保护区域"
         },
         {
             "key": "Gamezone entered",
-            "value": ""
+            "value": "进入游戏区域"
         },
         {
             "key": "Gamezone left",
-            "value": ""
+            "value": "离开游戏区域"
         },
         {
             "key": "~ Money Collector ~\nHolder: {str:h}\nPrice: {str:p}$\nPot: {str:po}$\n/mchelp",
-            "value": ""
+            "value": "~ 股票机器 ~\n当前持股人: {str:h}\n股票价格: {str:p}$\nPOT: {str:po}$\n输入/mchelp获取帮助"
         },
         {
             "key": "Welcome to the coach!\nWrite /coach for more information",
-            "value": ""
+            "value": "欢迎来到武器训练馆！\n输入/coach获取更多帮助！"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "{str:PP} has put a bounty of {str:m}$ on {str:vt}",
+            "value": "玩家 {str:PP} 花费{str:m}美元悬赏{str:vt}，杀死他的人可以获得这笔钱"
         },
         {
             "key": "",

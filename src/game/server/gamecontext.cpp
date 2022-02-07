@@ -443,7 +443,7 @@ void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan
 		{
 			Buffer.clear();
 			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
-			AddBroadcast(i, Buffer.buffer(), Priority, LifeSpan);
+			SendBroadcast(Buffer.buffer(), To);
 		}
 	}
 	

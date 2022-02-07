@@ -644,7 +644,7 @@ void CGameContext::ConChatBountylist(IConsole::IResult *pResult, void *pUserData
 
     if (Size > ListID * 6 + 6) {
         str_format(aBuf, sizeof aBuf, "/bountylist %d", ListID+1);
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/bountylist {int:ID}"), "ID", ListID+1, NULL);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
     }
 }
 
@@ -735,7 +735,7 @@ void CGameContext::ConChatSetbounty(IConsole::IResult *pResult, void *pUserData)
         pSelf->Server()->ClientName(pP->GetCID()),
         numBuf,
         pSelf->Server()->ClientName(Victim));
-    pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+    pSelf->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("{str:PP} has put a bounty of {str:m}$ on {str:vt}"), "PP", pSelf->Server()->ClientName(pP->GetCID()), "m", numBuf, "vt", pSelf->Server()->ClientName(Victim), NULL);
 
     if (Amount != pTarget->m_AccData.m_Bounty) {
         pSelf->FormatInt(Amount, numBuf);
@@ -815,15 +815,17 @@ void CGameContext::ConChatMe(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
     
+    if(!pP->m_AccData.m_UserID)
+        return;
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("---------- STATS ----------"));
     str_format(aBuf, sizeof aBuf, "AccID: %d", pP->m_AccData.m_UserID);
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("AccID: {int:id}"), "id", pP->m_AccData.m_UserID, NULL);
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("AccID: {int:id}"), "id", &pP->m_AccData.m_UserID, NULL);
 
     str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Username: {str:un}"), "un", pP->m_AccData.m_Username, NULL);
 
     str_format(aBuf, sizeof aBuf, "Level: %d", pP->m_AccData.m_Level);
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Level: {int:lv}"), "lv", pP->m_AccData.m_Level, NULL);
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Level: {int:lv}"), "lv", &pP->m_AccData.m_Level, NULL);
 
     pSelf->FormatInt(pP->m_AccData.m_ExpPoints, numBuf[0]);
     pSelf->FormatInt(pChr->calcExp(pP->m_AccData.m_Level), numBuf[1]);
@@ -831,11 +833,11 @@ void CGameContext::ConChatMe(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Exp: {str:exp} / {str:nB}"), "exp", numBuf[0], "nB", numBuf[1], NULL);
 
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Hammer: {int:h} Gun: {int:g}, Shotgun: {int:sg}, Grenade: {int:gr}, Rifle: {int:r}"),
-        "h", pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
-        "g", pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
-        "sg", pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
-        "gr", pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
-        "r" ,pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE], NULL);
+        "h", &pP->m_AccData.m_LvlWeapon[WEAPON_HAMMER],
+        "g", &pP->m_AccData.m_LvlWeapon[WEAPON_GUN],
+        "sg", &pP->m_AccData.m_LvlWeapon[WEAPON_SHOTGUN],
+        "gr", &pP->m_AccData.m_LvlWeapon[WEAPON_GRENADE],
+        "r" ,&pP->m_AccData.m_LvlWeapon[WEAPON_RIFLE], NULL);
 
     pSelf->FormatInt(pP->m_AccData.m_Money, numBuf[0]);
     str_format(aBuf, sizeof aBuf, "Money: %s$", numBuf[0]);
@@ -987,12 +989,12 @@ void CGameContext::ConChatIDs(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("---------- IDS ----------"));
     for  (int i = Page*6; i < Page*6 + 6 && i < j; i++) {
         str_format(aBuf, sizeof aBuf, "[%d] %s", IDs[i], pSelf->Server()->ClientName(IDs[i]));
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("[{int:id}] {str:CN}"), "id", IDs[i], pSelf->Server()->ClientName(IDs[i]), NULL);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
     }
 
     if (Page*6+6 < j) {
         str_format(aBuf, sizeof aBuf, "/ids %d", Page+1);
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/ids {int:page}"), "page", Page+1, NULL);
+        pSelf->SendChatTarget(pP->GetCID(), aBuf);
     }
 }
 
@@ -1395,7 +1397,7 @@ void CGameContext::ConChatPushAura(IConsole::IResult *pResult, void *pUserData)
 
     if (pP->m_GravAuraCooldown) {
         str_format(aBuf, sizeof aBuf, "You can use this aura in %d seconds again", pP->m_GravAuraCooldown);
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("You can use this aura in {int:cd} seconds again"), "cd", pP->m_GravAuraCooldown);
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("You can use this aura in {int:cd} seconds again"), "cd", &pP->m_GravAuraCooldown);
         return;
     }
 
@@ -1423,7 +1425,7 @@ void CGameContext::ConChatPullAura(IConsole::IResult *pResult, void *pUserData)
 
     if (pP->m_GravAuraCooldown) {
         str_format(aBuf, sizeof aBuf, "You can use this aura in %d seconds again", pP->m_GravAuraCooldown);
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("You can use this aura in {int:cd} seconds again"), "cd", pP->m_GravAuraCooldown, NULL);
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("You can use this aura in {int:cd} seconds again"), "cd", &pP->m_GravAuraCooldown, NULL);
         return;
     }
 

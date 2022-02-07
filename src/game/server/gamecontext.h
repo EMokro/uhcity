@@ -46,6 +46,19 @@
 
 static const int MAX_MONSTERS = 15;
 
+#define BROADCAST_DURATION_REALTIME (0)
+#define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
+
+enum
+{
+	BROADCAST_PRIORITY_LOWEST=0,
+	BROADCAST_PRIORITY_WEAPONSTATE,
+	BROADCAST_PRIORITY_EFFECTSTATE,
+	BROADCAST_PRIORITY_GAMEANNOUNCE,
+	BROADCAST_PRIORITY_SERVERANNOUNCE,
+	BROADCAST_PRIORITY_INTERFACE,
+};
+
 class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
@@ -161,6 +174,12 @@ public:
 	void AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan);
 	void SetClientLanguage(int ClientID, const char *pLanguage);
 
+	char *ITC(int I)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "%d", I);
+		return aBuf;
+	}
 
 	//
 	void CheckPureTuning();
