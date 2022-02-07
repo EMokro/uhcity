@@ -817,7 +817,7 @@ void CGameContext::ConChatMe(IConsole::IResult *pResult, void *pUserData)
     
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("---------- STATS ----------"));
     str_format(aBuf, sizeof aBuf, "AccID: %d", pP->m_AccData.m_UserID);
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("AccID: {int:id}") "id", pP->m_AccData.m_UserID, NULL);
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("AccID: {int:id}"), "id", pP->m_AccData.m_UserID, NULL);
 
     str_format(aBuf, sizeof aBuf, "Username: %s", pP->m_AccData.m_Username);
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Username: {str:un}"), "un", pP->m_AccData.m_Username, NULL);
