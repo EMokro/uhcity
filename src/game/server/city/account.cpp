@@ -88,7 +88,6 @@ void CAccount::Login(char *Username, char *Password)
 	if (res.IsError()) {
 		dbg_msg("account", "parse error");
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Sorry, your account data can't be read, We were deleted your account"));
-		Delete();
 		return;
 	}
 
