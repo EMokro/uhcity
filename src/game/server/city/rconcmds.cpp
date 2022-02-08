@@ -82,6 +82,24 @@ void CGameContext::ConDonor(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
+void CGameContext::ConHouse(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	int HouseID = pResult->GetInteger(0);
+	int PlayerID = pResult->GetVictim();
+	char aBuf[200];
+
+	CCharacter* pChr = pSelf->GetPlayerChar(PlayerID);
+	if (pChr)
+	{
+		pChr->GetPlayer()->m_AccData.m_HouseID = HouseID;
+
+		pSelf->SendChatTarget_Localization(PlayerID, CHATCATEGORY_JOIN, _("Player {str:PN} is now in the House {int:Number}"), "PN", pSelf->Server()->ClientName(PlayerID), "Number", &HouseID);
+
+		pChr->GetPlayer()->m_pAccount->Apply();
+	}
+}
+
 void CGameContext::ConJail(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;

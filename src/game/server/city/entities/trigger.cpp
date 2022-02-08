@@ -44,7 +44,7 @@ void CTrigger::TriggerID()
 	int Num = GameServer()->m_World.FindEntities(m_Pos, 1.0f, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 	for(int i = 0; i < Num; i++)
 	{
-		if (GetNumber() > 0 && apEnts[i]->GetPlayer()->m_AccData.m_UserID == GetNumber())
+		if (GetNumber() > 0 && apEnts[i]->GetPlayer()->m_AccData.m_HouseID == GetNumber())
 		{
 			apEnts[i]->m_TriggerID = GetNumber();
 			m_Switched = true;

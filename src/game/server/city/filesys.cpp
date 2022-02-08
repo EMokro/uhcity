@@ -24,6 +24,8 @@ void CFileSys::BackupAccounts() {
     str_format(aBuf, sizeof aBuf, "mkdir -p ./backups/account && cp -r ./accounts ./backups/account/%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 
     system(aBuf);
+
+    GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("Account Backup Create!"));
 }
 
 

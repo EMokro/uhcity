@@ -245,7 +245,7 @@ void CGameContext::SendPrivate(int From, int To, const char *pText, int SpamProt
 	if(From >= 0 && From < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", From, Team, Server()->ClientName(From), pText);
 	else
-		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
+		str_format(aBuf, sizeof(aBuf), "!!! %s", pText);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "teamchat", aBuf);
 
 	CNetMsg_Sv_Chat Msg;
@@ -277,7 +277,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, in
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientID, Team, Server()->ClientName(ChatterClientID), pText);
 	else
-		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
+		str_format(aBuf, sizeof(aBuf), "!!! %s", pText);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, Team!=CHAT_ALL?"teamchat":"chat", aBuf);
 
 	if(Team == CHAT_ALL)

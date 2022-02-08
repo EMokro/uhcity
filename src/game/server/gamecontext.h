@@ -244,6 +244,7 @@ public:
 		static void ConSendFakeParams(IConsole::IResult *pResult, void *pUserData);
 
 		static void ConFsBackupAccounts(IConsole::IResult* pResult, void* pUserData);
+		static void ConHouse(IConsole::IResult *pResult, void *pUserData);
 
 		// chat
 		static void ConChatLogin(IConsole::IResult* pResult, void* pUserData);

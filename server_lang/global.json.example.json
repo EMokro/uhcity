@@ -1090,75 +1090,75 @@
             "value": ""
         },
         {
-            "key": "",
+            "key": "Welcome to the Shop!",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Type /shop for more informations",
             "value": ""
         },
         {
-            "key": "",
+            "key": "~~~~~ BOUNTY EVENT ~~~~~",
             "value": ""
         },
         {
-            "key": "",
+            "key": "~~~~~ MONEY&EXP EVENT ~~~~~",
             "value": ""
         },
         {
-            "key": "",
+            "key": "~~~~~ RISING MC ~~~~~",
             "value": ""
         },
         {
-            "key": "",
+            "key": "We accept only dead tees.",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Duration: {int:s}",
             "value": ""
         },
         {
-            "key": "",
+            "key": "The Moneycollectors pot will rise",
             "value": ""
         },
         {
-            "key": "",
+            "key": "There is no event :(",
             "value": ""
         },
         {
-            "key": "",
+            "key": "You got a bounty of {str:m}$",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Event Over!",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Sorry, your account data can't be read, We were deleted your account",
             "value": ""
         },
         {
-            "key": "",
+            "key": "'{str:ClientName}' joined with a bounty of {str:Bounty}$",
             "value": ""
         },
         {
-            "key": "",
+            "key": " Parse Error: Please contact UrinStone to get this fixed.",
             "value": ""
         },
         {
-            "key": "",
+            "key": "You received money from {str:Owner}",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Account Backup Create!",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Visit our Discord server https://discord.gg/Rstb8ge",
             "value": ""
         },
         {
-            "key": "",
+            "key": "Player {str:PN} is now in the House {int:Number}",
             "value": ""
         },
         {

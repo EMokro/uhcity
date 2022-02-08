@@ -87,6 +87,8 @@ void CAccount::Login(char *Username, char *Password)
 
 	if (res.IsError()) {
 		dbg_msg("account", "parse error");
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Sorry, your account data can't be read, We were deleted your account"));
+		Delete();
 		return;
 	}
 
@@ -270,8 +272,7 @@ void CAccount::Login(char *Username, char *Password)
 	if (m_pPlayer->m_AccData.m_Bounty) {
 		char numBuf[32];
 		GameServer()->FormatInt(m_pPlayer->m_AccData.m_Bounty, numBuf);
-		str_format(aBuf, sizeof aBuf, "'%s' joined with a bounty of %s$", GameServer()->Server()->ClientName(m_pPlayer->GetCID()), numBuf);
-		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "");
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("'{str:ClientName}' joined with a bounty of {str:Bounty}$"), "ClientName", GameServer()->Server()->ClientName(m_pPlayer->GetCID()), "Bounty", numBuf);
 		GameServer()->AddToBountyList(m_pPlayer->GetCID());
 	}
   	
@@ -1053,7 +1054,7 @@ void CAccount::SetAuth(char *Username, int lvl) {
 	ParseResult res = AccD.Parse(AccText);
 
 	if (res.IsError()) {
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), " Parse Error: Please contact UrinStone to get this fixed.");
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _(" Parse Error: Please contact UrinStone to get this fixed."));
 		dbg_msg("account", "parse error");
 		return;
 	}

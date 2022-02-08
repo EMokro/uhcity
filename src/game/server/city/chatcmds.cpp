@@ -148,7 +148,7 @@ void CGameContext::ConChatHome(IConsole::IResult *pResult, void *pUserData)
     }
     
     vec2 oldPos = pChr->m_Core.m_Pos;
-    pChr->m_Home = pP->m_AccData.m_UserID;
+    pChr->m_Home = pP->m_AccData.m_HouseID;
     
     if (pChr->m_Core.m_Pos != oldPos)
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Welcome Home :)"));

@@ -259,7 +259,7 @@
         },
         {
             "key": "You need to be inside the Moneycollector",
-            "value": "你需要先进入股票机器"
+            "value": "你需要先进入金钱控制器"
         },
         {
             "key": "Pfff...",
@@ -267,11 +267,11 @@
         },
         {
             "key": "~~ Money Collector Help ~~",
-            "value": "~~ 股票机器帮助 ~~"
+            "value": "~~ 金钱机器帮助 ~~"
         },
         {
             "key": "The Money Collector collects 4% of the farmed income on the server.",
-            "value": "股票机器在服务器上收取总收入的4%"
+            "value": "金钱市场控制器会收集玩家获得的钱的4%"
         },
         {
             "key": "This money ends up in the pot.",
@@ -283,31 +283,31 @@
         },
         {
             "key": "The price is reduced by 5% every 10 minutes",
-            "value": "股票价格(Price)每10分钟降低5%"
+            "value": "金钱机器的购买价格每10分钟降低5%"
         },
         {
             "key": "The Holder can collect the money from the pot.",
-            "value": "股票持有者可以获取股票机器收集到的钱"
+            "value": "机器持有者可以获取机器收集到的钱"
         },
         {
             "key": "Checkout /mccmds to get more information.",
-            "value": "输入/mccmds获取更多关于股票机器的帮助"
+            "value": "输入/mccmds获取更多关于金钱机器的帮助"
         },
         {
             "key": "~~ Money Collector Cmds ~~",
-            "value": "~~ 股票机器の指令 ~~"
+            "value": "~~ 金钱机器の指令 ~~"
         },
         {
             "key": "/mcbuy",
-            "value": "/mcbuy <数字> - 买股票, 指令后的数字必须大于当前股票价格(Price)"
+            "value": "/mcbuy <数字> - 用此指令购买金钱机器, 指令后的数字必须大于当前金钱机器的价格(Price)"
         },
         {
             "key": "/mccollect",
-            "value": "/mccollect - 持股人使用这个指令收集到股票的钱(Pot)"
+            "value": "/mccollect - 持股人使用这个指令收集到金钱机器的钱(Pot)"
         },
         {
             "key": "/mchelp",
-            "value": "/mchelp - 获取股票机器的帮助"
+            "value": "/mchelp - 获得金钱机器的帮助"
         },
         {
             "key": "---------- STATS ----------",
@@ -987,7 +987,7 @@
         },
         {
             "key": "You must pay more than the indicated price",
-            "value": "你必须付出比当前股票更高的价格(Price)才能购买股票"
+            "value": "你必须付出比当前的金钱机器更高的价格才能购买金钱机器"
         },
         {
             "key": "You don't have enough money",
@@ -995,7 +995,7 @@
         },
         {
             "key": "{str:n} is the new holder of the Moneycollector with a value of {str:m}$",
-            "value": "{str:n}是当前股票的持有人，他付出了{str:m}$"
+            "value": "{str:n}是当前的金钱市场操作器的持有人，他付出了{str:m}$，可恶的资本家！"
         },
         {
             "key": "Money: {str:m}$",
@@ -1059,7 +1059,7 @@
         },
         {
             "key": "~ Money Collector ~\nHolder: {str:h}\nPrice: {str:p}$\nPot: {str:po}$\n/mchelp",
-            "value": "~ 股票机器 ~\n当前持股人: {str:h}\n股票价格: {str:p}$\nPOT: {str:po}$\n输入/mchelp获取帮助"
+            "value": "~ 金钱市场操作器 ~\n当前持股人: {str:h}\n机器价格: {str:p}$\nPOT: {str:po}$\n输入/mchelp获取帮助"
         },
         {
             "key": "Welcome to the coach!\nWrite /coach for more information",
@@ -1070,76 +1070,76 @@
             "value": "玩家 {str:PP} 花费{str:m}美元悬赏{str:vt}，杀死他的人可以获得这笔钱"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Welcome to the Shop!",
+            "value": "欢迎来到商店！"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Type /shop for more informations",
+            "value": "输入/shop获取更多帮助"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "~~~~~ BOUNTY EVENT ~~~~~",
+            "value": "~~~~~ 赏金猎人 ~~~~~"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "~~~~~ MONEY&EXP EVENT ~~~~~",
+            "value": "~~~~~ 钱＆经验 ~~~~~"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "~~~~~ RISING MC ~~~~~",
+            "value": "~~~~~ 资本家の胜利 ~~~~~"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "We accept only dead tees.",
+            "value": "我们需要死去的Tee"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Duration: {int:s}",
+            "value": "有效期：{int:s}"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "The Moneycollectors pot will rise",
+            "value": "金钱市场操控机将会变本加厉"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "There is no event :(",
+            "value": "当前没有活动正在执行 D;"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "You got a bounty of {str:m}$",
+            "value": "你得到了{str:m}美元的赏金"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Event Over!",
+            "value": "活动结束！"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Sorry, your account data can't be read, We were deleted your account",
+            "value": "我们真的是非常抱歉呢，你的账号无法读取，我们将会删除你的账号"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "'{str:ClientName}' joined with a bounty of {str:Bounty}$",
+            "value": "玩家'{str:ClientName}'曾被通缉{str:Bounty}美元，现在杀死他仍然可以获得赏金！"
         },
         {
-            "key": "",
-            "value": ""
+            "key": " Parse Error: Please contact UrinStone to get this fixed.",
+            "value": " 无法读取: 请联系QQ1421709710解决"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "You received money from {str:Owner}",
+            "value": "你捡到了{str:Owner}的钱"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Account Backup Create!",
+            "value": "成功创建账号备份"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Visit our Discord server https://discord.gg/Rstb8ge",
+            "value": "请加入我们的QQ群：834323539"
         },
         {
-            "key": "",
-            "value": ""
+            "key": "Player {str:PN} is now in the House {int:Number}",
+            "value": "玩家{str:PN}入住了{int:Number}号房间！恭喜！"
         },
         {
             "key": "",

@@ -32,8 +32,8 @@ MACRO_CONFIG_LONGLONG(SvMcPotMax, sv_mc_pot_max, 10000000000, 0, 1000000000000, 
 // items
 MACRO_CONFIG_INT(SvBoostHookStr, sv_boost_hook_str, 50, 1, 1000000, CFGFLAG_SERVER, "Strength of boosthook")
 
-MACRO_CONFIG_INT(SvGravAuraRadius, sv_gravaura_radius, 160, 1, 1000000, CFGFLAG_SERVER, "Gravity aura radius")
-MACRO_CONFIG_INT(SvGravAuraForce, sv_gravaura_force, 2, 1, 1000000, CFGFLAG_SERVER, "Gravity aura force strength")
+MACRO_CONFIG_INT(SvGravAuraRadius, sv_gravaura_radius, 500, 1, 1000000, CFGFLAG_SERVER, "Gravity aura radius")
+MACRO_CONFIG_INT(SvGravAuraForce, sv_gravaura_force, 200, -10000, 1000000, CFGFLAG_SERVER, "Gravity aura force strength")
 MACRO_CONFIG_INT(SvGravAuraCooldown, sv_gravaura_cooldown, 120, 0, 1000000, CFGFLAG_SERVER, "Gravity aura Cooldown in s")
 
 // - 64 player
