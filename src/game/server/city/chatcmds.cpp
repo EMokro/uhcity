@@ -2,6 +2,7 @@
 #include <game/server/entities/character.h>
 #include <engine/shared/config.h>
 #include <game/version.h>
+#include <engine/server/crypt.h>
 
 // account
 void CGameContext::ConChatLogin(IConsole::IResult *pResult, void *pUserData)
@@ -16,8 +17,12 @@ void CGameContext::ConChatLogin(IConsole::IResult *pResult, void *pUserData)
     char Password[512];
     str_copy(Username, pResult->GetString(0), sizeof(Username));
     str_copy(Password, pResult->GetString(1), sizeof(Password));
+
+    char aHash[64]; //Result
+	mem_zero(aHash, sizeof(aHash));
+	Crypt(Password, (const unsigned char*) "d9", 1, 14, aHash);
 	
-    pSelf->m_apPlayers[pResult->GetClientID()]->m_pAccount->Login(Username, Password);
+    pSelf->m_apPlayers[pResult->GetClientID()]->m_pAccount->Login(Username, aHash);
 }
 
 void CGameContext::ConChatRegister(IConsole::IResult *pResult, void *pUserData)
@@ -34,7 +39,10 @@ void CGameContext::ConChatRegister(IConsole::IResult *pResult, void *pUserData)
     str_copy(Username, pResult->GetString(0), sizeof(Username));
     str_copy(Password, pResult->GetString(1), sizeof(Password));
 
-    pSelf->m_apPlayers[pResult->GetClientID()]->m_pAccount->Register(Username, Password);
+    char aHash[64];
+	Crypt(Password, (const unsigned char*) "d9", 1, 14, aHash);
+
+    pSelf->m_apPlayers[pResult->GetClientID()]->m_pAccount->Register(Username, aHash, Password);
 }
 
 void CGameContext::ConChatLogout(IConsole::IResult *pResult, void *pUserData)
@@ -76,7 +84,10 @@ void CGameContext::ConChatChangePw(IConsole::IResult *pResult, void *pUserData)
     if (!pP->m_AccData.m_UserID)
         return;
 
-    pP->m_pAccount->NewPassword(NewPw);
+    char aHash[64];
+	Crypt(NewPw, (const unsigned char*) "d9", 1, 16, aHash);
+
+    pP->m_pAccount->NewPassword(aHash);
     pP->m_pAccount->Apply();
 
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Password changed"));

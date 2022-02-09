@@ -169,13 +169,19 @@ void CPlayer::Tick()
 		str_copy(m_aRank, "[*Donor*]", sizeof(m_aRank));
 	else if(m_AccData.m_VIP)
 		str_copy(m_aRank, "[*Vip*]", sizeof(m_aRank));
+	else if(m_PlayerFlags&PLAYERFLAG_IN_MENU)
+		str_copy(m_aRank, "[*CHAT*]", sizeof(m_aRank));		
 
 	const char *pMatchAdmin = str_find_nocase(Server()->ClientClan(GetCID()), "Admin");
 	const char *pMatchVip = str_find_nocase(Server()->ClientClan(GetCID()), "Vip");
 	const char *pMatchDonor = str_find_nocase(Server()->ClientClan(GetCID()), "Donor");
 	const char *pMatchPolice = str_find_nocase(Server()->ClientClan(GetCID()), "Police");
+	const char *pMatchMod = str_find_nocase(Server()->ClientClan(GetCID()), "Mod");
+	const char *pMatchMapper = str_find_nocase(Server()->ClientClan(GetCID()), "Mapper");
+	const char *pMatchChat = str_find_nocase(Server()->ClientClan(GetCID()), "CHAT");
 
-	if(pMatchAdmin || pMatchVip || pMatchDonor || pMatchPolice)
+
+	if(pMatchAdmin || pMatchVip || pMatchDonor || pMatchPolice || pMatchChat || pMatchMapper || pMatchMod)
 		Server()->SetClientClan(GetCID(), "");
 
 	if (Server()->Tick() % 50 == 0) {

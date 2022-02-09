@@ -12,7 +12,6 @@
 #include "base/rapidjson/filereadstream.h"
 #include "base/rapidjson/filewritestream.h"
 #include "base/rapidjson/error/en.h"
-//#include "game/server/gamecontext.h"
 
 #if defined(CONF_FAMILY_WINDOWS)
 	#include <tchar.h>
@@ -52,7 +51,7 @@ void CAccount::Login(char *Username, char *Password)
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Already logged in"));
 		return;
 	}
-	else if(strlen(Username) > 15 || !strlen(Username))
+	/*else if(strlen(Username) > 15 || !strlen(Username))
 	{
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Username too {str:ls}"), strlen(Username)?"long":"short");
 		return;
@@ -61,7 +60,7 @@ void CAccount::Login(char *Username, char *Password)
 	{
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Password too {str:ls}"), strlen(Password)?"long":"short");
 		return;
-    }
+    }*/
 	else if(!Exists(Username))
 	{
 		if (!OldLogin(Username, Password)) {
@@ -130,14 +129,14 @@ void CAccount::Login(char *Username, char *Password)
 	if(strcmp(Username, user["accdata"]["username"].GetString()))
 	{
 		dbg_msg("account", "Account login failed ('%s' - Wrong username)", Username);
-		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Wrong username or password"));
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Wrong username or password1"));
 		return;
 	}
 
 	if(strcmp(Password, user["accdata"]["password"].GetString()))
 	{
-		dbg_msg("account", "Account login failed ('%s' - Wrong password)", Username);
-		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Wrong username or password"));
+		dbg_msg("account", "Account login failed ('%s' - %s -Wrong password)", Password, user["accdata"]["password"].GetString());
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Wrong username or password2"));
 		return;
 	}
 
@@ -282,9 +281,27 @@ void CAccount::Login(char *Username, char *Password)
 		m_pPlayer->m_AccData.m_GunFreeze = 3;
 }
 
-void CAccount::Register(char *Username, char *Password)
+void CAccount::Register(char *Username, char *Password, char *TruePassword)
 {
 	char aBuf[125];
+	if(str_comp(Username, "++UserIDs++") == 0)
+	{
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("?"));
+		return;
+	}
+
+	if(str_comp(Username, "") == 0)
+	{
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("?"));
+		return;
+	}
+
+	if(Exists(Username))
+	{
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_JOIN, _("Username already exists"));
+		return;
+	}
+
 	if(m_pPlayer->m_AccData.m_UserID)
 	{
 		dbg_msg("account", "Account registration failed ('%s' - Logged in)", Username);
@@ -296,7 +313,7 @@ void CAccount::Register(char *Username, char *Password)
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Username too {str:ls}"), strlen(Password)?"long":"short");
 		return;
     }
-	else if(strlen(Password) > 15 || !strlen(Password))
+	else if(strlen(TruePassword) > 15 || !strlen(TruePassword))
 	{
 		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Password too {str:ls}"), strlen(Password)?"long":"short");
 		return;
@@ -521,7 +538,7 @@ void CAccount::Register(char *Username, char *Password)
 
 	dbg_msg("account", "Registration succesful ('%s')", Username);
 	str_format(aBuf, sizeof(aBuf), "Registration succesful - ('/login %s %s'): ", Username, Password);
-	GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Registration succesful - ('/login {str:Username} {str:Password}')"), "Username", Username, "Password", Password, NULL);
+	GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("Registration succesful - ('/login {str:Username} {str:Password}')"), "Username", Username, "Password", TruePassword, NULL);
 	Login(Username, Password);
 }
 

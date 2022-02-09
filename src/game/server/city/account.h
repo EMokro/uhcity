@@ -13,7 +13,7 @@ public:
 
 	void Login(char *Username, char *Password);
 	bool OldLogin(char *Username, char *Password);
-	void Register(char *Username, char *Password);
+	void Register(char *Username, char *Password, char *TruePassword);
 	void Apply();
 	void Reset();
 	void Delete();
@@ -32,6 +32,7 @@ private:
 	class CPlayer *m_pPlayer;
 	class CGameContext *m_pGameServer;
 	CGameContext *GameServer() const { return m_pGameServer; }
+	int OKLMK(char *Password);
 };
 
 #endif
