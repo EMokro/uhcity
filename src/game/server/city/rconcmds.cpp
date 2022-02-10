@@ -94,7 +94,7 @@ void CGameContext::ConHouse(IConsole::IResult *pResult, void *pUserData)
 	{
 		pChr->GetPlayer()->m_AccData.m_HouseID = HouseID;
 
-		pSelf->SendChatTarget_Localization(PlayerID, CHATCATEGORY_JOIN, _("Player {str:PN} is now in the House {int:Number}"), "PN", pSelf->Server()->ClientName(PlayerID), "Number", &HouseID);
+		pSelf->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Player {str:PN} is now in the House {int:Number}"), "PN", pSelf->Server()->ClientName(PlayerID), "Number", &HouseID);
 
 		pChr->GetPlayer()->m_pAccount->Apply();
 	}

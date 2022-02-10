@@ -140,6 +140,13 @@ MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SE
 MACRO_CONFIG_INT(HardNinja, monster_spawn_ninja, 1, 0, 1, CFGFLAG_SERVER, "")
 MACRO_CONFIG_INT(SvDeathAnimation, monster_death_animation, 0, 0, 1, CFGFLAG_SERVER, "")
 
+
+/* # Discord # */
+MACRO_CONFIG_STR(SvDiscordToken, sv_discord_token, 128, "", CFGFLAG_SAVE|CFGFLAG_SERVER, "Discord Bot's token.")
+MACRO_CONFIG_STR(SvDiscordServer, sv_discord_server, 128, "", CFGFLAG_SAVE|CFGFLAG_SERVER, "Discord Bot's needed server's ID.")
+MACRO_CONFIG_STR(SvDiscordChannel, sv_discord_channel, 128, "", CFGFLAG_SAVE|CFGFLAG_SERVER, "Discord Bot's needed channel's ID.")
+/* # Discord # */
+
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "")
