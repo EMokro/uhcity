@@ -51,6 +51,8 @@ void CMonster::Destroy()
 
 void CMonster::Spawn()
 {
+    if(GameServer()->m_pController->m_AliveMonsters >= 10)
+        return;
 	if(!GameServer()->m_pController->m_MonsterSpawnNum)
 		return;
 	m_Pos = vec2(0, 0);
@@ -1304,7 +1306,7 @@ void CMonster::Die(int Killer)
 {
     if(g_Config.m_SvDeathAnimation)
         new CMonsterDeath(GameWorld(), m_Pos, m_Core.m_Vel, m_Type, Killer);
-    //GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
+    GameServer()->CreateSound(m_Pos, SOUND_HOOK_LOOP);
     if(GameServer()->IsValidPlayer(Killer))
     {
     	// send the kill message; works only for ddnet client :/
@@ -1318,29 +1320,28 @@ void CMonster::Die(int Killer)
         int Score;
         switch(m_Type)
         {
-            case TYPE_HAMMER: Score = 500; break;
-            case TYPE_GUN: Score = 500; break;
-            case TYPE_SHOTGUN: Score = 1000; break;
-            case TYPE_GRENADE: Score = 1000; break;
-            case TYPE_LASER: Score = 2000; break;
-            case TYPE_NINJA: Score = 2000; break;
+            case TYPE_HAMMER: Score = 50000; break;
+            case TYPE_GUN: Score = 50000; break;
+            case TYPE_SHOTGUN: Score = 70000; break;
+            case TYPE_GRENADE: Score = 70000; break;
+            case TYPE_LASER: Score = 100000; break;
+            case TYPE_NINJA: Score = 500000; break;
             default: Score = 1; break; // Security :p
         }
         GameServer()->m_apPlayers[Killer]->m_AccData.m_ExpPoints += Score;
         GameServer()->m_apPlayers[Killer]->m_AccData.m_Money += Score;
+        GameServer()->m_apPlayers[Killer]->m_AccData.m_LvlWeapon[m_Type] += 2;
+        GameServer()->m_apPlayers[Killer]->GetCharacter()->IncreaseHealth(GameServer()->m_apPlayers[Killer]->m_AccData.m_Health-10);
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "ep + %d || Money + %d$", Score, Score);
         GameServer()->SendChatTarget(Killer, aBuf);
-        //GameServer()->CreateDeath(m_Pos, Killer);
-        //char aBuf[128];
-        //str_format(aBuf, sizeof(aBuf), "%s has killed a %s", Server()->ClientName(Killer), MonsterName());
-        //GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-        //str_format(aBuf, sizeof(aBuf), "You have killed a %s", MonsterName());
-        //GameServer()->SendChatTarget(Killer, aBuf);
+        GameServer()->CreateDeath(m_Pos, Killer);
         Reset();
+        GameServer()->m_apPlayers[Killer]->GetCharacter()->CheckLevelUp(Killer);
+        GameServer()->m_apPlayers[Killer]->GetCharacter()->HandleCity();
+        GameServer()->m_pController->m_AliveMonsters--;
+        
     }
-    else
-        Spawn(); // Monsters don't die until they are killed by a player
 }
 
 const char *CMonster::MonsterName()

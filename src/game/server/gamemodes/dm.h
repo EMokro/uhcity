@@ -4,10 +4,10 @@
 #define GAME_SERVER_GAMEMODES_DM_H
 #include <game/server/gamecontroller.h>
 
-class CGameControllerDM : public IGameController
+class CGameControllerMOD : public IGameController
 {
 public:
-	CGameControllerDM(class CGameContext *pGameServer);
+	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual void Tick();
 };
 #endif

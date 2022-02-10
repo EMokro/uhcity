@@ -24,7 +24,7 @@ class CMonster : public CEntity
     enum
     {
         ENTITY_NUM = 3,
-        ENTITY_SPEED = 5,
+        ENTITY_SPEED = 0,
     };
 public:
 	//monster's size

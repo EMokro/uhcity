@@ -3,13 +3,13 @@
 #include "dm.h"
 
 
-CGameControllerDM::CGameControllerDM(class CGameContext *pGameServer)
+CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
 	m_pGameType = "UH|City";
 }
 
-void CGameControllerDM::Tick()
+void CGameControllerMOD::Tick()
 {
 	IGameController::Tick();
 }

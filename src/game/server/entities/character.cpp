@@ -1450,8 +1450,6 @@ void CCharacter::Booster()
 
 						char aBuf[256];
 						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You leveled up!"));
-
-						
 					}
 				}
 			}
@@ -1872,6 +1870,12 @@ void CCharacter::AddGravAura() {
 
 void CCharacter::Tick()
 {
+	Booster();
+	if(m_Health <= 0)
+	{	
+		DieFromMonster(WEAPON_GAME);
+		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+	}
 	if(m_pPlayer->m_ForceBalanced)
 	{
 		char Buf[128];
@@ -1964,8 +1968,6 @@ void CCharacter::Tick()
 	if (Server()->Tick() % 50 == 0 && m_Transfers > 0)
 		m_Transfers--;
 	
-	if(m_Health <= 0 && m_Armor <= 0)
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	
 	// Previnput
 	m_PrevInput = m_Input;
@@ -2123,6 +2125,28 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 }
 
+void CCharacter::DieFromMonster(int Weapon)
+{
+	// send the kill message
+	CNetMsg_Sv_KillMsg Msg;
+	Msg.m_Killer = m_pPlayer->GetCID();
+	Msg.m_Victim = m_pPlayer->GetCID();
+	Msg.m_Weapon = Weapon;
+	Msg.m_ModeSpecial = 0;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+
+	// a nice sound
+	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
+
+	// this is for auto respawn after 3 secs
+	m_pPlayer->m_DieTick = Server()->Tick();
+
+	m_Alive = false;
+	GameServer()->m_World.RemoveEntity(this);
+	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
+	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+}
+
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster)
 {
 	if((Protected() && !m_GameZone) || m_pPlayer->m_Insta)
@@ -2139,23 +2163,26 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool From
 	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
 		return false;
 
-	// City
-	if(m_pPlayer->m_AccData.m_NoSelfDMG && From == m_pPlayer->GetCID())
-		return false;
+/*	//City
+	if(!FromMonster)
+	{
+		if(m_pPlayer->m_AccData.m_NoSelfDMG && From == m_pPlayer->GetCID())
+			return false;
 
-	int LvlDmg = 0;
+		int LvlDmg = 0;
 
-	if (GameServer()->ValidID(From))
-		LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
+		if (GameServer()->ValidID(From))
+			LvlDmg = floor(GameServer()->m_apPlayers[From]->m_AccData.m_LvlWeapon[Weapon] / 10.0);
 
-	if (LvlDmg > g_Config.m_SvWLvlDmgMax)
-		LvlDmg = g_Config.m_SvWLvlDmgMax;
-
-	// m_pPlayer only inflicts half damage on self
-	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
-	else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
-		Dmg += LvlDmg; // Add every 10 lvl 1 dmg to others
+		if (LvlDmg > g_Config.m_SvWLvlDmgMax)
+			LvlDmg = g_Config.m_SvWLvlDmgMax;
+	
+		// m_pPlayer only inflicts half damage on self
+		if(From == m_pPlayer->GetCID())
+			Dmg = max(1, Dmg/2);
+		else if (Weapon >= 0 && Weapon <= WEAPON_RIFLE)
+			Dmg += LvlDmg; // Add every 10 lvl 1 dmg to others
+	}*/
 
 	m_DamageTaken++;
 	if (GameServer()->ValidID(From)) {
@@ -2357,4 +2384,19 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
+}
+
+void CCharacter::CheckLevelUp(int ClientID)
+{
+	if(m_pPlayer->m_AccData.m_ExpPoints >= calcExp(m_pPlayer->m_AccData.m_Level))
+	{
+		m_pPlayer->m_AccData.m_ExpPoints = 0;
+		m_pPlayer->m_AccData.m_Level++;
+		m_pPlayer->m_Score = m_pPlayer->m_AccData.m_Level;
+		char aBuf[256];
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_INFO, _("You leveled up!"));
+	}
+
+	if(GameServer()->m_apPlayers[ClientID]->GetCharacter()->m_Health <= 0)
+		Die(-1, WEAPON_GAME);
 }

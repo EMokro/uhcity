@@ -11,7 +11,7 @@ IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 {
 	m_pGameServer = pGameServer;
-	m_RespawnTick = Server()->Tick();
+	m_RespawnTick = 0;
 	m_DieTick = Server()->Tick();
 	m_ScoreStartTick = Server()->Tick();
 	m_pCharacter = 0;
@@ -59,7 +59,7 @@ void CPlayer::Tick()
 #endif
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
-
+	
 	Server()->SetClientScore(m_ClientID, m_Score);
 	Server()->SetClientAccID(m_ClientID, m_AccData.m_UserID);
 	Server()->SetClientLanguage(m_ClientID, m_aLanguage);
@@ -417,7 +417,7 @@ void CPlayer::TryRespawn()
 	} else if(m_Insta) {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
 			return;
-	} else if(m_Insta) {
+	} else if(m_onMonster) {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_onMonster?4:0))
 			return; 
 	} else {

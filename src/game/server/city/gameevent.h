@@ -19,6 +19,7 @@ class CGameEvent {
         void Bounty();
         void MoneyExp(int Amount);
         void RisingMC();
+        void Monster();
 
         bool m_Escape;
         bool m_SilentEscape;
@@ -38,9 +39,11 @@ class CGameEvent {
         int m_Multiplier;
 
         enum {
-            EVENT_BOUNTY = 0,
+            EVENT_NONE = -1,
+            EVENT_BOUNTY,
             EVENT_MONEYEXP,
             EVENT_RISINGMC,
+            EVENT_MONSTER,
 
             AMOUNT_EVENT
         };

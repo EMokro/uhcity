@@ -58,6 +58,7 @@ public:
 	void FireWeapon();
 
 	void Die(int Killer, int Weapon);
+	void DieFromMonster(int Weapon);
 	void AddExp(int Weapon, long long unsigned Amount = 1);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster = false);
 
@@ -175,6 +176,8 @@ public:
 
 	// Monster
 	int GetHealth() const { return m_Health; }
+
+	void CheckLevelUp(int ClientID);
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;

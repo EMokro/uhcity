@@ -969,8 +969,8 @@ void CGameContext::ProcessPrivateMsg(const char* Msg, int ClientID) {
 	To = To == -1 ? pPlayer->m_PmID : To;
 
 	if (To == -1) {
-		SendChatTarget(ClientID, "This chat is only for private messages.");
-		SendChatTarget(ClientID, "Usage: <nickname>: Your Message");
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("This chat is only for private messages."));
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Usage: <nickname>: Your Message"));
 		return;
 	}
 

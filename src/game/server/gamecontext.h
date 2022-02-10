@@ -44,7 +44,7 @@
 
 */
 
-static const int MAX_MONSTERS = 15;
+static const int MAX_MONSTERS = 24;
 
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)

@@ -25,5 +25,6 @@ src/game/generated/nethash.cpp
 moneycollector.data
 teeworlds_srv
 teeworlds_srv_d
-
+*-Server
+*-Debug
 build/

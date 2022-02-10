@@ -27,7 +27,7 @@ void CGameEvent::Tick() {
             GetEventStr(m_CurrentEvent, aEvent, sizeof aEvent);
             dbg_msg("event", "'%s' Event ended", aEvent);
 
-            m_CurrentEvent = -1;
+            m_CurrentEvent = EVENT_NONE;
             m_isEvent = false;
             m_Escape = false;
             m_Timer = (rand() % (g_Config.m_SvEventTimerMax - g_Config.m_SvEventTimerMin)) + g_Config.m_SvEventTimerMin;
@@ -92,6 +92,11 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("The Moneycollectors pot will rise"));
             GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
             return;
+        case EVENT_MONSTER:
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ MONSTER!! BY Neox76 ~~~~~"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("Monster is coming! Join 'MOSTE' to Kill them!"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
+            return;
         }
     } else {
         switch (m_CurrentEvent)
@@ -113,6 +118,11 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("The Moneycollectors pot will rise"));
             GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
             return;
+        case EVENT_MONSTER:
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ MONSTER!! BY Neox76 ~~~~~"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Monster is coming! Join 'MOSTE' to Kill them!"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
+            return;
         default:
             GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("There is no event :("));
         }
@@ -122,6 +132,7 @@ void CGameEvent::EventInfo(int ClientID) {
 void CGameEvent::Reset() {
     m_Multiplier = 1;
     GameServer()->MoneyCollector()->m_CollectPercentage = 0.04;
+    GameServer()->m_pController->m_MonsterEvent = false;
 }
 
 void CGameEvent::Abort() {
@@ -142,6 +153,9 @@ void CGameEvent::GetEventStr(int ID, char *Out, int Size) {
         break;
     case EVENT_RISINGMC:
         str_format(Out, Size, "RisngMC");
+        break;
+    case EVENT_MONSTER:
+        str_format(Out, Size, "Monster");
         break;
     default:
         str_format(Out, Size, "Unknown");
@@ -182,4 +196,9 @@ void CGameEvent::MoneyExp(int Amount) {
 
 void CGameEvent::RisingMC() {
     GameServer()->MoneyCollector()->m_CollectPercentage = 1.5;
+}
+
+void CGameEvent::Monster()
+{
+    GameServer()->m_pController->m_MonsterEvent = true;
 }

@@ -71,6 +71,7 @@ public:
 	int m_MonsterSpawnCurrentNum;
 	int m_AliveMonsters;
 	void NewMonster(int MonsterID);
+	bool m_MonsterEvent;
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();
 

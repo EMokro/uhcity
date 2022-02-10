@@ -45,6 +45,7 @@ IGameController::IGameController(class CGameContext *pGameServer)
 
 	m_MonsterSpawnNum = 0;
 	m_MonsterSpawnCurrentNum = 0;
+	m_MonsterEvent = false;
 }
 
 IGameController::~IGameController()
@@ -147,7 +148,14 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	int SubType = 0;
 
 	if(Index == ENTITY_SPAWN)
+	{
+		if(m_MonsterEvent)
+		{
+			m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
+    	    m_MonsterSpawnNum ++;
+		}
 		m_aaSpawnPoints[0][m_aNumSpawnPoints[0]++] = Pos;
+	}
 	else if(Index == ENTITY_JAIL)
 		m_aaSpawnPoints[1][m_aNumSpawnPoints[1]++] = Pos;
 	else if(Index == ENTITY_INSTA_SPAWN)
@@ -211,7 +219,12 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		new CVip(&GameServer()->m_World, Pos);
 	else if(Index == ENTITY_FLAGSTAND_RED)
 		new CBuyHealth(&GameServer()->m_World, Pos);
-	else if(Index == ENTITY_MONSTER)
+	else if(Index == ENTITY_MONSTER && !m_MonsterEvent)
+	{
+		m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
+        m_MonsterSpawnNum ++;
+	}
+	else if(Index == ENTITY_MEVENT && m_MonsterEvent)
 	{
 		m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
         m_MonsterSpawnNum ++;
@@ -424,8 +437,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 				GameServer()->FormatInt(KillReward, numBuf[1]);
 
 				if (pVictim->GetPlayer()->m_AccData.m_Bounty) {
-					str_format(aBuf, sizeof(aBuf), "%s collected a bounty of %s$", Server()->ClientName(pKiller->GetCID()), numBuf[1]);
-					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("{str:p} collected a bounty of {str:m}$"), "p", Server()->ClientName(pKiller->GetCID()), "m", numBuf[1]);
 				}
 
 				pVictim->GetPlayer()->m_AccData.m_Bounty = 0;
@@ -433,7 +445,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 				GameServer()->RemoveFromBountyList(pVictim->GetPlayer()->GetCID());
 
 				str_format(aBuf, sizeof(aBuf), "+%s$ || current %s$", numBuf[1], numBuf[0]);
-				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aBuf);
+				pKiller->GetCharacter()->GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_INFO, _("+{str:em}$ || current {str:cm}$"), "em", numBuf[1], "cm", numBuf[0]);
 			}
 			else
 			{
@@ -448,17 +460,16 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 				GameServer()->FormatInt(KillReward, numBuf[1]);
 
 				if (pVictim->GetPlayer()->m_AccData.m_Bounty) {
-					str_format(aBuf, sizeof(aBuf), "%s collected a bounty of %s$", Server()->ClientName(pKiller->GetCID()), numBuf[1]);
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("{str:p} collected a bounty of {str:m}$"), "p", Server()->ClientName(pKiller->GetCID()), "m", numBuf[1]);
 					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 				}
 
-				str_format(aBuf, sizeof(aBuf), "+%s$ || Current: %s$ || %i Insta-Kills", numBuf[1], numBuf[0], pKiller->GetCharacter()->m_InstaKills);
-				pKiller->GetCharacter()->GameServer()->SendChatTarget(pKiller->GetCID(), aBuf);
+				pKiller->GetCharacter()->GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_INFO, _("+{str:b1}$ || Current: {str:b0}$ || {str:IK} Insta-Kills"), "b1", numBuf[1], "b0", numBuf[0], "IK", pKiller->GetCharacter()->m_InstaKills);
 
 				if(pVictim->m_InstaKills >= 5)
 				{
 					str_format(aBuf, sizeof(aBuf), "%s killed %s with %i kills", Server()->ClientName(pKiller->GetCID()), Server()->ClientName(pVictim->GetPlayer()->GetCID()),pVictim->m_InstaKills);
-					GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("{str:k} killed {str:v} with {str:n} kills"), Server()->ClientName(pKiller->GetCID()), Server()->ClientName(pVictim->GetPlayer()->GetCID()),pVictim->m_InstaKills);
 				}
 
 				pVictim->GetPlayer()->m_AccData.m_Bounty = 0;
@@ -484,7 +495,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	}
 
 	if(Weapon == WEAPON_SELF)
-		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
+		pVictim->GetPlayer()->m_RespawnTick = 0;
 	return 0;
 }
 
@@ -680,38 +691,27 @@ void IGameController::Tick()
 
 	DoWincheck();
 
-	//Monster
-	int AliveMonsters = 0;
-    for(int i = 0; i < MAX_MONSTERS; i ++)
-        if(GameServer()->GetValidMonster(i))
-            AliveMonsters ++;
-
-    m_AliveMonsters = AliveMonsters;
-
-	for(int i = 0; i < 3; i ++)
+	for(int i = 0; i <= MAX_MONSTERS; i++)
     {
-        if(!GameServer()->GetValidMonster(i))
-        {
-            NewMonster(i);
-            m_AliveMonsters += 5;
-        }
+    	if(!GameServer()->GetValidMonster(i) && m_AliveMonsters <= MAX_MONSTERS)
+    	{
+    	    NewMonster(i);
+			m_AliveMonsters++;
+		}
     }
 }
 
 void IGameController::NewMonster(int MonsterID)
 {
+	int m_Type = 0;
 	if(!g_Config.m_EnableMonster)
 		return;
-    if(MonsterID >= 0 && MonsterID < 3)
+    m_Type = rand()%NUM_WEAPONS;
+	if(MonsterID >= 0 && MonsterID <= MAX_MONSTERS)
     {
         if(!GameServer()->m_apMonsters[MonsterID])
         {
-            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, MonsterID, 5, 5, 2);
-			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GUN, MonsterID, 5, 5, 2);
-			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_SHOTGUN, MonsterID, 5, 5, 2);
-			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GRENADE, MonsterID, 5, 5, 2);
-			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_LASER, MonsterID, 5, 5, 2);
-			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_NINJA, MonsterID, 5, 5, 2);
+            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, m_Type, MonsterID, 10, 10, 5);
         }
     }
 }

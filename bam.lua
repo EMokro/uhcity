@@ -267,12 +267,7 @@ function build(settings)
 		tools[i] = Link(settings, toolname, Compile(settings, v), engine, md5, zlib, pnglite)
 	end
 
-	-- build client, server, version server and master server
-	client_exe = Link(client_settings, "teeworlds", game_shared, game_client,
-		engine, client, game_editor, md5, zlib, pnglite, wavpack,
-		client_link_other)
-
-	server_exe = Link(server_settings, "teeworlds_srv", engine, server,
+	server_exe = Link(server_settings, "UHCity-Server", engine, server,
 		game_shared, game_server, md5, zlib, server_link_other, city, json)
 
 	serverlaunch = {}
@@ -287,9 +282,8 @@ function build(settings)
 		engine, md5, zlib)
 
 	-- make targets
-	c = PseudoTarget("client".."_"..settings.config_name, client_exe, client_depends)
 	s = PseudoTarget("server".."_"..settings.config_name, server_exe, serverlaunch)
-	g = PseudoTarget("game".."_"..settings.config_name, client_exe, server_exe)
+	g = PseudoTarget("game".."_"..settings.config_name, server_exe)
 
 	v = PseudoTarget("versionserver".."_"..settings.config_name, versionserver_exe)
 	m = PseudoTarget("masterserver".."_"..settings.config_name, masterserver_exe)
@@ -302,7 +296,7 @@ end
 
 debug_settings = NewSettings()
 debug_settings.config_name = "debug"
-debug_settings.config_ext = "_d"
+debug_settings.config_ext = "-Debug"
 debug_settings.debug = 1
 debug_settings.optimize = 0
 debug_settings.cc.defines:Add("CONF_DEBUG")
