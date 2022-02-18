@@ -8,7 +8,7 @@ MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
 IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 
-CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
+CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team, int Zomb)
 {
 	m_pGameServer = pGameServer;
 	m_RespawnTick = 0;
@@ -44,6 +44,9 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 		m_pAccount->Apply();
 
 	SetLanguage(Server()->GetClientLanguage(ClientID));
+
+	m_Zomb = Zomb;
+	mem_zero(m_SubZomb, sizeof(m_SubZomb));
 }
 
 CPlayer::~CPlayer()
@@ -57,7 +60,7 @@ void CPlayer::Tick()
 #ifdef CONF_DEBUG
 	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientID) && !m_Zomb)
 		return;
 	
 	Server()->SetClientScore(m_ClientID, m_Score);
@@ -74,6 +77,7 @@ void CPlayer::Tick()
 		m_ChatScore--;
 
 	// do latency stuff
+	if(!m_Zomb)
 	{
 		IServer::CClientInfo Info;
 		if(Server()->GetClientInfo(m_ClientID, &Info))
@@ -212,37 +216,52 @@ void CPlayer::Snap(int SnappingClient)
 #ifdef CONF_DEBUG
 	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientID) && !m_Zomb)
 		return;
 
 	int FakeID = m_ClientID;
-	if (!Server()->Translate(FakeID, SnappingClient))
+	if (!Server()->Translate(FakeID, SnappingClient) && !m_Zomb)
 		return;
 
+	dbg_msg("test", "test: %d", FakeID);
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, FakeID, sizeof(CNetObj_ClientInfo)));
-	if(!pClientInfo)
+	if(!pClientInfo && !m_Zomb)
 		return;
-
-	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
 	
-	if(str_comp(m_aRank, "") && Server()->Tick() % 100 < 50)
-		StrToInts(&pClientInfo->m_Clan0, 3, m_aRank);
-	else
+	if(!m_Zomb)
+	{
+		StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
+	
+		if(str_comp(m_aRank, "") && Server()->Tick() % 100 < 50)
+			StrToInts(&pClientInfo->m_Clan0, 3, m_aRank);
+		else
+			StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
+		StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
 		StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
+		pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+		pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
+		pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
+		pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
 	
 
-	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
-	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	pClientInfo->m_UseCustomColor = m_Rainbow?true:m_TeeInfos.m_UseCustomColor;
+		pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+		pClientInfo->m_UseCustomColor = m_Rainbow?true:m_TeeInfos.m_UseCustomColor;
 
-	pClientInfo->m_ColorBody = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorBody;
-	pClientInfo->m_ColorFeet = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorFeet;
+		pClientInfo->m_ColorBody = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorBody;
+		pClientInfo->m_ColorFeet = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorFeet;
+	}
+	
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, FakeID, sizeof(CNetObj_PlayerInfo)));
-	if(!pPlayerInfo)
+	if(!pPlayerInfo && !m_Zomb)
 		return;
 
-	pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
+	if(m_Zomb)
+		pPlayerInfo->m_Latency = 0;
+	else
+		pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
 	pPlayerInfo->m_ClientID = FakeID;
 	pPlayerInfo->m_Score = m_Score;
@@ -271,7 +290,7 @@ void CPlayer::OnDisconnect(const char *pReason)
 
 	KillCharacter();
 
-	if(Server()->ClientIngame(m_ClientID))
+	if(Server()->ClientIngame(m_ClientID) && !m_Zomb)
 	{
 		char aBuf[512];
 		if(pReason && *pReason)
@@ -417,7 +436,7 @@ void CPlayer::TryRespawn()
 	} else if(m_Insta) {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
 			return;
-	} else if(m_onMonster) {
+	} else if(m_onMonster || m_Zomb) {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_onMonster?4:0))
 			return; 
 	} else {
@@ -459,4 +478,26 @@ const char* CPlayer::GetLanguage()
 void CPlayer::SetLanguage(const char* pLanguage)
 {
 	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
+}
+
+bool CPlayer::GetZomb(int Type)
+{
+	if(m_Zomb == Type)
+		return true;
+	for(int i = 0; i < (int)(sizeof(m_SubZomb)/sizeof(m_SubZomb[0])); i++)
+	{
+		if(m_SubZomb[i] == Type)
+			return true;
+	}
+	return false;
+}
+
+void CPlayer::DeleteCharacter()
+{
+	if(m_pCharacter)
+	{
+		m_Spawning = false;
+		delete m_pCharacter;
+		m_pCharacter = 0;
+	}
 }

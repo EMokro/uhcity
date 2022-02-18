@@ -193,6 +193,12 @@ void CNetConnection::Disconnect(const char *pReason)
 	Reset();
 }
 
+void CNetConnection::BotConnect()
+{
+    m_State = NET_CONNSTATE_CONNECT;
+}
+
+
 int CNetConnection::Feed(CNetPacketConstruct *pPacket, NETADDR *pAddr)
 {
 	int64 Now = time_get();

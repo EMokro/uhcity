@@ -14,7 +14,7 @@ class CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CPlayer(CGameContext *pGameServer, int ClientID, int Team);
+	CPlayer(CGameContext *pGameServer, int ClientID, int Team, int Zomb);
 	~CPlayer();
 
 	void Init(int CID);
@@ -36,6 +36,12 @@ public:
 	void SendAfk();
 
 	void KillCharacter(int Weapon = WEAPON_GAME);
+
+	//Zomb2
+	void DeleteCharacter();
+	int GetZomb() { return m_Zomb; };
+	bool GetZomb(int Zomb);
+
 	CCharacter *GetCharacter();
 
 	//---------------------------------------------------------
@@ -208,6 +214,25 @@ public:
 
 	const char* GetLanguage();
 	void SetLanguage(const char* pLanguage);
+
+	//Zomb2
+	int m_SubZomb[3];//all Types, 3 times ( 0, 1, 2)
+	int m_Zomb;
+	///////////////////////////////
+	//1 = Zaby
+	//2 = Zoomer
+	//3 = Zooker
+	//4 = Zamer
+	//5 = Zunner
+	//6 = Zaster
+	//7 = Zotter
+	//8 = Zenade
+	//9 = Flombie
+	//10 = Zinja
+	//11 = Zele
+	//12 = Zinvis
+	//13 = Zeater
+	////////////////////////////////
 	
 private:
 	CCharacter *m_pCharacter;

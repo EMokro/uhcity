@@ -444,13 +444,15 @@ void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size)
 
 const char *CServer::ClientName(int ClientID)
 {
-	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
+	if(ClientID > MAX_PLAYERS && ClientID < MAX_CLIENTS)
+		return "Zombie";//needed
+	if(ClientID < 0|| ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 		return "(invalid)";
+
 	if(m_aClients[ClientID].m_State == CServer::CClient::STATE_INGAME)
 		return m_aClients[ClientID].m_aName;
 	else
 		return "(connecting)";
-
 }
 
 const char *CServer::ClientClan(int ClientID)
@@ -493,6 +495,8 @@ int CServer::ClientIdByName(const char* Name) {
 
 int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 {
+	if(ClientID > MAX_PLAYERS)
+		return -1;
 	return SendMsgEx(pMsg, Flags, ClientID, false);
 }
 
@@ -1969,4 +1973,26 @@ const char* CServer::GetClientLanguage(int ClientID)
 void CServer::SetClientLanguage(int ClientID, const char* pLanguage)
 {
 	str_copy(m_aClients[ClientID].m_aLanguage, pLanguage, sizeof(m_aClients[ClientID].m_aLanguage));
+}
+
+void CNetServer::BotInit(int BotID)
+{
+    m_aSlots[BotID].m_Connection.BotConnect();
+}
+
+void CServer::BotJoin(int BotID)
+{
+    const char *pNames[] = {
+        "Zaby",
+    };
+    const char *pClans[] = { 
+        "Zombie",
+    };
+
+    m_NetServer.BotInit(BotID);
+    m_aClients[BotID].m_State = CClient::STATE_INGAME;
+    m_aClients[BotID].m_Authed = AUTHED_NO;
+
+    str_copy(m_aClients[BotID].m_aName, pNames[BotID], MAX_NAME_LENGTH); //Namen des Jeweiligen Dummys setzten
+    str_copy(m_aClients[BotID].m_aClan, pClans[BotID], MAX_CLAN_LENGTH); //Clan des jeweiligen Dummys setzten
 }

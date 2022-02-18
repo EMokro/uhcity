@@ -150,6 +150,11 @@ public:
 	int ClampTeam(int Team);
 
 	virtual void PostReset();
+
+	// Zomb2
+	void CheckZombie();
+	int RandZomb();
+	int m_Zombie[13];//not sure about the amount of zombies
 };
 
 #endif

@@ -191,6 +191,8 @@ public:
 	int64 LastRecvTime() const { return m_LastRecvTime; }
 
 	int AckSequence() const { return m_Ack; }
+
+	void BotConnect();
 };
 
 class CConsoleNetConnection
@@ -295,6 +297,8 @@ private:
 public:
 	int SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_DELCLIENT pfnDelClient, void *pUser);
 
+	void BotInit(int BotID);
+	
 	//
 	bool Open(NETADDR BindAddr, int MaxClients, int MaxClientsPerIP, int Flags);
 	int Close();

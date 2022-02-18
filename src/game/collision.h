@@ -61,6 +61,12 @@ public:
 	bool DoorOpen(int DoorNumber, bool Open);
 	bool IsDoorOpen(int DoorNumber) { return m_DoorOpen[DoorNumber]; }
 
+	//Zomb2
+	bool CheckTiles(vec2 Pos, int Deepness);
+	bool CheckParable(vec2 Pos, int Wideness, int Direction);
+	bool CheckPlatform(vec2 Pos, int Deepness);
+	bool IntersectTile(vec2 Pos0, vec2 Pos1);
+
 private:
 	class CTile *m_pSubGameLayer[4];
 };

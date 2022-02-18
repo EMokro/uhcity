@@ -133,6 +133,8 @@ bool IGameController::CanSpawn(int Team, vec2 *pOutPos, int Type)
 			EvaluateSpawnType(&Eval, 2);
 		else if (Type == 3)
 			EvaluateSpawnType(&Eval, 3);
+		else if (Type == 4)
+			EvaluateSpawnType(&Eval, 4);
 		else
 			EvaluateSpawnType(&Eval, 0);
 	}
@@ -163,7 +165,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	else if (Index == ENTITY_AFK)
 		m_aaSpawnPoints[3][m_aNumSpawnPoints[3]++] = Pos;
 	else if (Index == ENTITY_MONSTER_PSPAWN)
-		m_aaSpawnPoints[3][m_aNumSpawnPoints[4]++] = Pos;
+		m_aaSpawnPoints[4][m_aNumSpawnPoints[4]++] = Pos;
 	else if(Index == ENTITY_ARMOR_1)
 		Type = POWERUP_ARMOR;
 	else if(Index == ENTITY_HEALTH_1)
@@ -570,6 +572,8 @@ void IGameController::Tick()
 		if(!m_Warmup)
 			StartRound();
 	}
+	
+	CheckZombie();
 
 	if(m_GameOverTick != -1)
 	{
@@ -691,14 +695,14 @@ void IGameController::Tick()
 
 	DoWincheck();
 
-	for(int i = 0; i <= MAX_MONSTERS; i++)
+	/*for(int i = 0; i <= MAX_MONSTERS; i++)
     {
     	if(!GameServer()->GetValidMonster(i) && m_AliveMonsters <= MAX_MONSTERS)
     	{
     	    NewMonster(i);
 			m_AliveMonsters++;
 		}
-    }
+    }*/
 }
 
 void IGameController::NewMonster(int MonsterID)
@@ -906,4 +910,36 @@ int IGameController::ClampTeam(int Team)
 	if(IsTeamplay())
 		return Team&1;
 	return 0;
+}
+
+void IGameController::CheckZombie()
+{
+	if(!g_Config.m_EnableMonster)
+		return;
+	for(int i = 112; i < MAX_CLIENTS; i++)//...
+	{
+		if(!GameServer()->m_apPlayers[i])//Check if the CID is free
+		{
+			int Random = RandZomb();
+			if(Random == -1)
+				break;
+			GameServer()->OnZombie(i, Random+1);//Create a Zombie Finally
+			m_Zombie[Random]--;
+		}
+	}
+}
+
+int IGameController::RandZomb()
+{
+	int size = (int)(sizeof(m_Zombie)/sizeof(m_Zombie[0]));
+	int Rand = rand()%size;
+	int WTF = 1;
+	while(!m_Zombie[Rand])
+	{
+		Rand = rand()%size;
+		WTF--;
+		if(!WTF) // 100% CPU :D (Very nice, but it's a JOKE! :P)
+			return -1;
+	}
+	return Rand;
 }

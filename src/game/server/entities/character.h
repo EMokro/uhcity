@@ -178,6 +178,30 @@ public:
 	int GetHealth() const { return m_Health; }
 
 	void CheckLevelUp(int ClientID);
+
+	//Zomb2
+	void DoZombieMovement();
+	void DoZombieAim(vec2 VictimPos, int VicCID, vec2 NearZombPos, int NearZombCID);
+	void ResetAiming();
+	vec2 GetGrenadeAngle(vec2 m_StartPos, vec2 m_ToShoot, bool GrenadeBot);
+	float GetTriggerDistance(int Type);
+
+	struct MoveVars
+	{
+		bool m_FJump;
+		int m_LastX;
+		int m_LastXTimer;
+		int m_JumpTimer;
+		int m_CliffTimer;
+	} m_Move;
+
+	struct AimVars
+	{
+		int m_FireCounter;
+		int m_Angle;
+		bool m_Explode;
+	} m_Aim;
+	bool m_IsVisible;
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;

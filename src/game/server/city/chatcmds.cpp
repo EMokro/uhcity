@@ -380,7 +380,7 @@ void CGameContext::ConChatMonster(IConsole::IResult *pResult, void *pUserData)
     char aBuf[128];
 
     if (!g_Config.m_EnableMonster) {
-        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Monster is not enabled"));
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Zomb is not enabled"));
         return;
     }
 

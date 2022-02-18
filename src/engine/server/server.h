@@ -148,6 +148,8 @@ public:
 	CRegister m_Register;
 	CMapChecker m_MapChecker;
 
+	void BotJoin(int BotID);
+
 	CServer();
 
 	int TrySetClientName(int ClientID, const char *pName);

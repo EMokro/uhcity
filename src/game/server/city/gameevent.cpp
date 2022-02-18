@@ -119,8 +119,8 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
             return;
         case EVENT_MONSTER:
-            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ MONSTER!! BY Neox76 ~~~~~"));
-            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Monster is coming! Join 'MOSTE' to Kill them!"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("~~~~~ ZOMB COMING!! ~~~~~"));
+            GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_INFO, _("Zombie is coming! Kill them!"));
             GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
             return;
         default:
@@ -155,7 +155,7 @@ void CGameEvent::GetEventStr(int ID, char *Out, int Size) {
         str_format(Out, Size, "RisngMC");
         break;
     case EVENT_MONSTER:
-        str_format(Out, Size, "Monster");
+        str_format(Out, Size, "Zomb");
         break;
     default:
         str_format(Out, Size, "Unknown");
@@ -169,7 +169,7 @@ void CGameEvent::Bounty() {
     char aBuf[128], numBuf[16];
     int Amount;
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
         if (!GameServer()->m_apPlayers[i])
             continue;
 

@@ -19,6 +19,7 @@
 #include "gamemodes/mod.h"
 #include <algorithm>
 
+#include "entities/pickup.h"
 enum
 {
 	RESET,
@@ -817,7 +818,7 @@ void CGameContext::OnClientConnected(int ClientID)
 	// Check which team the player should be on
 	const int StartTeam = g_Config.m_SvTournamentMode ? TEAM_SPECTATORS : m_pController->GetAutoTeam(ClientID);
 
-	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, StartTeam);
+	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, StartTeam, 0);
 	//players[client_id].init(client_id);
 	//players[client_id].client_id = client_id;
 
@@ -877,7 +878,7 @@ void CGameContext::FormatInt(long long n, char* out) {
 		digit = i % 10;
 
 		if ((out_index + 1) % 4 == 0) {
-			out[out_index++] = '.';
+			out[out_index++] = ',';
 		}
 		out[out_index++] = digit + '0';
 	}
@@ -2208,6 +2209,47 @@ bool CGameContext::IsValidPlayer(int PlayerID)
     return true;
 }
 
+void CGameContext::OnZombie(int ClientID, int Zomb)
+{
+	if(ClientID >= MAX_CLIENTS) //|| //m_apPlayers[ClientID])
+		return;
+
+	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, 0, 1);
+	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, ClientID, sizeof(CNetObj_ClientInfo)));
+	pClientInfo->m_UseCustomColor = 0;
+	StrToInts(&pClientInfo->m_Clan0, 3, "Zombie");
+	pClientInfo->m_Country = 1000;
+	pClientInfo->m_ColorBody = 16776960;
+	pClientInfo->m_ColorFeet = 16776960;
+	StrToInts(&pClientInfo->m_Name0, 4, "Zombie");
+	StrToInts(&pClientInfo->m_Skin0, 6, "zaby");
+
+	Server()->BotJoin(ClientID);
+	
+	m_apPlayers[ClientID]->Respawn();
+//	dbg_msg("test", "SUS");
+}
+
+void CGameContext::OnZombieKill(int ClientID)
+{
+	for(int i = 0; i++; i < 10)
+	{
+		CPickup *pPickup = new CPickup(&this->m_World, POWERUP_HEALTH, POWERUP_HEALTH);
+		pPickup->m_Pos = m_apPlayers[ClientID]->GetCharacter()->m_Pos;
+	}
+	if(m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+		m_apPlayers[ClientID]->DeleteCharacter();
+	if(m_apPlayers[ClientID])
+		delete m_apPlayers[ClientID];
+	m_apPlayers[ClientID] = 0;
+
+	// update spectator modes
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if(m_apPlayers[i] && m_apPlayers[i]->m_SpectatorID == ClientID)
+			m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
+	}
+}
 
 const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() { return GAME_VERSION; }
