@@ -394,7 +394,7 @@ void CGameContext::ConChatMonster(IConsole::IResult *pResult, void *pUserData)
 
     pP->m_onMonster ^= 1;
     pChr->Die(pP->GetCID(), WEAPON_GAME);
-    str_format(aBuf, sizeof(aBuf), "%s %s Monster", pSelf->Server()->ClientName(pP->GetCID()), pP->m_onMonster ? "joined" : "left");
+    str_format(aBuf, sizeof(aBuf), "%s %s Zomb 2!", pSelf->Server()->ClientName(pP->GetCID()), pP->m_onMonster ? "joined" : "left");
     pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 }
 
@@ -886,6 +886,7 @@ void CGameContext::ConChatCmdlist(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/bountylist -- Get a list of all bounties"));
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/writestats -- Writes your weaponlevel down"));
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/lang cn|en -- Change you server language"));
+        pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("/zomb -- Play zomb"));
     } else {
         pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("We don't have so many commands :("));
     }
@@ -902,7 +903,7 @@ void CGameContext::ConChatHelp(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("If you already have an account you can login with"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("-- /login <username> <password>"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("If you have any questions you can always ask a team member."));
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Join our discord to contact us https://discord.gg/Rstb8ge"));
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Join our discord to contact us https://discord.gg/PhgUmS2qey"));
 }
 
 void CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
@@ -913,7 +914,7 @@ void CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("---------- INFO ----------"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("UH|City is made by UrinStone."));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Join our Discord to be always informed about the latest updates."));
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("If you forget your password or wish to donate, please ONLY contact UrinStone#8404 on Discord."));
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("If you forget your password or wish to donate, please ONLY contact TeeFlowerFell-Sans#9358 on Discord."));
 }
 
 void CGameContext::ConChatWriteStats(IConsole::IResult *pResult, void *pUserData)
@@ -955,7 +956,7 @@ void CGameContext::ConChatDonor(IConsole::IResult *pResult, void *pUserData)
     
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("---------- DONOR ----------"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Donor costs 10€"));
-    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Contact UrinStone#8404 at discord"));
+    pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Contact TeeFlowerFell-Sans#9358 at discord"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("Donor provides following features:"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("- x5 Money and Exp"));
     pSelf->SendChatTarget_Localization(pP->GetCID(), CHATCATEGORY_INFO, _("- The nice crown"));

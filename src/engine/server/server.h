@@ -72,6 +72,7 @@ public:
 			STATE_CONNECTING,
 			STATE_READY,
 			STATE_INGAME,
+			STATE_BOT,
 
 			SNAPRATE_INIT=0,
 			SNAPRATE_FULL,
@@ -148,7 +149,7 @@ public:
 	CRegister m_Register;
 	CMapChecker m_MapChecker;
 
-	void BotJoin(int BotID);
+	void BotJoin(int BotID, int BotMode);
 
 	CServer();
 

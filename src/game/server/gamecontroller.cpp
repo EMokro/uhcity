@@ -417,6 +417,10 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
+	
+	if(pVictim->GetPlayer()->m_Zomb && !pKiller)
+		return 0;
+	
 	if(pKiller == pVictim->GetPlayer())
 	{
 		if(pVictim->GetPlayer()->m_AccData.m_Money >= 50)
@@ -507,9 +511,32 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 	pChr->IncreaseHealth(pChr->GetPlayer()->m_AccData.m_Health);
 	pChr->IncreaseArmor(pChr->GetPlayer()->m_AccData.m_Armor);
 
-	// give default weapons
+	if(pChr->GetPlayer()->GetZomb(5) || pChr->GetPlayer()->GetZomb(9))//Zunner, Flombie
+	{
+		pChr->GiveWeapon(WEAPON_GUN, -1);
+		pChr->SetWeapon(WEAPON_GUN);
+	}
+	else if(pChr->GetPlayer()->GetZomb(2))//Zoomer
+	{
+		pChr->GiveWeapon(WEAPON_RIFLE, -1);
+		pChr->SetWeapon(WEAPON_RIFLE);
+	}
+	else if(pChr->GetPlayer()->GetZomb(7))//Zotter
+	{
+		pChr->GiveWeapon(WEAPON_SHOTGUN, -1);
+		pChr->SetWeapon(WEAPON_SHOTGUN);
+	}
+	else if(pChr->GetPlayer()->GetZomb(8))//Zenade
+	{
+		pChr->GiveWeapon(WEAPON_GRENADE, -1);
+		pChr->SetWeapon(WEAPON_GRENADE);
+	}
+	else if(!pChr->GetPlayer()->m_Zomb)
+	{// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);
-	pChr->GiveWeapon(WEAPON_GUN, 10);
+	
+	if(!pChr->GetPlayer()->m_Zomb)
+		pChr->GiveWeapon(WEAPON_GUN, 10);
 
 	if(pChr->GetPlayer()->m_AccData.m_AllWeapons)
 	{
@@ -519,7 +546,12 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 	}
 
 	if(pChr->GetPlayer()->m_AccData.m_NinjaStart)
-		pChr->GiveNinja();
+		pChr->GiveNinja();}
+	else//Zaby, Zooker, Zamer, Zaster, Zele, Zinja, Zeater (Ninja gets automatically)
+	{
+		pChr->GiveWeapon(WEAPON_HAMMER, -1);
+		pChr->SetWeapon(WEAPON_HAMMER);
+	}
 }
 
 void IGameController::DoWarmup(int Seconds)
@@ -690,7 +722,7 @@ void IGameController::Tick()
 
 	// Scheduled server message
 	if (Server()->Tick() % 30000 == 0) { // every 10 min
-		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Visit our Discord server https://discord.gg/Rstb8ge"));
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Visit our Discord server https://discord.gg/PhgUmS2qey"));
 	}
 
 	DoWincheck();
@@ -707,7 +739,7 @@ void IGameController::Tick()
 
 void IGameController::NewMonster(int MonsterID)
 {
-	int m_Type = 0;
+	/*int m_Type = 0;
 	if(!g_Config.m_EnableMonster)
 		return;
     m_Type = rand()%NUM_WEAPONS;
@@ -717,7 +749,7 @@ void IGameController::NewMonster(int MonsterID)
         {
             GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, m_Type, MonsterID, 10, 10, 5);
         }
-    }
+    }*/
 }
 
 bool IGameController::IsTeamplay() const
@@ -916,14 +948,14 @@ void IGameController::CheckZombie()
 {
 	if(!g_Config.m_EnableMonster)
 		return;
-	for(int i = 112; i < MAX_CLIENTS; i++)//...
+	for(int i = MAX_PLAYERS + 1; i < MAX_CLIENTS; i++)//...
 	{
 		if(!GameServer()->m_apPlayers[i])//Check if the CID is free
 		{
 			int Random = RandZomb();
 			if(Random == -1)
 				break;
-			GameServer()->OnZombie(i, Random+1);//Create a Zombie Finally
+			GameServer()->CreateNewDummy(i, Random);
 			m_Zombie[Random]--;
 		}
 	}

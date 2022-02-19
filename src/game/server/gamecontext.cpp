@@ -1894,6 +1894,9 @@ void CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp_nocase(pType, "kick") == 0)
 	{
 		int KickID = str_toint(pValue);
+		if(KickID >= MAX_PLAYERS)
+			return;
+		
 		if(KickID < 0 || KickID >= MAX_CLIENTS || !pSelf->m_apPlayers[KickID])
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Invalid client id to kick");
@@ -2211,23 +2214,40 @@ bool CGameContext::IsValidPlayer(int PlayerID)
 
 void CGameContext::OnZombie(int ClientID, int Zomb)
 {
-	if(ClientID >= MAX_CLIENTS) //|| //m_apPlayers[ClientID])
-		return;
+}
 
-	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, 0, 1);
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, ClientID, sizeof(CNetObj_ClientInfo)));
-	pClientInfo->m_UseCustomColor = 0;
-	StrToInts(&pClientInfo->m_Clan0, 3, "Zombie");
-	pClientInfo->m_Country = 1000;
-	pClientInfo->m_ColorBody = 16776960;
-	pClientInfo->m_ColorFeet = 16776960;
-	StrToInts(&pClientInfo->m_Name0, 4, "Zombie");
-	StrToInts(&pClientInfo->m_Skin0, 6, "zaby");
+int CGameContext::CreateNewDummy(int DummyID, int DummyMode)
+{
+    if (DummyID < 0)
+    {
+        dbg_msg("dummy", "Can't get ClientID. Server is full or something like that.");
+        return -1;
+    }
 
-	Server()->BotJoin(ClientID);
-	
-	m_apPlayers[ClientID]->Respawn();
-//	dbg_msg("test", "SUS");
+    if (m_apPlayers[DummyID])
+    {
+        /*m_apPlayers[DummyID]->OnDisconnect("");
+        delete m_apPlayers[DummyID];
+        m_apPlayers[DummyID] = 0;*/
+		return -1;
+    }
+
+    m_apPlayers[DummyID] = new(DummyID) CPlayer(this, DummyID, TEAM_RED, DummyMode);	
+	m_apPlayers[DummyID]->m_TeeInfos.m_UseCustomColor = 0;
+	m_apPlayers[DummyID]->m_TeeInfos.m_ColorFeet = 16776960;
+	m_apPlayers[DummyID]->m_TeeInfos.m_ColorBody = 16776960;
+    Server()->BotJoin(DummyID, DummyMode);
+
+	if(DummyMode <= 13) //Zombie dummy
+		str_copy(m_apPlayers[DummyID]->m_TeeInfos.m_SkinName, "voodoo_tee", MAX_NAME_LENGTH);
+	else // don't know :D
+		str_copy(m_apPlayers[DummyID]->m_TeeInfos.m_SkinName, "pinky", MAX_NAME_LENGTH);
+
+    dbg_msg("dummy", "Dummy connected: %d", DummyID);
+
+    OnClientEnter(DummyID);
+
+    return DummyID;
 }
 
 void CGameContext::OnZombieKill(int ClientID)

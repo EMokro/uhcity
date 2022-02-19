@@ -93,10 +93,9 @@ void CGameEvent::EventInfo(int ClientID) {
             GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
             return;
         case EVENT_MONSTER:
-            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ MONSTER!! BY Neox76 ~~~~~"));
-            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("Monster is coming! Join 'MOSTE' to Kill them!"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("~~~~~ ZOMB COMING!! ~~~~~"));
+            GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFO, _("Zombie is coming! Kill them!"));
             GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_JOIN, _("Duration: {sec:s}"), "s", &m_Timer, NULL);
-            return;
         }
     } else {
         switch (m_CurrentEvent)

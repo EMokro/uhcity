@@ -223,7 +223,7 @@ void CPlayer::Snap(int SnappingClient)
 	if (!Server()->Translate(FakeID, SnappingClient) && !m_Zomb)
 		return;
 
-	dbg_msg("test", "test: %d", FakeID);
+	//dbg_msg("test", "test: %d", FakeID);
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, FakeID, sizeof(CNetObj_ClientInfo)));
 	if(!pClientInfo && !m_Zomb)
 		return;
@@ -251,6 +251,15 @@ void CPlayer::Snap(int SnappingClient)
 
 		pClientInfo->m_ColorBody = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorBody;
 		pClientInfo->m_ColorFeet = m_Rainbow?m_RainbowColor:m_TeeInfos.m_ColorFeet;
+	}
+	else
+	{
+		StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
+		StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+		pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
+		pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
+		pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 	}
 	
 
@@ -437,7 +446,7 @@ void CPlayer::TryRespawn()
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Insta?2:0))
 			return;
 	} else if(m_onMonster || m_Zomb) {
-		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_onMonster?4:0))
+		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Zomb||m_onMonster?4:0))// && !GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_Zomb?4:0))
 			return; 
 	} else {
 		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_AccData.m_Arrested?1:0))
@@ -455,14 +464,15 @@ void CPlayer::FakeSnap(int SnappingClient)
 {
 	IServer::CClientInfo Info;
 
-	Server()->GetClientInfo(SnappingClient, &Info);
-	if (Info.m_Client != IServer::CLIENT_VANILLA)
-		return;
-
 	int FakeID = VANILLA_MAX_CLIENTS - 1;
 
 	CNetObj_ClientInfo* pClientInfo = static_cast<CNetObj_ClientInfo*>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, FakeID, sizeof(CNetObj_ClientInfo)));
-	if (!pClientInfo)
+	
+	Server()->GetClientInfo(SnappingClient, &Info);
+	if (Info.m_Client != IServer::CLIENT_VANILLA || m_Zomb)
+		return;
+
+	if (!pClientInfo && !m_Zomb)
 		return;
 
 	StrToInts(&pClientInfo->m_Name0, 4, " ");

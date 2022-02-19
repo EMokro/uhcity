@@ -195,7 +195,7 @@ void CNetConnection::Disconnect(const char *pReason)
 
 void CNetConnection::BotConnect()
 {
-    m_State = NET_CONNSTATE_CONNECT;
+    m_State = NET_CONNSTATE_BOT;
 }
 
 
@@ -302,6 +302,7 @@ int CNetConnection::Update()
 	// check for timeout
 	if(State() != NET_CONNSTATE_OFFLINE &&
 		State() != NET_CONNSTATE_CONNECT &&
+		State() != NET_CONNSTATE_BOT &&
 		(Now-m_LastRecvTime) > time_freq()*10)
 	{
 		m_State = NET_CONNSTATE_ERROR;

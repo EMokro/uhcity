@@ -118,7 +118,7 @@
             "value": "玩家{str:PName} 加入/离开 了激光瞬杀"
         },
         {
-            "key": "Monster is not enabled",
+            "key": "Zomb is not enabled",
             "value": "怪物未被开启"
         },
         {
@@ -446,7 +446,7 @@
             "value": "如果你有疑问你可以询问制作团队成员"
         },
         {
-            "key": "Join our discord to contact us https://discord.gg/Rstb8ge",
+            "key": "Join our discord to contact us https://discord.gg/PhgUmS2qey",
             "value": "加入我们的QQ群来联系我们: 834323539"
         },
         {
@@ -462,7 +462,7 @@
             "value": "加入我们的QQ群来获取最新的更新：834323539"
         },
         {
-            "key": "If you forget your password or wish to donate, please ONLY contact UrinStone#8404 on Discord.",
+            "key": "If you forget your password or wish to donate, please ONLY contact TeeFlowerFell-Sans#9358 on Discord.",
             "value": "如果你忘记了密码或者想要充值，那么请加QQ好友1421709710，其他人无效"
         },
         {
@@ -514,7 +514,7 @@
             "value": "Donor 价格10元"
         },
         {
-            "key": "Contact UrinStone#8404 at discord",
+            "key": "Contact TeeFlowerFell-Sans#9358 at discord",
             "value": "加QQ1421709710购买Donor"
         },
         {
@@ -1134,7 +1134,7 @@
             "value": "成功创建账号备份"
         },
         {
-            "key": "Visit our Discord server https://discord.gg/Rstb8ge",
+            "key": "Visit our Discord server https://discord.gg/PhgUmS2qey",
             "value": "请加入我们的QQ群：834323539"
         },
         {
